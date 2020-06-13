@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+<!--Description-->
+
+
+
+    <meta name="description" content="1. 正确使用 String类的 equals()方法 和 Object类的 equals() 方法
+已知对象在前，未知对象在后。注意：已知对象不为 null"/>
+
+
+<!--Author-->
+
+    <meta name="author" content="sungm"/>
+
+
+<!--Open Graph Title-->
+
+    <meta property="og:title" content="正确的避免NullPointException"/>
+
+
+<!--Open Graph Description-->
+
+    <meta property="og:description" content="1. 正确使用 String类的 equals()方法 和 Object类的 equals() 方法
+已知对象在前，未知对象在后。注意：已知对象不为 null"/>
+
+
+<!--Open Graph Site Name-->
+    <meta property="og:site_name" content="Miracle&#39;s Blog"/>
+
+<!--Type page-->
+
+    <meta property="og:type" content="article"/>
+
+
+<!--Page Cover-->
+
+
+    <meta property="og:image" content="http://yoursite.com/img/home-bg.jpg"/>
+
+
+<meta name="twitter:card" content="summary_large_image"/>
+
+
+
+
+    <meta name="twitter:image" content="http://yoursite.com/img/home-bg.jpg"/>
+
+
+<!-- Title -->
+
+<title>正确的避免NullPointException - Miracle&#39;s Blog</title>
+
+<!-- Bootstrap Core CSS -->
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+
+<!-- Custom CSS -->
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<!-- Custom Fonts -->
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.0/css/all.min.css" />
+<link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css"/>
+<link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css"/>
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+<!-- Gallery -->
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/featherlight@1.4.0/src/featherlight.css" integrity="sha256-30DV/STftlyQ6v8yaOWlabammvCYtRJERLj/m0b3zno=" crossorigin="anonymous">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/lightgallery@1.6.11/dist/css/lightgallery.min.css">
+
+<!-- favicon -->
+
+<link rel="icon" href="/img/favicon.png"/>
+
+
+
+    <!-- Google Analytics -->
+    
+
+
+<meta name="generator" content="Hexo 4.2.1"><link rel="alternate" href="/atom.xml" title="Miracle's Blog" type="application/atom+xml">
+</head>
+<!-- Head tag -->
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top bg-transparent position-absolute w-100 p-0" id="nav">
+    <div class="container pl-0 pr-0">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <a class="navbar-brand text-white p-1 pl-3" href="/">Miracle's Blog</a>
+        </div>
+        <div class="navbar-nav float-right">
+            <button class="btn btn-link search-btn navbar-item" data-toggle="modal" data-target="#searchModal">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    </div>
+    <!-- /.container -->
+</nav>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 text-center">
+                <div class="post-heading text-white">
+                    <h1>正确的避免NullPointException</h1>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Main Content -->
+            <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
+                
+                    <span class="meta d-inline-block">
+    
+    
+    <!-- Date -->
+    
+        <span class="post-meta-split">&nbsp;|&nbsp;</span>
+        <i class="far fa-calendar-check fa-fw"></i>
+        2020-06-13
+    
+    <!-- word count and read count -->
+    
+
+    
+
+    
+</span>  
+                
+                <h1 id="1-正确使用-String类的-equals-方法-和-Object类的-equals-方法"><a href="#1-正确使用-String类的-equals-方法-和-Object类的-equals-方法" class="headerlink" title="1. 正确使用 String类的 equals()方法 和 Object类的 equals() 方法"></a>1. 正确使用 String类的 equals()方法 和 Object类的 equals() 方法</h1><blockquote>
+<p>已知对象在前，未知对象在后。注意：已知对象不为 null</p>
+</blockquote>
+<a id="more"></a>
+
+<p>######正确示例</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    String name &#x3D; &quot;sungm&quot;; </span><br><span class="line">    &#x2F;&#x2F;name为已知对象且被赋予初始值不为空</span><br><span class="line">    if (name.equals(getOtherName())) &#123;</span><br><span class="line">        &#x2F;&#x2F;todo do something</span><br><span class="line">        System.out.println(&quot;todo do something&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static String getOtherName() &#123;</span><br><span class="line">    return &quot;sungm&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>######错误示例</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">    String name &#x3D; &quot;sungm&quot;;</span><br><span class="line">    &#x2F;&#x2F;getOtherName()方法返回值为 null。抛出NPE</span><br><span class="line">    if (getOtherName().equals(name)) &#123;</span><br><span class="line">        &#x2F;&#x2F;todo do something</span><br><span class="line">        System.out.println(&quot;todo do something&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static String getOtherName() &#123;</span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h1 id="2-未知对象转String使用String-valueOf-方法"><a href="#2-未知对象转String使用String-valueOf-方法" class="headerlink" title="2. 未知对象转String使用String.valueOf()方法"></a>2. 未知对象转String使用String.valueOf()方法</h1><blockquote>
+<p>空对象调用 toString() 方法会抛出NPE，使用 String.valueOf() 替代</p>
+</blockquote>
+<p>#####示例</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    &#x2F;&#x2F;抛NPE</span><br><span class="line">    System.out.println(getPrice().toString());</span><br><span class="line">    &#x2F;&#x2F;不抛NPE</span><br><span class="line">    System.out.println(String.valueOf(getPrice()));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static BigDecimal getPrice() &#123;</span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="String-valueOf-方法源码"><a href="#String-valueOf-方法源码" class="headerlink" title="String.valueOf() 方法源码"></a>String.valueOf() 方法源码</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public static String valueOf(Object obj) &#123;</span><br><span class="line">    return (obj &#x3D;&#x3D; null) ? &quot;null&quot; : obj.toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h1 id="3-使用第三方类库或者自己封装的工具类"><a href="#3-使用第三方类库或者自己封装的工具类" class="headerlink" title="3. 使用第三方类库或者自己封装的工具类"></a>3. 使用第三方类库或者自己封装的工具类</h1><blockquote>
+<p>例如 Apache 的 StringUtils 类</p>
+</blockquote>
+<p>#####Apache 的 StringUtils工具类部分源码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">public static boolean isEmpty(String str) &#123;</span><br><span class="line">    return str &#x3D;&#x3D; null || str.length() &#x3D;&#x3D; 0;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static boolean isNotEmpty(String str) &#123;</span><br><span class="line">    return !isEmpty(str);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static boolean isBlank(String str) &#123;</span><br><span class="line">    int strLen;</span><br><span class="line">    if (str !&#x3D; null &amp;&amp; (strLen &#x3D; str.length()) !&#x3D; 0) &#123;</span><br><span class="line">        for(int i &#x3D; 0; i &lt; strLen; ++i) &#123;</span><br><span class="line">            if (!Character.isWhitespace(str.charAt(i))) &#123;</span><br><span class="line">                return false;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return true;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static boolean isNotBlank(String str) &#123;</span><br><span class="line">    return !isBlank(str);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>#####Apache 中 StringUtils 中 isEmpty() 方法 和 isBlank() 方法的区别：</p>
+<blockquote>
+<p>1: isEmpty() 方法：当Sting为null或者空（””）时返回true<br>2: isBlank() 方法 ：当Sting为null或者空（””）或者空字符串（”     “）时返回true</p>
+</blockquote>
+<p>#####示例</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">    String empty &#x3D; null;</span><br><span class="line">    System.out.println(StringUtils.isEmpty(empty));</span><br><span class="line"></span><br><span class="line">    empty &#x3D; &quot;&quot;;</span><br><span class="line">    System.out.println(StringUtils.isEmpty(empty));</span><br><span class="line"></span><br><span class="line">    empty &#x3D; &quot;      &quot;;</span><br><span class="line">    System.out.println(StringUtils.isBlank(empty));</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="4-避免自动拆箱可能抛出NPE"><a href="#4-避免自动拆箱可能抛出NPE" class="headerlink" title="4. 避免自动拆箱可能抛出NPE"></a>4. 避免自动拆箱可能抛出NPE</h1><blockquote>
+<p>自动拆箱可能抛出NPE</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;反例</span><br><span class="line">public int function() &#123;</span><br><span class="line">    return Integer对象;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h1 id="5-数据库查出的数据可能为null，做空判断"><a href="#5-数据库查出的数据可能为null，做空判断" class="headerlink" title="5. 数据库查出的数据可能为null，做空判断"></a>5. 数据库查出的数据可能为null，做空判断</h1><blockquote>
+<p>数据库非空字段可以加非空约束；对可能为空的字段做空判断、防止NPE。</p>
+</blockquote>
+<hr>
+<h1 id="6-级联调用容易抛出NPE，建议使用Java-8-的-Optional类"><a href="#6-级联调用容易抛出NPE，建议使用Java-8-的-Optional类" class="headerlink" title="6. 级联调用容易抛出NPE，建议使用Java 8 的 Optional类"></a>6. 级联调用容易抛出NPE，建议使用Java 8 的 Optional类</h1><blockquote>
+<p>例如 object.getMehtodA().getMethodB().getMethodC()；很容易抛出NPE</p>
+</blockquote>
+<hr>
+<h1 id="7-远程调用返回对象容易抛出NPE，建议做空判断"><a href="#7-远程调用返回对象容易抛出NPE，建议做空判断" class="headerlink" title="7. 远程调用返回对象容易抛出NPE，建议做空判断"></a>7. 远程调用返回对象容易抛出NPE，建议做空判断</h1><blockquote>
+<p>调用第三方接口等返回对象可能为空，建议对该对象操作之前做空判断。</p>
+</blockquote>
+<hr>
+<h1 id="8-取Session中-的值之前做空判断"><a href="#8-取Session中-的值之前做空判断" class="headerlink" title="8. 取Session中 的值之前做空判断"></a>8. 取Session中 的值之前做空判断</h1><blockquote>
+<p> 取Session的值之前对Session做空判断，对获取的Session值操作之前对Session值做空判断、避免NPE</p>
+</blockquote>
+<hr>
+<h1 id="9-对集合的操作之前做空判断"><a href="#9-对集合的操作之前做空判断" class="headerlink" title="9. 对集合的操作之前做空判断"></a>9. 对集合的操作之前做空判断</h1><blockquote>
+<p> 取集合中的值之前对集合做空判断，对获取的集合值操作之前对集合值做空判断、避免NPE</p>
+</blockquote>
+<hr>
+
+            </div>
+
+            <!-- Post information -->
+            
+    <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 post-tags">
+        
+            <i class="fas fa-tag" style="vertical-align: middle;font-size: .8rem;"></i>
+            tags:&nbsp;
+            
+            
+        
+            <a href="/tags/Java/">#Java</a>
+        
+    </div>
+
+            
+    <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
+        <ul class="pagination d-block text-center">
+            
+                <li class="previous page-item d-inline"><a href="/2020/06/13/java-nio-Buffer-%E7%B1%BB%E8%AF%A6%E8%A7%A3/" class="page-link float-left">&larr;  Newer</a></li>
+            
+            
+                <li class="next page-item d-inline"><a href="/2020/06/13/%E5%81%9A%E6%9C%89%E6%84%8F%E4%B9%89%E7%9A%84%E5%91%BD%E5%90%8D/" class="page-link float-right">Older  &rarr;</a></li>
+            
+        </ul>
+    </div>
+
+
+            
+                <!-- Comments -->
+                
+
+                
+
+            
+
+        </div>
+    </div>
+</article> 
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+    <style>
+        #toc-content .toc-link::before {
+            background-color: transparent;
+            max-height: 25px;
+        }
+
+        #toc-content .toc-link.is-active-link::before {
+            background-color: #404040;
+        }
+    </style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    <div class="ui-toc dropup scrollspy-body pull-right" style="right: 3%;">
+        <button type="button" class="toc-btn btn btn-light" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
+            <i class="fas fa-list"></i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right p-2"  aria-labelledby="tocLabel">
+            <div class="toc-widget">
+                <div id="toc-content" class="text-truncate">
+                </div>
+            </div>
+            <div class="toc-menu pt-3 pl-4">
+                <a class="expand-toggle d-block py-1" href="#"><span class="expand-text">Expand all</span><span class="close-text" style="display: none;">Collapse all</span></a>
+                <a class="back-to-top d-block py-1" href="#">Back to top</a>
+                <a class="go-to-bottom d-block py-1" href="#">Go to bottom</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        tocbot.init({
+            // Where to render the table of contents.
+            tocSelector: '#toc-content',
+            // Where to grab the headings to build the table of contents.
+            contentSelector: 'article',
+            // Which headings to grab inside of the contentSelector element.
+            headingSelector: 'h1, h2, h3',
+            // For headings inside relative or absolute positioned containers within content.
+            hasInnerContainers: true,
+        });
+    </script>
+
+
+    
+
+
+    <!-- Footer -->
+    <hr />
+
+<!-- Footer -->
+<footer id="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 text-center">
+                <ul class="list-inline">
+                    
+
+                    
+
+                    
+
+                    
+
+                    
+
+                    
+                </ul>
+                <ul class="copyright footer-menu list-inline">
+                    
+                    
+                        <li class="list-inline-item">
+                            
+                            
+                            <a href="/">
+                                
+                                    Home
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/archives">
+                                
+                                    Archives
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/tags">
+                                
+                                    Tags
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/categories">
+                                
+                                    Categories
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/about">
+                                
+                                    About
+                                
+                            </a>
+                        </li>
+                    
+                </ul>
+                <p class="copyright footer-author">
+                    &copy; -2020 
+                    <a rel="external" class="copyright-link" href="" target="_blank">sungm</a><br/>
+                    Powered by <a rel="external" class="copyright-link" href="https://hexo.io/" target="_blank">Hexo</a>  
+                    <span class="copyright-split">&nbsp;|&nbsp;&nbsp;</span>
+                    Theme <a rel="external" class="copyright-link" href="https://github.com/luswdev/hexo-theme-clean.git" target="_blank">Clean</a>
+                    
+                    
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    <!-- After footer scripts -->
+    <!-- jQuery -->
+<script src="//cdn.jsdelivr.net/npm/jquery@2.1.4/dist/jquery.min.js"></script>
+
+<!-- For drop down -->
+<script src="//cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="//cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
+<!-- Gallery -->
+<script src="//cdn.jsdelivr.net/npm/lightgallery@1.6.11/dist/js/lightgallery-all.min.js"></script>
+<!-- Busuanzi -->
+
+
+<!-- Search script -->
+<script src="/js/search.js"></script>
+<script type="text/javascript">
+    $(function () {
+        searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+    });
+</script>
+
+
+<script src="/js/main.js"></script>
+
+
+    <!-- Search Modal -->
+    <!-- Modal -->
+<div class="modal fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+        <div class="modal-content overflow-auto">
+            <div class="modal-header">
+                <input type="text" class="form-control" placeholder="Searching Keywords..." id="searchInput">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div id="searchResult">
+                    <div class="search-empty text-center text-muted p-5">
+                        <i class="far fa-meh"></i>
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

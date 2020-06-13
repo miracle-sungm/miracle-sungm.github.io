@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+<!--Description-->
+
+
+
+    <meta name="description" content="软件中随处可见命名。我们给变量、函数、参数、类和封包命名。我们给源代码及源码所在的目录命名。我们给 jar 文件、 war 文件 和 ear 文件命名。有很多命名要做、不妨做好它。下面列出几条简单规则。"/>
+
+
+<!--Author-->
+
+    <meta name="author" content="sungm"/>
+
+
+<!--Open Graph Title-->
+
+    <meta property="og:title" content="做有意义的命名"/>
+
+
+<!--Open Graph Description-->
+
+    <meta property="og:description" content="软件中随处可见命名。我们给变量、函数、参数、类和封包命名。我们给源代码及源码所在的目录命名。我们给 jar 文件、 war 文件 和 ear 文件命名。有很多命名要做、不妨做好它。下面列出几条简单规则。"/>
+
+
+<!--Open Graph Site Name-->
+    <meta property="og:site_name" content="Miracle&#39;s Blog"/>
+
+<!--Type page-->
+
+    <meta property="og:type" content="article"/>
+
+
+<!--Page Cover-->
+
+
+    <meta property="og:image" content="http://yoursite.com/img/home-bg.jpg"/>
+
+
+<meta name="twitter:card" content="summary_large_image"/>
+
+
+
+
+    <meta name="twitter:image" content="http://yoursite.com/img/home-bg.jpg"/>
+
+
+<!-- Title -->
+
+<title>做有意义的命名 - Miracle&#39;s Blog</title>
+
+<!-- Bootstrap Core CSS -->
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+
+<!-- Custom CSS -->
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<!-- Custom Fonts -->
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.0/css/all.min.css" />
+<link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css"/>
+<link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css"/>
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+<!-- Gallery -->
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/featherlight@1.4.0/src/featherlight.css" integrity="sha256-30DV/STftlyQ6v8yaOWlabammvCYtRJERLj/m0b3zno=" crossorigin="anonymous">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/lightgallery@1.6.11/dist/css/lightgallery.min.css">
+
+<!-- favicon -->
+
+<link rel="icon" href="/img/favicon.png"/>
+
+
+
+    <!-- Google Analytics -->
+    
+
+
+<meta name="generator" content="Hexo 4.2.1"><link rel="alternate" href="/atom.xml" title="Miracle's Blog" type="application/atom+xml">
+</head>
+<!-- Head tag -->
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top bg-transparent position-absolute w-100 p-0" id="nav">
+    <div class="container pl-0 pr-0">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <a class="navbar-brand text-white p-1 pl-3" href="/">Miracle's Blog</a>
+        </div>
+        <div class="navbar-nav float-right">
+            <button class="btn btn-link search-btn navbar-item" data-toggle="modal" data-target="#searchModal">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    </div>
+    <!-- /.container -->
+</nav>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 text-center">
+                <div class="post-heading text-white">
+                    <h1>做有意义的命名</h1>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Main Content -->
+            <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
+                
+                    <span class="meta d-inline-block">
+    
+    
+    <!-- Date -->
+    
+        <span class="post-meta-split">&nbsp;|&nbsp;</span>
+        <i class="far fa-calendar-check fa-fw"></i>
+        2020-06-13
+    
+    <!-- word count and read count -->
+    
+
+    
+
+    
+</span>  
+                
+                <blockquote>
+<p>软件中随处可见命名。我们给变量、函数、参数、类和封包命名。我们给源代码及源码所在的目录命名。我们给 jar 文件、 war 文件 和 ear 文件命名。有很多命名要做、不妨做好它。下面列出几条简单规则。</p>
+</blockquote>
+<a id="more"></a>
+
+<p>#1. 名副其实</p>
+<blockquote>
+<p>变量、函数或类的名称应该已经答复了所有的大问题。它该告诉你，它为什么会存在，它做了什么事，应该怎么用。如果名称需要注释来补充，那就不算是名副其实。</p>
+</blockquote>
+<hr>
+<p>#2. 避免误导</p>
+<blockquote>
+<ol>
+<li><strong>避免留下掩藏代码本意的错误线索。</strong><br>例如：使用某些专有名词作为变量名，使用缩写。</li>
+<li><strong>避免使用与本意相悖的词</strong><br>例如：<br>String[] accountList = new String[10];  accountList 实质是一个数组对象，命名后缀为<br>List产生误导作用。</li>
+<li><strong>避免使用外形相似的命名</strong><br>例如：两个变量</li>
+<li><strong>避免使用小写字母 l 与 大写字母 O 作为变量名，跟数组1 和数字 0 难以区分。</strong></li>
+</ol>
+</blockquote>
+<hr>
+<p>#3. 做有意义的区分</p>
+<blockquote>
+<p>如果只是为了满足编译器或解释器的需要而写代码，肯定会制造麻烦。</p>
+</blockquote>
+<blockquote>
+<p>#####错误示例：<br><strong>1. 添加数字系列，这样的名称纯属误导。</strong></p>
+<ul>
+<li>例如：<br>定义两个学生对象<br>Student student1 = new Student();<br>Student student2 = new Student();</li>
+</ul>
+<p><strong>2. 少使用废话，废话都是冗余。要区分名称，要以读者能鉴别之处来区分。</strong></p>
+<ul>
+<li><p>例如：假设已有一个 Product 类，还有ProductInfo 类 和 ProductData 类，虽然名称不同，意思却无差别。 Info 和 Data 就i想 a、an、the 一样，都是意义含混的废话。</p>
+</li>
+<li><p>例如：如果你需要获取账户信息，你该调用那个方法呢 ？<br>getAccount();<br>getAccounts();<br>getAccountInfo();</p>
+</li>
+<li><p>例如：<br>moneyAmount 和 money 没区别，<br>customerInfo 与 customer 没区别，<br>accountData 和 account 没区别，<br>theMessage 和 message 没区别 。</p>
+</li>
+</ul>
+</blockquote>
+<hr>
+<p>#4. 使用读的出来的名称</p>
+<blockquote>
+<p>#####错误示例：<br><strong>1.  使用汉语拼音，只会让别人觉得你写的代码很 low.</strong></p>
+<p><strong>2. 使用罕见的英语词汇</strong></p>
+</blockquote>
+<hr>
+<p>#5. 使用可搜索的名称</p>
+<blockquote>
+<p>#####建议:<br><strong>1. 使用长名称，长名称胜于短名称。</strong></p>
+<ul>
+<li>例如： WORK_DAYS_PER_WEEK 比数字 5 好找得多。</li>
+</ul>
+</blockquote>
+<hr>
+<p>#6. 避免使用编码</p>
+<blockquote>
+<p>编码已经太多，不需要自找麻烦。</p>
+</blockquote>
+<hr>
+<p>#7. 避免使用前缀</p>
+<blockquote>
+<p>不必使用 m_ 前缀来表名成员变量，很多时候阅读代码的人不会去看前缀，直接看后面有意义的名称，前缀反而成了废代码。</p>
+</blockquote>
+<hr>
+<p>#8. 接口和实现</p>
+<p>略</p>
+<hr>
+<p>#9. 类名</p>
+<blockquote>
+<p>类名和对象名应该是名词或者名词短语，不应该是动词。</p>
+<ul>
+<li>正例：Customer</li>
+<li>反例：CustomerInfo、CustomerData、 Data .</li>
+</ul>
+</blockquote>
+<hr>
+<p>#10. 方法名</p>
+<blockquote>
+<p>方法名应该是动词或者动词短语，不应该是名词。</p>
+<ul>
+<li>例如：getName(); setName() 等。</li>
+</ul>
+</blockquote>
+<hr>
+<p>#11. 避免思维映射</p>
+<blockquote>
+<ul>
+<li>例如：变量 i、j 通常用于 for 循环中，传统惯用这种单字母名词作为循环计数器，并不是一种好的选择。</li>
+</ul>
+</blockquote>
+<hr>
+<p>#12. 避免使用双关语</p>
+<blockquote>
+<ul>
+<li>例如：add方法用来添加一个对象，返回结果应该是布尔类型（添加成功或者失败） ，如果你需要添加一个对象并返回添加后产生的新值，建议使用append方法和insert方法。</li>
+</ul>
+</blockquote>
+
+            </div>
+
+            <!-- Post information -->
+            
+    <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 post-tags">
+        
+            <i class="fas fa-tag" style="vertical-align: middle;font-size: .8rem;"></i>
+            tags:&nbsp;
+            
+            
+        
+            <a href="/tags/Java/">#Java</a>
+        
+    </div>
+
+            
+    <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
+        <ul class="pagination d-block text-center">
+            
+                <li class="previous page-item d-inline"><a href="/2020/06/13/%E6%AD%A3%E7%A1%AE%E7%9A%84%E9%81%BF%E5%85%8DNullPointException/" class="page-link float-left">&larr;  Newer</a></li>
+            
+            
+                <li class="next page-item d-inline"><a href="/2020/06/13/Lambda-%E8%A1%A8%E8%BE%BE%E5%BC%8F/" class="page-link float-right">Older  &rarr;</a></li>
+            
+        </ul>
+    </div>
+
+
+            
+                <!-- Comments -->
+                
+
+                
+
+            
+
+        </div>
+    </div>
+</article> 
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+    <style>
+        #toc-content .toc-link::before {
+            background-color: transparent;
+            max-height: 25px;
+        }
+
+        #toc-content .toc-link.is-active-link::before {
+            background-color: #404040;
+        }
+    </style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    <div class="ui-toc dropup scrollspy-body pull-right" style="right: 3%;">
+        <button type="button" class="toc-btn btn btn-light" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
+            <i class="fas fa-list"></i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right p-2"  aria-labelledby="tocLabel">
+            <div class="toc-widget">
+                <div id="toc-content" class="text-truncate">
+                </div>
+            </div>
+            <div class="toc-menu pt-3 pl-4">
+                <a class="expand-toggle d-block py-1" href="#"><span class="expand-text">Expand all</span><span class="close-text" style="display: none;">Collapse all</span></a>
+                <a class="back-to-top d-block py-1" href="#">Back to top</a>
+                <a class="go-to-bottom d-block py-1" href="#">Go to bottom</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        tocbot.init({
+            // Where to render the table of contents.
+            tocSelector: '#toc-content',
+            // Where to grab the headings to build the table of contents.
+            contentSelector: 'article',
+            // Which headings to grab inside of the contentSelector element.
+            headingSelector: 'h1, h2, h3',
+            // For headings inside relative or absolute positioned containers within content.
+            hasInnerContainers: true,
+        });
+    </script>
+
+
+    
+
+
+    <!-- Footer -->
+    <hr />
+
+<!-- Footer -->
+<footer id="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 text-center">
+                <ul class="list-inline">
+                    
+
+                    
+
+                    
+
+                    
+
+                    
+
+                    
+                </ul>
+                <ul class="copyright footer-menu list-inline">
+                    
+                    
+                        <li class="list-inline-item">
+                            
+                            
+                            <a href="/">
+                                
+                                    Home
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/archives">
+                                
+                                    Archives
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/tags">
+                                
+                                    Tags
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/categories">
+                                
+                                    Categories
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/about">
+                                
+                                    About
+                                
+                            </a>
+                        </li>
+                    
+                </ul>
+                <p class="copyright footer-author">
+                    &copy; -2020 
+                    <a rel="external" class="copyright-link" href="" target="_blank">sungm</a><br/>
+                    Powered by <a rel="external" class="copyright-link" href="https://hexo.io/" target="_blank">Hexo</a>  
+                    <span class="copyright-split">&nbsp;|&nbsp;&nbsp;</span>
+                    Theme <a rel="external" class="copyright-link" href="https://github.com/luswdev/hexo-theme-clean.git" target="_blank">Clean</a>
+                    
+                    
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    <!-- After footer scripts -->
+    <!-- jQuery -->
+<script src="//cdn.jsdelivr.net/npm/jquery@2.1.4/dist/jquery.min.js"></script>
+
+<!-- For drop down -->
+<script src="//cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="//cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
+<!-- Gallery -->
+<script src="//cdn.jsdelivr.net/npm/lightgallery@1.6.11/dist/js/lightgallery-all.min.js"></script>
+<!-- Busuanzi -->
+
+
+<!-- Search script -->
+<script src="/js/search.js"></script>
+<script type="text/javascript">
+    $(function () {
+        searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+    });
+</script>
+
+
+<script src="/js/main.js"></script>
+
+
+    <!-- Search Modal -->
+    <!-- Modal -->
+<div class="modal fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+        <div class="modal-content overflow-auto">
+            <div class="modal-header">
+                <input type="text" class="form-control" placeholder="Searching Keywords..." id="searchInput">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div id="searchResult">
+                    <div class="search-empty text-center text-muted p-5">
+                        <i class="far fa-meh"></i>
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>
