@@ -9,8 +9,7 @@
 
 
 
-    <meta name="description" content="#1. 引言
-
+    <meta name="description" content="1. 引言
 我希望通过这一篇文章、可以让读者全面了解Lambda表达式、也许不够全面、我在尽力完善它、也希望你能留下宝贵意见、在下方留言。文章有点长、请耐心看完。"/>
 
 
@@ -26,8 +25,7 @@
 
 <!--Open Graph Description-->
 
-    <meta property="og:description" content="#1. 引言
-
+    <meta property="og:description" content="1. 引言
 我希望通过这一篇文章、可以让读者全面了解Lambda表达式、也许不够全面、我在尽力完善它、也希望你能留下宝贵意见、在下方留言。文章有点长、请耐心看完。"/>
 
 
@@ -155,22 +153,19 @@
     
 </span>  
                 
-                <p>#1. 引言</p>
-<blockquote>
+                <h2 id="1-引言"><a href="#1-引言" class="headerlink" title="1. 引言"></a>1. 引言</h2><blockquote>
 <p>我希望通过这一篇文章、可以让读者全面了解Lambda表达式、也许不够全面、我在尽力完善它、也希望你能留下宝贵意见、在下方留言。文章有点长、请耐心看完。</p>
 </blockquote>
 <a id="more"></a>
 
-<p>#2. 描述</p>
-<blockquote>
+<h2 id="2-描述"><a href="#2-描述" class="headerlink" title="2. 描述"></a>2. 描述</h2><blockquote>
 <ul>
 <li>可以将 Lambda 表达式理解为简洁的表示可传递匿名函数的一种方式：它没有名称，但它有参数列表、函数主体、返回类型，可能还有一个可抛出的异常列表。</li>
 <li>Lambda 表达式是实现行为参数化的一种方式，这种方式比起使用匿名内部类的方式更加的简洁、易读。</li>
 </ul>
 </blockquote>
 <hr>
-<p>#3. 组成</p>
-<blockquote>
+<h2 id="3-组成"><a href="#3-组成" class="headerlink" title="3. 组成"></a>3. 组成</h2><blockquote>
 <ul>
 <li>参数</li>
 <li>箭头</li>
@@ -179,16 +174,16 @@
 </blockquote>
 <p><strong>例如</strong><br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(Apple a1, Apple a2) -&gt; a1.getWeight().compareTo(a2.getWeight())</span><br></pre></td></tr></table></figure></p>
 <hr>
-<h1 id="4-Lambda-语法"><a href="#4-Lambda-语法" class="headerlink" title="4. Lambda 语法"></a>4. Lambda 语法</h1><blockquote>
+<h2 id="4-Lambda-语法"><a href="#4-Lambda-语法" class="headerlink" title="4. Lambda 语法"></a>4. Lambda 语法</h2><blockquote>
 <ul>
 <li>(parameters) -&gt; expression  </li>
 <li>(parameters) -&gt; { statements; }  </li>
 </ul>
 </blockquote>
 <hr>
-<h1 id="5-有效的-Lambda-表达式"><a href="#5-有效的-Lambda-表达式" class="headerlink" title="5.有效的 Lambda 表达式"></a>5.有效的 Lambda 表达式</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;* 表示有一个 String 类型的入参，且返回一个 int 类型的结果。  *&#x2F;</span><br><span class="line">(String s) -&gt; s.length()</span><br><span class="line"></span><br><span class="line">&#x2F;* 表示有一个 Apple 类型的入参，且返回一个 boolean 类型的结果。 *&#x2F;</span><br><span class="line">(Apple a) -&gt; a.getWeight() &gt; 150</span><br><span class="line"></span><br><span class="line">&#x2F;* 表示有两个 int 类型的入参，且没有返回值（返回 void ）。 *&#x2F;</span><br><span class="line">(int x, int y) -&gt; &#123;</span><br><span class="line">    System.out.println(&quot;Result:&quot;);</span><br><span class="line">    System.out.println(x+y);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;* 表示没有入参，且返回一个 int 类型的结果。 *&#x2F;</span><br><span class="line">() -&gt; 1</span><br><span class="line"></span><br><span class="line">&#x2F;* 表示有两个 Apple 类型的入参，且返回一个 int 类型的结果，比较两个苹果的重量。 *&#x2F;</span><br><span class="line">(Apple a1, Apple a2) -&gt; a1.getWeight().compareTo(a2.getWeight())</span><br></pre></td></tr></table></figure>
+<h2 id="5-有效的-Lambda-表达式"><a href="#5-有效的-Lambda-表达式" class="headerlink" title="5.有效的 Lambda 表达式"></a>5.有效的 Lambda 表达式</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;* 表示有一个 String 类型的入参，且返回一个 int 类型的结果。  *&#x2F;</span><br><span class="line">(String s) -&gt; s.length()</span><br><span class="line"></span><br><span class="line">&#x2F;* 表示有一个 Apple 类型的入参，且返回一个 boolean 类型的结果。 *&#x2F;</span><br><span class="line">(Apple a) -&gt; a.getWeight() &gt; 150</span><br><span class="line"></span><br><span class="line">&#x2F;* 表示有两个 int 类型的入参，且没有返回值（返回 void ）。 *&#x2F;</span><br><span class="line">(int x, int y) -&gt; &#123;</span><br><span class="line">    System.out.println(&quot;Result:&quot;);</span><br><span class="line">    System.out.println(x+y);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;* 表示没有入参，且返回一个 int 类型的结果。 *&#x2F;</span><br><span class="line">() -&gt; 1</span><br><span class="line"></span><br><span class="line">&#x2F;* 表示有两个 Apple 类型的入参，且返回一个 int 类型的结果，比较两个苹果的重量。 *&#x2F;</span><br><span class="line">(Apple a1, Apple a2) -&gt; a1.getWeight().compareTo(a2.getWeight())</span><br></pre></td></tr></table></figure>
 <hr>
-<h1 id="6-使用-Lambda-表达式"><a href="#6-使用-Lambda-表达式" class="headerlink" title="6. 使用 Lambda 表达式"></a>6. 使用 Lambda 表达式</h1><h3 id="6-1-函数式接口"><a href="#6-1-函数式接口" class="headerlink" title="6.1 函数式接口"></a>6.1 函数式接口</h3><blockquote>
+<h2 id="6-使用-Lambda-表达式"><a href="#6-使用-Lambda-表达式" class="headerlink" title="6. 使用 Lambda 表达式"></a>6. 使用 Lambda 表达式</h2><h3 id="6-1-函数式接口"><a href="#6-1-函数式接口" class="headerlink" title="6.1 函数式接口"></a>6.1 函数式接口</h3><blockquote>
 <ul>
 <li><strong>定义：</strong>只定义了一个抽象方法的接口称为函数式接口。接口中可以包含多个 default 方法，只要接口只定义了一个抽象方法、那么该接口就是函数式接口，比如java.lang.Runnable 类和 java.util.Comparator 类。</li>
 <li><strong>作用：</strong>Lambda 表达式允许你直接以内联的形式为函数式接口的抽象方法提供实现，且将整个表达式作为函数式接口的实例（具体来说、Lambda表达式是函数式接口的一个实例）。<ul>
@@ -220,7 +215,7 @@
 <p>任何函数式接口都不允许抛出受检异常（checked exception）。如果你需要 Lambda 表达式来抛出异常，有两种办法：定义一个自己的函数式接口，并声明受检异常，或者把Lambda 包在一个try/catch块中。</p>
 </blockquote>
 <hr>
-<h1 id="7-类型检查、类型推断及限制"><a href="#7-类型检查、类型推断及限制" class="headerlink" title="7. 类型检查、类型推断及限制"></a>7. 类型检查、类型推断及限制</h1><h3 id="7-1-类型检查"><a href="#7-1-类型检查" class="headerlink" title="7.1 类型检查"></a>7.1 类型检查</h3><blockquote>
+<h2 id="7-类型检查、类型推断及限制"><a href="#7-类型检查、类型推断及限制" class="headerlink" title="7. 类型检查、类型推断及限制"></a>7. 类型检查、类型推断及限制</h2><h3 id="7-1-类型检查"><a href="#7-1-类型检查" class="headerlink" title="7.1 类型检查"></a>7.1 类型检查</h3><blockquote>
 <p>Lambda 类型是从使用 Lambda 的上下文推断出来的，上下文中 Lambda 表达式需要的类型成为目标类型。</p>
 </blockquote>
 <p><div class="img-item" data-src="https://upload-images.jianshu.io/upload_images/11864885-fdfe543b21cdabb2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-sub-html=".caption"><img src="https://upload-images.jianshu.io/upload_images/11864885-fdfe543b21cdabb2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="类型检查示例图"><div class="img-caption d-block text-center"><span class="center-caption text-muted border-bottom">类型检查示例图</span></div></div></p>
