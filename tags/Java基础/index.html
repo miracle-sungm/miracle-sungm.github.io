@@ -9,8 +9,6 @@
 
 
 
-    <meta name="description" content="1. 静态工厂方法例子：如Boolean类中的valueOf(boolean b) 方法"/>
-
 
 <!--Author-->
 
@@ -19,12 +17,10 @@
 
 <!--Open Graph Title-->
 
-    <meta property="og:title" content="考虑使用静态工厂方法代替构造方法"/>
+    <meta property="og:title" content="Miracle&#39;s Blog"/>
 
 
 <!--Open Graph Description-->
-
-    <meta property="og:description" content="1. 静态工厂方法例子：如Boolean类中的valueOf(boolean b) 方法"/>
 
 
 <!--Open Graph Site Name-->
@@ -32,7 +28,7 @@
 
 <!--Type page-->
 
-    <meta property="og:type" content="article"/>
+    <meta property="og:type" content="website"/>
 
 
 <!--Page Cover-->
@@ -51,7 +47,7 @@
 
 <!-- Title -->
 
-<title>考虑使用静态工厂方法代替构造方法 - Miracle&#39;s Blog</title>
+<title>Java基础 - Miracle&#39;s Blog</title>
 
 <!-- Bootstrap Core CSS -->
 <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
@@ -111,140 +107,80 @@
 </nav>
 
     <!-- Main Content -->
-    <!-- Page Header -->
-<!-- Set your background image for this header in your post front-matter: cover -->
-
-<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
     <div class="container">
         <div class="row">
-            <div class="col-lg-12 col-md-12 text-center">
-                <div class="post-heading text-white">
-                    <h1>考虑使用静态工厂方法代替构造方法</h1>
-                    
+            <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
+                <div class="site-heading text-center text-white">
+                    <h1>Tag: Java基础:</h1>
                 </div>
             </div>
         </div>
     </div>
 </header>
 
-<!-- Post Content -->
-<article>
-    <div class="container">
-        <div class="row">
-            <!-- Post Main Content -->
+<!-- Main Content -->
+<div class="container page-tags">
+    <div class="row">
+        <div class="col-lg-10 offset-lg-1 text-center">
+            
+                
+    <a href="/tags/Java/" class="btn btn-light m-2">
+        Java
+    </a>
+
+
+            
+                
+    <a href="/tags/Java%E5%9F%BA%E7%A1%80/" class="btn btn-info m-2">
+        Java基础
+        <span class="badge badge-light">2</span>
+    </a>
+
+
+            
+        </div>
+        
             <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
+                <hr class="tag-preview-hr">
                 
-                    <span class="meta d-inline-block">
-    
-    
-    <!-- Date -->
-    
-        <span class="post-meta-split">&nbsp;|&nbsp;</span>
-        <i class="far fa-calendar-check fa-fw"></i>
-        2020-06-13
-    
-    <!-- word count and read count -->
-    
-
-    
-
-    
-</span>  
+                    <div class="post-preview post-preview-archive-tag">
+    <a href="/2020/06/16/%E8%A7%A3%E6%9E%90XML/">
+        <h1 class="post-title">
+            解析XML
+        </h1>
+    </a>
+    <p class="post-meta">
+        <!-- Date and Author -->
+        
+        2020-06-16
+    </p>
+</div>
                 
-                <h2 id="1-静态工厂方法例子："><a href="#1-静态工厂方法例子：" class="headerlink" title="1. 静态工厂方法例子："></a>1. 静态工厂方法例子：</h2><p>如Boolean类中的valueOf(boolean b) 方法</p>
-<a id="more"></a>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * The &#123;@code Boolean&#125; object corresponding to the primitive</span><br><span class="line"> * value &#123;@code true&#125;.</span><br><span class="line"> *&#x2F;</span><br><span class="line">public static final Boolean TRUE &#x3D; new Boolean(true);</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * The &#123;@code Boolean&#125; object corresponding to the primitive</span><br><span class="line"> * value &#123;@code false&#125;.</span><br><span class="line"> *&#x2F;</span><br><span class="line">public static final Boolean FALSE &#x3D; new Boolean(false);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;...中间代码省略</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;静态工厂方法</span><br><span class="line">@HotSpotIntrinsicCandidate</span><br><span class="line">public static Boolean valueOf(boolean b) &#123;</span><br><span class="line">    return (b ? TRUE : FALSE);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>注意：</strong><br>静态工厂方法与工厂方法模式不同，类可以直接提供静态工厂方法，而不是公共的构造方法。</p>
-<h2 id="2-使用静态工厂方法代替构造方法的优缺点"><a href="#2-使用静态工厂方法代替构造方法的优缺点" class="headerlink" title="2. 使用静态工厂方法代替构造方法的优缺点"></a>2. 使用静态工厂方法代替构造方法的优缺点</h2><h3 id="2-1-优点"><a href="#2-1-优点" class="headerlink" title="2.1 优点"></a>2.1 优点</h3><p>（1）. 静态工厂方法不像构造方法，它们是有名字的。（属于类的方法）<br>（2）. 静态工厂方法与构造方法不同，他们被调用时不需要每次都创建一个对象。例如调用Boolean.valueOf(true)方法，返回的是Boolean类中定义的静态不变属性TRUE对象；<br>（3）. 静态工厂方法与构造方法不同，他们可以返回任意对象，构造方法只能返回当前类的对象。<br>（4）. 静态工厂方法返回对象的类可以根据输入类型不同而不同。例如使用泛型。<br>（5）. 在编写该方法的类时，返回的对象的类不需要存在。（static关键字的作用）</p>
-<h3 id="2-2-缺点"><a href="#2-2-缺点" class="headerlink" title="2.2 缺点"></a>2.2 缺点</h3><p>（1）. 只提供静态工厂方法、没有提供公共或者受保护的构造方法时不能被子类化。（主要限制）<br>（2）. 静态工厂方法并不像构造方法那样突出、不容易被程序员阅读。</p>
-<h3 id="2-3-总结"><a href="#2-3-总结" class="headerlink" title="2.3 总结"></a>2.3 总结</h3><p>静态工厂方法和公共构造方法都有他们的用途，并且了解他们的相对有点时值得的。通常，静态工厂方法更可取，因此避免在没有考虑静态工厂方法的情况下、提供公共构造方法。</p>
-
+                    <div class="post-preview post-preview-archive-tag">
+    <a href="/2020/06/16/XML%E5%9F%BA%E7%A1%80/">
+        <h1 class="post-title">
+            XML基础
+        </h1>
+    </a>
+    <p class="post-meta">
+        <!-- Date and Author -->
+        
+        2020-06-16
+    </p>
+</div>
+                
+                <div class="archive-before-pagination"></div>
+                <ul class="pagination d-block text-center">
+    
+    
+</ul>
             </div>
-
-            <!-- Post information -->
-            
-    <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 post-tags">
-        
-            <i class="fas fa-tag" style="vertical-align: middle;font-size: .8rem;"></i>
-            tags:&nbsp;
-            
-            
-        
-            <a href="/tags/Java/">#Java</a>
         
     </div>
-
-            
-    <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
-        <ul class="pagination d-block text-center">
-            
-                <li class="previous page-item d-inline"><a href="/2020/06/13/%E5%8E%9F%E5%A7%8B%E7%B1%BB%E5%9E%8B%E7%89%B9%E5%8C%96/" class="page-link float-left">&larr;  Newer</a></li>
-            
-            
-                <li class="next page-item d-inline"><a href="/2020/06/12/java-lang-Object-%E7%B1%BB%E8%AF%A6%E8%A7%A3/" class="page-link float-right">Older  &rarr;</a></li>
-            
-        </ul>
-    </div>
+</div>
 
 
-            
-                <!-- Comments -->
-                
-
-                
-
-            
-
-        </div>
-    </div>
-</article> 
-
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
-    <style>
-        #toc-content .toc-link::before {
-            background-color: transparent;
-            max-height: 25px;
-        }
-
-        #toc-content .toc-link.is-active-link::before {
-            background-color: #404040;
-        }
-    </style>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
-    <div class="ui-toc dropup scrollspy-body pull-right" style="right: 3%;">
-        <button type="button" class="toc-btn btn btn-light" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
-            <i class="fas fa-list"></i>
-        </button>
-        <div class="dropdown-menu dropdown-menu-right p-2"  aria-labelledby="tocLabel">
-            <div class="toc-widget">
-                <div id="toc-content" class="text-truncate">
-                </div>
-            </div>
-            <div class="toc-menu pt-3 pl-4">
-                <a class="expand-toggle d-block py-1" href="#"><span class="expand-text">Expand all</span><span class="close-text" style="display: none;">Collapse all</span></a>
-                <a class="back-to-top d-block py-1" href="#">Back to top</a>
-                <a class="go-to-bottom d-block py-1" href="#">Go to bottom</a>
-            </div>
-        </div>
-    </div>
-    <script>
-        tocbot.init({
-            // Where to render the table of contents.
-            tocSelector: '#toc-content',
-            // Where to grab the headings to build the table of contents.
-            contentSelector: 'article',
-            // Which headings to grab inside of the contentSelector element.
-            headingSelector: 'h1, h2, h3',
-            // For headings inside relative or absolute positioned containers within content.
-            hasInnerContainers: true,
-        });
-    </script>
-
-
-    
 
 
     <!-- Footer -->

@@ -156,13 +156,11 @@
 </blockquote>
 <a id="more"></a>
 
-<p>#1. 名副其实</p>
-<blockquote>
+<h2 id="1-名副其实"><a href="#1-名副其实" class="headerlink" title="1. 名副其实"></a>1. 名副其实</h2><blockquote>
 <p>变量、函数或类的名称应该已经答复了所有的大问题。它该告诉你，它为什么会存在，它做了什么事，应该怎么用。如果名称需要注释来补充，那就不算是名副其实。</p>
 </blockquote>
 <hr>
-<p>#2. 避免误导</p>
-<blockquote>
+<h2 id="2-避免误导"><a href="#2-避免误导" class="headerlink" title="2. 避免误导"></a>2. 避免误导</h2><blockquote>
 <ol>
 <li><strong>避免留下掩藏代码本意的错误线索。</strong><br>例如：使用某些专有名词作为变量名，使用缩写。</li>
 <li><strong>避免使用与本意相悖的词</strong><br>例如：<br>String[] accountList = new String[10];  accountList 实质是一个数组对象，命名后缀为<br>List产生误导作用。</li>
@@ -171,8 +169,7 @@
 </ol>
 </blockquote>
 <hr>
-<p>#3. 做有意义的区分</p>
-<blockquote>
+<h2 id="3-做有意义的区分"><a href="#3-做有意义的区分" class="headerlink" title="3. 做有意义的区分"></a>3. 做有意义的区分</h2><blockquote>
 <p>如果只是为了满足编译器或解释器的需要而写代码，肯定会制造麻烦。</p>
 </blockquote>
 <blockquote>
@@ -191,35 +188,29 @@
 </ul>
 </blockquote>
 <hr>
-<p>#4. 使用读的出来的名称</p>
-<blockquote>
+<h2 id="4-使用读的出来的名称"><a href="#4-使用读的出来的名称" class="headerlink" title="4. 使用读的出来的名称"></a>4. 使用读的出来的名称</h2><blockquote>
 <p>#####错误示例：<br><strong>1.  使用汉语拼音，只会让别人觉得你写的代码很 low.</strong></p>
 <p><strong>2. 使用罕见的英语词汇</strong></p>
 </blockquote>
 <hr>
-<p>#5. 使用可搜索的名称</p>
-<blockquote>
+<h2 id="5-使用可搜索的名称"><a href="#5-使用可搜索的名称" class="headerlink" title="5. 使用可搜索的名称"></a>5. 使用可搜索的名称</h2><blockquote>
 <p>#####建议:<br><strong>1. 使用长名称，长名称胜于短名称。</strong></p>
 <ul>
 <li>例如： WORK_DAYS_PER_WEEK 比数字 5 好找得多。</li>
 </ul>
 </blockquote>
 <hr>
-<p>#6. 避免使用编码</p>
-<blockquote>
+<h2 id="6-避免使用编码"><a href="#6-避免使用编码" class="headerlink" title="6. 避免使用编码"></a>6. 避免使用编码</h2><blockquote>
 <p>编码已经太多，不需要自找麻烦。</p>
 </blockquote>
 <hr>
-<p>#7. 避免使用前缀</p>
-<blockquote>
+<h2 id="7-避免使用前缀"><a href="#7-避免使用前缀" class="headerlink" title="7. 避免使用前缀"></a>7. 避免使用前缀</h2><blockquote>
 <p>不必使用 m_ 前缀来表名成员变量，很多时候阅读代码的人不会去看前缀，直接看后面有意义的名称，前缀反而成了废代码。</p>
 </blockquote>
 <hr>
-<p>#8. 接口和实现</p>
-<p>略</p>
+<h2 id="8-接口和实现"><a href="#8-接口和实现" class="headerlink" title="8. 接口和实现"></a>8. 接口和实现</h2><p>略</p>
 <hr>
-<p>#9. 类名</p>
-<blockquote>
+<h2 id="9-类名"><a href="#9-类名" class="headerlink" title="9. 类名"></a>9. 类名</h2><blockquote>
 <p>类名和对象名应该是名词或者名词短语，不应该是动词。</p>
 <ul>
 <li>正例：Customer</li>
@@ -227,23 +218,20 @@
 </ul>
 </blockquote>
 <hr>
-<p>#10. 方法名</p>
-<blockquote>
+<h2 id="10-方法名"><a href="#10-方法名" class="headerlink" title="10. 方法名"></a>10. 方法名</h2><blockquote>
 <p>方法名应该是动词或者动词短语，不应该是名词。</p>
 <ul>
 <li>例如：getName(); setName() 等。</li>
 </ul>
 </blockquote>
 <hr>
-<p>#11. 避免思维映射</p>
-<blockquote>
+<h2 id="11-避免思维映射"><a href="#11-避免思维映射" class="headerlink" title="11. 避免思维映射"></a>11. 避免思维映射</h2><blockquote>
 <ul>
 <li>例如：变量 i、j 通常用于 for 循环中，传统惯用这种单字母名词作为循环计数器，并不是一种好的选择。</li>
 </ul>
 </blockquote>
 <hr>
-<p>#12. 避免使用双关语</p>
-<blockquote>
+<h2 id="12-避免使用双关语"><a href="#12-避免使用双关语" class="headerlink" title="12. 避免使用双关语"></a>12. 避免使用双关语</h2><blockquote>
 <ul>
 <li>例如：add方法用来添加一个对象，返回结果应该是布尔类型（添加成功或者失败） ，如果你需要添加一个对象并返回添加后产生的新值，建议使用append方法和insert方法。</li>
 </ul>
