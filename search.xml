@@ -32,6 +32,44 @@
       </tags>
   </entry>
   <entry>
+    <title>Java NIO 概述</title>
+    <url>/2020/06/13/Java-NIO-%E6%A6%82%E8%BF%B0/</url>
+    <content><![CDATA[<h2 id="1-什么是NIO？"><a href="#1-什么是NIO？" class="headerlink" title="1.  什么是NIO？"></a>1.  什么是NIO？</h2><blockquote>
+<p>java.nio 全称 java non-blocking IO，是指 JDK1.4 及以上版本里提供的新 API（New IO） ，为所有的原始类型（ boolean 类型除外）提供<a href="https://baike.baidu.com/item/%E7%BC%93%E5%AD%98/100710" target="_blank" rel="noopener">缓存</a>支持的数据容器，使用它可以提供非阻塞式的高伸缩性网络。【百度百科】 </p>
+</blockquote>
+<a id="more"></a>
+
+<hr>
+<p>优点：NIO 比 AIO（异步I/O） 更加强大，处理数据更快。它可以大大的提高IO吞吐量，常用在高性能服务器上面。</p>
+<h2 id="2-NIO原理"><a href="#2-NIO原理" class="headerlink" title="2. NIO原理"></a>2. NIO原理</h2><blockquote>
+<p>使用较少的线程执行更多的任务。</p>
+</blockquote>
+<blockquote>
+<p>如下图所示，使用较少的线程，通过 Selector 选择器来执行不同 Channel 通道中的任务，执行任务再结合 AIO（异步I/O）就能发挥服务器的最大性能，更大程度上提升服务器的运行效率。</p>
+</blockquote>
+<p><div class="img-item" data-src="https://upload-images.jianshu.io/upload_images/11864885-0a82f84999ea3e77.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-sub-html=".caption"><img src="https://upload-images.jianshu.io/upload_images/11864885-0a82f84999ea3e77.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="原理图"><div class="img-caption d-block text-center"><span class="center-caption text-muted border-bottom">原理图</span></div></div></p>
+<hr>
+<h2 id="3-与常规-I-O-的区别"><a href="#3-与常规-I-O-的区别" class="headerlink" title="3. 与常规 I/O 的区别"></a>3. 与常规 I/O 的区别</h2><blockquote>
+<p>常规 I/O （如 InputStream 和 OutputStream）存在很大的缺点，就是他们是阻塞的，而 NIO 解决的就是常规 I/O 执行效率低的问题，即采用非阻塞高性能运行的方式来避免以前以前“笨拙” I/O 带来的低效率问题。NIO在大文件操作上相比常规 I/O 更加优秀，对常规 I/O 使用的 byte[] 和 char[] 进行封装，采用 ByteBuffer 类来操作数据，再结合针对 File 或者 Socket 技术的 Channel，采用同步非阻塞技术实现高性能处理。</p>
+</blockquote>
+<hr>
+<h2 id="4-缓冲区介绍"><a href="#4-缓冲区介绍" class="headerlink" title="4. 缓冲区介绍"></a>4. 缓冲区介绍</h2><blockquote>
+<p>在使用传统的I/O流API时，如 InputStream 和 OutputStream ，以及Reader和Writer联合使用时，常常把字节流中的数据放入byte[]字节数组中，或把字符流中的数据放入char[]字符数组中，也可以从 byte[] 或 char[] 数组中获取数据来实现功能上的需求，但由于在 Java 语言中对 array 数组自身进行操作的 API 非常少，常用的操作仅仅是 length 属性和下标[x]了，在 JDK 中也没有提供更加方便操作数组中数据的 API，如果对数组中的数据进行高级处理，需要程序员自己写代码进行实现，处理的方式是比较原始的，这个问题可以使用 NIO 技术中的缓冲区Buffer类来解决，它提供了很多工具方法，大大提高了程序开发的效率。</p>
+</blockquote>
+<hr>
+<p>推荐书籍：</p>
+<ul>
+<li>[高洪岩]《Java多线程编程核心技术》</li>
+<li>[高洪岩]《Java并发编程：核心方法与框架》</li>
+<li>[高洪岩]《NIO与Socket编程技术指南》</li>
+</ul>
+]]></content>
+      <tags>
+        <tag>Java</tag>
+        <tag>Java NIO</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Lambda 表达式</title>
     <url>/2020/06/13/Lambda-%E8%A1%A8%E8%BE%BE%E5%BC%8F/</url>
     <content><![CDATA[<h2 id="1-引言"><a href="#1-引言" class="headerlink" title="1. 引言"></a>1. 引言</h2><blockquote>
@@ -146,146 +184,6 @@
       <tags>
         <tag>Java</tag>
         <tag>函数式编程</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>java.lang.Object 类详解</title>
-    <url>/2020/06/12/java-lang-Object-%E7%B1%BB%E8%AF%A6%E8%A7%A3/</url>
-    <content><![CDATA[<h2 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h2><blockquote>
-<p>Object 方法包括 5 个非 final 类型的方法，分别是：clone、hashCode、equals、toString、finalize 方法；包括 4 个 final 方法，分别是 getClass、wait、notify、notifyAll 方法。其中 clone 方法是 protected 方法，finalize 方法自 Java 9 之后被废弃。</p>
-</blockquote>
-<a id="more"></a>
-
-<h2 id="1-clone-方法"><a href="#1-clone-方法" class="headerlink" title="1. clone 方法"></a>1. clone 方法</h2><h3 id="1-1-源码"><a href="#1-1-源码" class="headerlink" title="1.1 源码"></a>1.1 源码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@HotSpotIntrinsicCandidate protected native Object clone() throws CloneNotSupportedException;</span><br></pre></td></tr></table></figure>
-
-<p>说明：调用该方法实现一个对象的浅复制，创建并且返回此对象的副本（“副本”的准确含义可能依赖于对象的类）。 Object.clone() 方法是一个 protected 方法，类只有实现 java.lang.Cloneable 接口，并重写 Object.clone() 方法才能使用该 clone 方法，否则抛出 CloneNotSupportedException 。</p>
-<h3 id="1-2-clone-与-copy-的区别"><a href="#1-2-clone-与-copy-的区别" class="headerlink" title="1.2 clone 与 copy 的区别"></a>1.2 clone 与 copy 的区别</h3><p>假设我们有一个 Person 对象，并假设 Person 类实现了Cloneable 接口并重写了 clone 方法。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Person a &#x3D; new Person();</span><br><span class="line">&#x2F;&#x2F;copy 的做法通常为:</span><br><span class="line">Person b &#x3D; a;</span><br><span class="line">&#x2F;&#x2F;clone 的做法通常为:</span><br><span class="line">Person c &#x3D; a.clone();</span><br></pre></td></tr></table></figure>
-
-<p>说明：<br>（1）copy 是将对象 a 的引用赋值给对象 b，赋值之后对象 a 和对象 b 都指向同一个引用 a。<br>（2）clone 是实现对象的浅拷贝，产生一个新的对象，对象 c 与 对象 a 不指向同一个引用。</p>
-<blockquote>
-<p>clone 在内存中实际操作是：将对象 a 的内存，拷贝一个副本，并重新分配一块内存区域用于保存副本。</p>
-</blockquote>
-<h3 id="1-3-浅拷贝和深拷贝"><a href="#1-3-浅拷贝和深拷贝" class="headerlink" title="1.3 浅拷贝和深拷贝"></a>1.3 浅拷贝和深拷贝</h3><blockquote>
-<p>前面我们提到，clone 在内存中的实际操作时将一个对象的内存拷贝出一个副本、并重新分配一个内存用于保存副本。由于原对象（被拷贝的对象）属性可能存在两种值传递类型，分别是值传递和引用传递，对副本的操作可能对原对象造成影响（改变副本的引用传递属性的值，由于引用传递导致原对象的响应值同样改变）。</p>
-</blockquote>
-<blockquote>
-<p>如果一个对象包含引用传递类型的属性，直接拷贝对象，不做特殊处理，这种拷贝称为浅拷贝。若一个对象不存在引用传递类型的数据，那也就不区别什么浅拷贝和深拷贝，可以称为浅拷贝也可以称为深拷贝。</p>
-</blockquote>
-<p>示例：</p>
-<p>定义2个类：Person类 包含 Book属性</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Person implements Cloneable &#123;</span><br><span class="line"></span><br><span class="line">    private String name;</span><br><span class="line">    private Book book;</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F;省略 constructor 、 getter 、 setter 方法</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() throws CloneNotSupportedException &#123;</span><br><span class="line">        return super.clone();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;Person&#123;&quot; +</span><br><span class="line">                &quot;name&#x3D;&#39;&quot; + name + &#39;\&#39;&#39; +</span><br><span class="line">                &quot;, book&#x3D;&quot; + book +</span><br><span class="line">                &#39;&#125;&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Book &#123;</span><br><span class="line"></span><br><span class="line">    private String bookName;</span><br><span class="line">    private String author;</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F;省略 constructor 、 getter 、 setter 方法</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;Book&#123;&quot; +</span><br><span class="line">                &quot;bookName&#x3D;&#39;&quot; + bookName + &#39;\&#39;&#39; +</span><br><span class="line">                &quot;, author&#x3D;&#39;&quot; + author + &#39;\&#39;&#39; +</span><br><span class="line">                &#39;&#125;&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Main &#123;</span><br><span class="line">    &#x2F;&#x2F;主方法：</span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        Book effectiveJava &#x3D; new Book(&quot;Effective Java&quot;, &quot;Joshua Bloch&quot;);</span><br><span class="line">        Person sungm &#x3D; new Person(&quot;sungm&quot;, effectiveJava);</span><br><span class="line">        Person sunhw &#x3D; (Person) sungm.clone();</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;对象 sungm 的信息：&quot; + sungm);</span><br><span class="line">        System.out.println(&quot;对象 sunhw 的信息：&quot; + sunhw);</span><br><span class="line">        System.out.println(&quot;对象 sungm 与对象 sunhw 是否相等：&quot; + (sungm &#x3D;&#x3D; sunhw));</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;-----------------------------------------&quot;);</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;改变对象 sunhw 的 book 属性</span><br><span class="line">        sunhw.getBook().setBookName(&quot;Vue.js&quot;);</span><br><span class="line">        sunhw.getBook().setAuthor(&quot;尤雨溪&quot;);</span><br><span class="line">        System.out.println(&quot;对象 sunhw 的信息：&quot; + sunhw);</span><br><span class="line">        System.out.println(&quot;对象 sungm 的信息：&quot; + sungm);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;* 输出结果 *&#x2F;</span><br><span class="line">对象 sungm 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Effective Java&#39;, author&#x3D;&#39;Joshua Bloch&#39;&#125;&#125;</span><br><span class="line">对象 sunhw 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Effective Java&#39;, author&#x3D;&#39;Joshua Bloch&#39;&#125;&#125;</span><br><span class="line">对象 sungm 与对象 sunhw 是否相等：false</span><br><span class="line">-----------------------------------------</span><br><span class="line">对象 sunhw 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Vue.js&#39;, author&#x3D;&#39;尤雨溪&#39;&#125;&#125;</span><br><span class="line">对象 sungm 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Vue.js&#39;, author&#x3D;&#39;尤雨溪&#39;&#125;&#125;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>从输出结果可以看出：对象 sunhw 改变了的属性 book 的内容， 对对象 sungm 造成了影响。因为两个对象的 book 属性保存的是同一个引用，造成这种差异是由于对象进行了浅拷贝。</p>
-</blockquote>
-<p>进行深拷贝示例：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Person implements Cloneable &#123;</span><br><span class="line"></span><br><span class="line">    private String name;</span><br><span class="line">    private Book book;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;省略 constructor 、 getter 、 setter 方法</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() throws CloneNotSupportedException &#123;</span><br><span class="line">        Person person &#x3D; (Person) super.clone();</span><br><span class="line">        person.book &#x3D; (Book) book.clone();</span><br><span class="line">        return person;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;Person&#123;&quot; +</span><br><span class="line">                &quot;name&#x3D;&#39;&quot; + name + &#39;\&#39;&#39; +</span><br><span class="line">                &quot;, book&#x3D;&quot; + book +</span><br><span class="line">                &#39;&#125;&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Book implements Cloneable&#123;</span><br><span class="line"></span><br><span class="line">    private String bookName;</span><br><span class="line">    private String author;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;省略 constructor 、 getter 、 setter 方法</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() throws CloneNotSupportedException &#123;</span><br><span class="line">        return super.clone();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;Book&#123;&quot; +</span><br><span class="line">                &quot;bookName&#x3D;&#39;&quot; + bookName + &#39;\&#39;&#39; +</span><br><span class="line">                &quot;, author&#x3D;&#39;&quot; + author + &#39;\&#39;&#39; +</span><br><span class="line">                &#39;&#125;&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Main &#123;</span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        Book effectiveJava &#x3D; new Book(&quot;Effective Java&quot;, &quot;Joshua Bloch&quot;);</span><br><span class="line">        Person sungm &#x3D; new Person(&quot;sungm&quot;, effectiveJava);</span><br><span class="line">        Person sunhw &#x3D; (Person) sungm.clone();</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;对象 sungm 的信息：&quot; + sungm);</span><br><span class="line">        System.out.println(&quot;对象 sunhw 的信息：&quot; + sunhw);</span><br><span class="line">        System.out.println(&quot;对象 sungm 与对象 sunhw 是否相等：&quot; + (sungm &#x3D;&#x3D; sunhw));</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;-----------------------------------------&quot;);</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;改变对象 sunhw 的 book 属性</span><br><span class="line">        sunhw.getBook().setBookName(&quot;Vue.js&quot;);</span><br><span class="line">        sunhw.getBook().setAuthor(&quot;尤雨溪&quot;);</span><br><span class="line">        System.out.println(&quot;对象 sunhw 的信息：&quot; + sunhw);</span><br><span class="line">        System.out.println(&quot;对象 sungm 的信息：&quot; + sungm);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;*运行结果*&#x2F;</span><br><span class="line">对象 sungm 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Effective Java&#39;, author&#x3D;&#39;Joshua Bloch&#39;&#125;&#125;</span><br><span class="line">对象 sunhw 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Effective Java&#39;, author&#x3D;&#39;Joshua Bloch&#39;&#125;&#125;</span><br><span class="line">对象 sungm 与对象 sunhw 是否相等：false </span><br><span class="line">-----------------------------------------</span><br><span class="line">对象 sunhw 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Vue.js&#39;, author&#x3D;&#39;尤雨溪&#39;&#125;&#125;</span><br><span class="line">对象 sungm 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Effective Java&#39;, author&#x3D;&#39;Joshua Bloch&#39;&#125;&#125;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>说明：进行深拷贝一般有2中方式<br>（1）将属性对象实现 java.lang.Cloneable 接口并重写 clone 方法，然后在原始类中修改 clone方法。<br>（2）实现 java.io.Serializable 接口，通过序列化和反序列号拷贝对象。</p>
-</blockquote>
-<h2 id="2-hashCode-方法"><a href="#2-hashCode-方法" class="headerlink" title="2. hashCode 方法"></a>2. hashCode 方法</h2><blockquote>
-<p>返回对象的 Hash 值 （也称散列码）。对象的散列码是为了更好的支持基于哈希机制的 Java 集合类，例如：HashMap、HashSet、HashTable。</p>
-</blockquote>
-<h3 id="2-1-通用约定"><a href="#2-1-通用约定" class="headerlink" title="2.1 通用约定"></a>2.1 通用约定</h3><blockquote>
-<p>（1）在 Java 程序执行期间，多次调用该方法应该返回相同的值，前提是未修改在 equals 方法中使用的信息。<br>（2）如果 2 个对象通过 equals 方法判定为 2 个对象相等、那么他们返回的 Hash 值也应该相等。<br>（3）对于 2 个对象来说，如果使用 equals 方法返回 false，那么这两个对象的 hashCode 值不要求一定不同（可以相同，可以不同），但是如果不同则可以提高应用的性能。<br>（4）对于 Object 类来说，不同 Object 对象的 hash 值是不同的、其 hash 值返回的是内存地址。</p>
-</blockquote>
-<blockquote>
-<p><strong>说明：鉴于第 （2） 条约定，如果重写了 equals 方法，那就要求重写 hashCode 方法。</strong></p>
-</blockquote>
-<h2 id="3-equals-方法"><a href="#3-equals-方法" class="headerlink" title="3. equals 方法"></a>3. equals 方法</h2><blockquote>
-<p>判断两个对象是否相等。仅当两个对象引用的是同一个内存地址，即同一个对象，该方法返回 true。若不满足指向同一个内存地址、即使两个对象的内容相同，也会返回 false。</p>
-</blockquote>
-<p>源码：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public boolean equals(Object obj) &#123; return (this &#x3D;&#x3D; obj); &#125;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>规则：<br>（1）自反性：对于任意非空对象， x.equals(x) 应该返回 true<br>（2）对称性：对于任意非空对象，若 x.equals(y) 返回 true，则 y.equals(x) 也应该返回 true<br>（3）传递性：对于任意非空对象，若 x.equals(y) 返回 true、y.equals(z) 也返回 true ，则 x.equals(z) 也应该返回 true<br>（4）一致性：若 x.equals(y) 返回 true，那第二次、第三次调用也应该返回 true，前提是未修改两个对象。</p>
-</blockquote>
-<h2 id="4-toString-方法"><a href="#4-toString-方法" class="headerlink" title="4. toString 方法"></a>4. toString 方法</h2><blockquote>
-<p>返回对象的字符串表现形式（类全名及无符号十六进制的 Hash 值）。API 建议所有的子类都重写该方法。</p>
-</blockquote>
-<p>源码：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public String toString() &#123; return getClass().getName() + &quot;@&quot; + Integer.toHexString(hashCode()); &#125;</span><br></pre></td></tr></table></figure>
-<h2 id="5-finalize-方法"><a href="#5-finalize-方法" class="headerlink" title="5. finalize 方法"></a>5. finalize 方法</h2><blockquote>
-<p>该方法自 Java 9 之后被废弃。</p>
-</blockquote>
-<p>源码：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Deprecated(since&#x3D;&quot;9&quot;) protected void finalize() throws Throwable &#123; &#125;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>说明：该方法并非一两句话能解释清楚，这里引入一篇博客、可供参考学习。<a href="https://www.jianshu.com/p/9d2788fffd5f" target="_blank" rel="noopener">https://www.jianshu.com/p/9d2788fffd5f</a></p>
-</blockquote>
-<h2 id="6-getClass-方法"><a href="#6-getClass-方法" class="headerlink" title="6. getClass 方法"></a>6. getClass 方法</h2><blockquote>
-<p>返回运行时该对象的 class 对象，返回的 class 对象是被表示对象的类的 static synchronized 方法锁定的对象。</p>
-</blockquote>
-<blockquote>
-<p>该方法一般常见于反射技术。</p>
-</blockquote>
-<h2 id="7-wait-方法"><a href="#7-wait-方法" class="headerlink" title="7. wait 方法"></a>7. wait 方法</h2><blockquote>
-<p>导致当前线程等待，可设置等待的毫秒数，知道其他线程调用 notify 方法或者调用该对象的 notifyAll 方法唤醒该线程。</p>
-</blockquote>
-<p>源码：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public final void wait() throws InterruptedException &#123;</span><br><span class="line">    wait(0L);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public final native void wait(long timeoutMillis) throws InterruptedException;</span><br></pre></td></tr></table></figure>
-<h2 id="8-notify-方法"><a href="#8-notify-方法" class="headerlink" title="8. notify 方法"></a>8. notify 方法</h2><blockquote>
-<p>唤醒正在此对象的监听器上等待的单个线程。如果该对象的监听器等待的线程存在多个、则唤醒其中一个线程，该线程的唤醒是随机的。</p>
-</blockquote>
-<p>源码：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@HotSpotIntrinsicCandidate public final native void notify();</span><br></pre></td></tr></table></figure>
-<h2 id="9-notifyAll-方法"><a href="#9-notifyAll-方法" class="headerlink" title="9. notifyAll 方法"></a>9. notifyAll 方法</h2><blockquote>
-<p>唤醒正在此对象的监听器上等待的所有线程。</p>
-</blockquote>
-<p>源码：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@HotSpotIntrinsicCandidate public final native void notifyAll();</span><br></pre></td></tr></table></figure>
-]]></content>
-      <tags>
-        <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Java NIO 概述</title>
-    <url>/2020/06/13/Java-NIO-%E6%A6%82%E8%BF%B0/</url>
-    <content><![CDATA[<h2 id="1-什么是NIO？"><a href="#1-什么是NIO？" class="headerlink" title="1.  什么是NIO？"></a>1.  什么是NIO？</h2><blockquote>
-<p>java.nio 全称 java non-blocking IO，是指 JDK1.4 及以上版本里提供的新 API（New IO） ，为所有的原始类型（ boolean 类型除外）提供<a href="https://baike.baidu.com/item/%E7%BC%93%E5%AD%98/100710" target="_blank" rel="noopener">缓存</a>支持的数据容器，使用它可以提供非阻塞式的高伸缩性网络。【百度百科】 </p>
-</blockquote>
-<a id="more"></a>
-
-<hr>
-<p>优点：NIO 比 AIO（异步I/O） 更加强大，处理数据更快。它可以大大的提高IO吞吐量，常用在高性能服务器上面。</p>
-<h2 id="2-NIO原理"><a href="#2-NIO原理" class="headerlink" title="2. NIO原理"></a>2. NIO原理</h2><blockquote>
-<p>使用较少的线程执行更多的任务。</p>
-</blockquote>
-<blockquote>
-<p>如下图所示，使用较少的线程，通过 Selector 选择器来执行不同 Channel 通道中的任务，执行任务再结合 AIO（异步I/O）就能发挥服务器的最大性能，更大程度上提升服务器的运行效率。</p>
-</blockquote>
-<p><div class="img-item" data-src="https://upload-images.jianshu.io/upload_images/11864885-0a82f84999ea3e77.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-sub-html=".caption"><img src="https://upload-images.jianshu.io/upload_images/11864885-0a82f84999ea3e77.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="原理图"><div class="img-caption d-block text-center"><span class="center-caption text-muted border-bottom">原理图</span></div></div></p>
-<hr>
-<h2 id="3-与常规-I-O-的区别"><a href="#3-与常规-I-O-的区别" class="headerlink" title="3. 与常规 I/O 的区别"></a>3. 与常规 I/O 的区别</h2><blockquote>
-<p>常规 I/O （如 InputStream 和 OutputStream）存在很大的缺点，就是他们是阻塞的，而 NIO 解决的就是常规 I/O 执行效率低的问题，即采用非阻塞高性能运行的方式来避免以前以前“笨拙” I/O 带来的低效率问题。NIO在大文件操作上相比常规 I/O 更加优秀，对常规 I/O 使用的 byte[] 和 char[] 进行封装，采用 ByteBuffer 类来操作数据，再结合针对 File 或者 Socket 技术的 Channel，采用同步非阻塞技术实现高性能处理。</p>
-</blockquote>
-<hr>
-<h2 id="4-缓冲区介绍"><a href="#4-缓冲区介绍" class="headerlink" title="4. 缓冲区介绍"></a>4. 缓冲区介绍</h2><blockquote>
-<p>在使用传统的I/O流API时，如 InputStream 和 OutputStream ，以及Reader和Writer联合使用时，常常把字节流中的数据放入byte[]字节数组中，或把字符流中的数据放入char[]字符数组中，也可以从 byte[] 或 char[] 数组中获取数据来实现功能上的需求，但由于在 Java 语言中对 array 数组自身进行操作的 API 非常少，常用的操作仅仅是 length 属性和下标[x]了，在 JDK 中也没有提供更加方便操作数组中数据的 API，如果对数组中的数据进行高级处理，需要程序员自己写代码进行实现，处理的方式是比较原始的，这个问题可以使用 NIO 技术中的缓冲区Buffer类来解决，它提供了很多工具方法，大大提高了程序开发的效率。</p>
-</blockquote>
-<hr>
-<p>推荐书籍：</p>
-<ul>
-<li>[高洪岩]《Java多线程编程核心技术》</li>
-<li>[高洪岩]《Java并发编程：核心方法与框架》</li>
-<li>[高洪岩]《NIO与Socket编程技术指南》</li>
-</ul>
-]]></content>
-      <tags>
-        <tag>Java</tag>
-        <tag>Java NIO</tag>
       </tags>
   </entry>
   <entry>
@@ -593,67 +491,139 @@
       </tags>
   </entry>
   <entry>
-    <title>正确的避免NullPointException</title>
-    <url>/2020/06/13/%E6%AD%A3%E7%A1%AE%E7%9A%84%E9%81%BF%E5%85%8DNullPointException/</url>
-    <content><![CDATA[<h2 id="1-正确使用-String类的-equals-方法-和-Object类的-equals-方法"><a href="#1-正确使用-String类的-equals-方法-和-Object类的-equals-方法" class="headerlink" title="1. 正确使用 String类的 equals()方法 和 Object类的 equals() 方法"></a>1. 正确使用 String类的 equals()方法 和 Object类的 equals() 方法</h2><blockquote>
-<p>已知对象在前，未知对象在后。注意：已知对象不为 null</p>
+    <title>java.lang.Object 类详解</title>
+    <url>/2020/06/12/java-lang-Object-%E7%B1%BB%E8%AF%A6%E8%A7%A3/</url>
+    <content><![CDATA[<h2 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h2><blockquote>
+<p>Object 方法包括 5 个非 final 类型的方法，分别是：clone、hashCode、equals、toString、finalize 方法；包括 4 个 final 方法，分别是 getClass、wait、notify、notifyAll 方法。其中 clone 方法是 protected 方法，finalize 方法自 Java 9 之后被废弃。</p>
 </blockquote>
 <a id="more"></a>
 
-<p>######正确示例</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    String name &#x3D; &quot;sungm&quot;; </span><br><span class="line">    &#x2F;&#x2F;name为已知对象且被赋予初始值不为空</span><br><span class="line">    if (name.equals(getOtherName())) &#123;</span><br><span class="line">        &#x2F;&#x2F;todo do something</span><br><span class="line">        System.out.println(&quot;todo do something&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static String getOtherName() &#123;</span><br><span class="line">    return &quot;sungm&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>######错误示例</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">    String name &#x3D; &quot;sungm&quot;;</span><br><span class="line">    &#x2F;&#x2F;getOtherName()方法返回值为 null。抛出NPE</span><br><span class="line">    if (getOtherName().equals(name)) &#123;</span><br><span class="line">        &#x2F;&#x2F;todo do something</span><br><span class="line">        System.out.println(&quot;todo do something&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static String getOtherName() &#123;</span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="2-未知对象转String使用String-valueOf-方法"><a href="#2-未知对象转String使用String-valueOf-方法" class="headerlink" title="2. 未知对象转String使用String.valueOf()方法"></a>2. 未知对象转String使用String.valueOf()方法</h2><blockquote>
-<p>空对象调用 toString() 方法会抛出NPE，使用 String.valueOf() 替代</p>
-</blockquote>
-<p>#####示例</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    &#x2F;&#x2F;抛NPE</span><br><span class="line">    System.out.println(getPrice().toString());</span><br><span class="line">    &#x2F;&#x2F;不抛NPE</span><br><span class="line">    System.out.println(String.valueOf(getPrice()));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static BigDecimal getPrice() &#123;</span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h5 id="String-valueOf-方法源码"><a href="#String-valueOf-方法源码" class="headerlink" title="String.valueOf() 方法源码"></a>String.valueOf() 方法源码</h5><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static String valueOf(Object obj) &#123;</span><br><span class="line">    return (obj &#x3D;&#x3D; null) ? &quot;null&quot; : obj.toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="3-使用第三方类库或者自己封装的工具类"><a href="#3-使用第三方类库或者自己封装的工具类" class="headerlink" title="3. 使用第三方类库或者自己封装的工具类"></a>3. 使用第三方类库或者自己封装的工具类</h2><blockquote>
-<p>例如 Apache 的 StringUtils 类</p>
-</blockquote>
-<p>#####Apache 的 StringUtils工具类部分源码</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">public static boolean isEmpty(String str) &#123;</span><br><span class="line">    return str &#x3D;&#x3D; null || str.length() &#x3D;&#x3D; 0;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static boolean isNotEmpty(String str) &#123;</span><br><span class="line">    return !isEmpty(str);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static boolean isBlank(String str) &#123;</span><br><span class="line">    int strLen;</span><br><span class="line">    if (str !&#x3D; null &amp;&amp; (strLen &#x3D; str.length()) !&#x3D; 0) &#123;</span><br><span class="line">        for(int i &#x3D; 0; i &lt; strLen; ++i) &#123;</span><br><span class="line">            if (!Character.isWhitespace(str.charAt(i))) &#123;</span><br><span class="line">                return false;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return true;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static boolean isNotBlank(String str) &#123;</span><br><span class="line">    return !isBlank(str);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="1-clone-方法"><a href="#1-clone-方法" class="headerlink" title="1. clone 方法"></a>1. clone 方法</h2><h3 id="1-1-源码"><a href="#1-1-源码" class="headerlink" title="1.1 源码"></a>1.1 源码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@HotSpotIntrinsicCandidate protected native Object clone() throws CloneNotSupportedException;</span><br></pre></td></tr></table></figure>
 
-<p>#####Apache 中 StringUtils 中 isEmpty() 方法 和 isBlank() 方法的区别：</p>
+<p>说明：调用该方法实现一个对象的浅复制，创建并且返回此对象的副本（“副本”的准确含义可能依赖于对象的类）。 Object.clone() 方法是一个 protected 方法，类只有实现 java.lang.Cloneable 接口，并重写 Object.clone() 方法才能使用该 clone 方法，否则抛出 CloneNotSupportedException 。</p>
+<h3 id="1-2-clone-与-copy-的区别"><a href="#1-2-clone-与-copy-的区别" class="headerlink" title="1.2 clone 与 copy 的区别"></a>1.2 clone 与 copy 的区别</h3><p>假设我们有一个 Person 对象，并假设 Person 类实现了Cloneable 接口并重写了 clone 方法。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Person a &#x3D; new Person();</span><br><span class="line">&#x2F;&#x2F;copy 的做法通常为:</span><br><span class="line">Person b &#x3D; a;</span><br><span class="line">&#x2F;&#x2F;clone 的做法通常为:</span><br><span class="line">Person c &#x3D; a.clone();</span><br></pre></td></tr></table></figure>
+
+<p>说明：<br>（1）copy 是将对象 a 的引用赋值给对象 b，赋值之后对象 a 和对象 b 都指向同一个引用 a。<br>（2）clone 是实现对象的浅拷贝，产生一个新的对象，对象 c 与 对象 a 不指向同一个引用。</p>
 <blockquote>
-<p>1: isEmpty() 方法：当Sting为null或者空（””）时返回true<br>2: isBlank() 方法 ：当Sting为null或者空（””）或者空字符串（”     “）时返回true</p>
+<p>clone 在内存中实际操作是：将对象 a 的内存，拷贝一个副本，并重新分配一块内存区域用于保存副本。</p>
 </blockquote>
-<p>#####示例</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">    String empty &#x3D; null;</span><br><span class="line">    System.out.println(StringUtils.isEmpty(empty));</span><br><span class="line"></span><br><span class="line">    empty &#x3D; &quot;&quot;;</span><br><span class="line">    System.out.println(StringUtils.isEmpty(empty));</span><br><span class="line"></span><br><span class="line">    empty &#x3D; &quot;      &quot;;</span><br><span class="line">    System.out.println(StringUtils.isBlank(empty));</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="1-3-浅拷贝和深拷贝"><a href="#1-3-浅拷贝和深拷贝" class="headerlink" title="1.3 浅拷贝和深拷贝"></a>1.3 浅拷贝和深拷贝</h3><blockquote>
+<p>前面我们提到，clone 在内存中的实际操作时将一个对象的内存拷贝出一个副本、并重新分配一个内存用于保存副本。由于原对象（被拷贝的对象）属性可能存在两种值传递类型，分别是值传递和引用传递，对副本的操作可能对原对象造成影响（改变副本的引用传递属性的值，由于引用传递导致原对象的响应值同样改变）。</p>
+</blockquote>
+<blockquote>
+<p>如果一个对象包含引用传递类型的属性，直接拷贝对象，不做特殊处理，这种拷贝称为浅拷贝。若一个对象不存在引用传递类型的数据，那也就不区别什么浅拷贝和深拷贝，可以称为浅拷贝也可以称为深拷贝。</p>
+</blockquote>
+<p>示例：</p>
+<p>定义2个类：Person类 包含 Book属性</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Person implements Cloneable &#123;</span><br><span class="line"></span><br><span class="line">    private String name;</span><br><span class="line">    private Book book;</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F;省略 constructor 、 getter 、 setter 方法</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() throws CloneNotSupportedException &#123;</span><br><span class="line">        return super.clone();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;Person&#123;&quot; +</span><br><span class="line">                &quot;name&#x3D;&#39;&quot; + name + &#39;\&#39;&#39; +</span><br><span class="line">                &quot;, book&#x3D;&quot; + book +</span><br><span class="line">                &#39;&#125;&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<hr>
-<h2 id="4-避免自动拆箱可能抛出NPE"><a href="#4-避免自动拆箱可能抛出NPE" class="headerlink" title="4. 避免自动拆箱可能抛出NPE"></a>4. 避免自动拆箱可能抛出NPE</h2><blockquote>
-<p>自动拆箱可能抛出NPE</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Book &#123;</span><br><span class="line"></span><br><span class="line">    private String bookName;</span><br><span class="line">    private String author;</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F;省略 constructor 、 getter 、 setter 方法</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;Book&#123;&quot; +</span><br><span class="line">                &quot;bookName&#x3D;&#39;&quot; + bookName + &#39;\&#39;&#39; +</span><br><span class="line">                &quot;, author&#x3D;&#39;&quot; + author + &#39;\&#39;&#39; +</span><br><span class="line">                &#39;&#125;&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Main &#123;</span><br><span class="line">    &#x2F;&#x2F;主方法：</span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        Book effectiveJava &#x3D; new Book(&quot;Effective Java&quot;, &quot;Joshua Bloch&quot;);</span><br><span class="line">        Person sungm &#x3D; new Person(&quot;sungm&quot;, effectiveJava);</span><br><span class="line">        Person sunhw &#x3D; (Person) sungm.clone();</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;对象 sungm 的信息：&quot; + sungm);</span><br><span class="line">        System.out.println(&quot;对象 sunhw 的信息：&quot; + sunhw);</span><br><span class="line">        System.out.println(&quot;对象 sungm 与对象 sunhw 是否相等：&quot; + (sungm &#x3D;&#x3D; sunhw));</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;-----------------------------------------&quot;);</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;改变对象 sunhw 的 book 属性</span><br><span class="line">        sunhw.getBook().setBookName(&quot;Vue.js&quot;);</span><br><span class="line">        sunhw.getBook().setAuthor(&quot;尤雨溪&quot;);</span><br><span class="line">        System.out.println(&quot;对象 sunhw 的信息：&quot; + sunhw);</span><br><span class="line">        System.out.println(&quot;对象 sungm 的信息：&quot; + sungm);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;* 输出结果 *&#x2F;</span><br><span class="line">对象 sungm 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Effective Java&#39;, author&#x3D;&#39;Joshua Bloch&#39;&#125;&#125;</span><br><span class="line">对象 sunhw 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Effective Java&#39;, author&#x3D;&#39;Joshua Bloch&#39;&#125;&#125;</span><br><span class="line">对象 sungm 与对象 sunhw 是否相等：false</span><br><span class="line">-----------------------------------------</span><br><span class="line">对象 sunhw 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Vue.js&#39;, author&#x3D;&#39;尤雨溪&#39;&#125;&#125;</span><br><span class="line">对象 sungm 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Vue.js&#39;, author&#x3D;&#39;尤雨溪&#39;&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>从输出结果可以看出：对象 sunhw 改变了的属性 book 的内容， 对对象 sungm 造成了影响。因为两个对象的 book 属性保存的是同一个引用，造成这种差异是由于对象进行了浅拷贝。</p>
 </blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;反例</span><br><span class="line">public int function() &#123;</span><br><span class="line">    return Integer对象;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="5-数据库查出的数据可能为null，做空判断"><a href="#5-数据库查出的数据可能为null，做空判断" class="headerlink" title="5. 数据库查出的数据可能为null，做空判断"></a>5. 数据库查出的数据可能为null，做空判断</h2><blockquote>
-<p>数据库非空字段可以加非空约束；对可能为空的字段做空判断、防止NPE。</p>
+<p>进行深拷贝示例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Person implements Cloneable &#123;</span><br><span class="line"></span><br><span class="line">    private String name;</span><br><span class="line">    private Book book;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;省略 constructor 、 getter 、 setter 方法</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() throws CloneNotSupportedException &#123;</span><br><span class="line">        Person person &#x3D; (Person) super.clone();</span><br><span class="line">        person.book &#x3D; (Book) book.clone();</span><br><span class="line">        return person;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;Person&#123;&quot; +</span><br><span class="line">                &quot;name&#x3D;&#39;&quot; + name + &#39;\&#39;&#39; +</span><br><span class="line">                &quot;, book&#x3D;&quot; + book +</span><br><span class="line">                &#39;&#125;&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Book implements Cloneable&#123;</span><br><span class="line"></span><br><span class="line">    private String bookName;</span><br><span class="line">    private String author;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;省略 constructor 、 getter 、 setter 方法</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() throws CloneNotSupportedException &#123;</span><br><span class="line">        return super.clone();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;Book&#123;&quot; +</span><br><span class="line">                &quot;bookName&#x3D;&#39;&quot; + bookName + &#39;\&#39;&#39; +</span><br><span class="line">                &quot;, author&#x3D;&#39;&quot; + author + &#39;\&#39;&#39; +</span><br><span class="line">                &#39;&#125;&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Main &#123;</span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        Book effectiveJava &#x3D; new Book(&quot;Effective Java&quot;, &quot;Joshua Bloch&quot;);</span><br><span class="line">        Person sungm &#x3D; new Person(&quot;sungm&quot;, effectiveJava);</span><br><span class="line">        Person sunhw &#x3D; (Person) sungm.clone();</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;对象 sungm 的信息：&quot; + sungm);</span><br><span class="line">        System.out.println(&quot;对象 sunhw 的信息：&quot; + sunhw);</span><br><span class="line">        System.out.println(&quot;对象 sungm 与对象 sunhw 是否相等：&quot; + (sungm &#x3D;&#x3D; sunhw));</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;-----------------------------------------&quot;);</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;改变对象 sunhw 的 book 属性</span><br><span class="line">        sunhw.getBook().setBookName(&quot;Vue.js&quot;);</span><br><span class="line">        sunhw.getBook().setAuthor(&quot;尤雨溪&quot;);</span><br><span class="line">        System.out.println(&quot;对象 sunhw 的信息：&quot; + sunhw);</span><br><span class="line">        System.out.println(&quot;对象 sungm 的信息：&quot; + sungm);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;*运行结果*&#x2F;</span><br><span class="line">对象 sungm 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Effective Java&#39;, author&#x3D;&#39;Joshua Bloch&#39;&#125;&#125;</span><br><span class="line">对象 sunhw 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Effective Java&#39;, author&#x3D;&#39;Joshua Bloch&#39;&#125;&#125;</span><br><span class="line">对象 sungm 与对象 sunhw 是否相等：false </span><br><span class="line">-----------------------------------------</span><br><span class="line">对象 sunhw 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Vue.js&#39;, author&#x3D;&#39;尤雨溪&#39;&#125;&#125;</span><br><span class="line">对象 sungm 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Effective Java&#39;, author&#x3D;&#39;Joshua Bloch&#39;&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>说明：进行深拷贝一般有2中方式<br>（1）将属性对象实现 java.lang.Cloneable 接口并重写 clone 方法，然后在原始类中修改 clone方法。<br>（2）实现 java.io.Serializable 接口，通过序列化和反序列号拷贝对象。</p>
 </blockquote>
-<hr>
-<h2 id="6-级联调用容易抛出NPE，建议使用Java-8-的-Optional类"><a href="#6-级联调用容易抛出NPE，建议使用Java-8-的-Optional类" class="headerlink" title="6. 级联调用容易抛出NPE，建议使用Java 8 的 Optional类"></a>6. 级联调用容易抛出NPE，建议使用Java 8 的 Optional类</h2><blockquote>
-<p>例如 object.getMehtodA().getMethodB().getMethodC()；很容易抛出NPE</p>
+<h2 id="2-hashCode-方法"><a href="#2-hashCode-方法" class="headerlink" title="2. hashCode 方法"></a>2. hashCode 方法</h2><blockquote>
+<p>返回对象的 Hash 值 （也称散列码）。对象的散列码是为了更好的支持基于哈希机制的 Java 集合类，例如：HashMap、HashSet、HashTable。</p>
 </blockquote>
-<hr>
-<h2 id="7-远程调用返回对象容易抛出NPE，建议做空判断"><a href="#7-远程调用返回对象容易抛出NPE，建议做空判断" class="headerlink" title="7. 远程调用返回对象容易抛出NPE，建议做空判断"></a>7. 远程调用返回对象容易抛出NPE，建议做空判断</h2><blockquote>
-<p>调用第三方接口等返回对象可能为空，建议对该对象操作之前做空判断。</p>
+<h3 id="2-1-通用约定"><a href="#2-1-通用约定" class="headerlink" title="2.1 通用约定"></a>2.1 通用约定</h3><blockquote>
+<p>（1）在 Java 程序执行期间，多次调用该方法应该返回相同的值，前提是未修改在 equals 方法中使用的信息。<br>（2）如果 2 个对象通过 equals 方法判定为 2 个对象相等、那么他们返回的 Hash 值也应该相等。<br>（3）对于 2 个对象来说，如果使用 equals 方法返回 false，那么这两个对象的 hashCode 值不要求一定不同（可以相同，可以不同），但是如果不同则可以提高应用的性能。<br>（4）对于 Object 类来说，不同 Object 对象的 hash 值是不同的、其 hash 值返回的是内存地址。</p>
 </blockquote>
-<hr>
-<h2 id="8-取Session中-的值之前做空判断"><a href="#8-取Session中-的值之前做空判断" class="headerlink" title="8. 取Session中 的值之前做空判断"></a>8. 取Session中 的值之前做空判断</h2><blockquote>
-<p> 取Session的值之前对Session做空判断，对获取的Session值操作之前对Session值做空判断、避免NPE</p>
+<blockquote>
+<p><strong>说明：鉴于第 （2） 条约定，如果重写了 equals 方法，那就要求重写 hashCode 方法。</strong></p>
 </blockquote>
-<hr>
-<h2 id="9-对集合的操作之前做空判断"><a href="#9-对集合的操作之前做空判断" class="headerlink" title="9. 对集合的操作之前做空判断"></a>9. 对集合的操作之前做空判断</h2><blockquote>
-<p> 取集合中的值之前对集合做空判断，对获取的集合值操作之前对集合值做空判断、避免NPE</p>
+<h2 id="3-equals-方法"><a href="#3-equals-方法" class="headerlink" title="3. equals 方法"></a>3. equals 方法</h2><blockquote>
+<p>判断两个对象是否相等。仅当两个对象引用的是同一个内存地址，即同一个对象，该方法返回 true。若不满足指向同一个内存地址、即使两个对象的内容相同，也会返回 false。</p>
 </blockquote>
-<hr>
+<p>源码：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public boolean equals(Object obj) &#123; return (this &#x3D;&#x3D; obj); &#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>规则：<br>（1）自反性：对于任意非空对象， x.equals(x) 应该返回 true<br>（2）对称性：对于任意非空对象，若 x.equals(y) 返回 true，则 y.equals(x) 也应该返回 true<br>（3）传递性：对于任意非空对象，若 x.equals(y) 返回 true、y.equals(z) 也返回 true ，则 x.equals(z) 也应该返回 true<br>（4）一致性：若 x.equals(y) 返回 true，那第二次、第三次调用也应该返回 true，前提是未修改两个对象。</p>
+</blockquote>
+<h2 id="4-toString-方法"><a href="#4-toString-方法" class="headerlink" title="4. toString 方法"></a>4. toString 方法</h2><blockquote>
+<p>返回对象的字符串表现形式（类全名及无符号十六进制的 Hash 值）。API 建议所有的子类都重写该方法。</p>
+</blockquote>
+<p>源码：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public String toString() &#123; return getClass().getName() + &quot;@&quot; + Integer.toHexString(hashCode()); &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="5-finalize-方法"><a href="#5-finalize-方法" class="headerlink" title="5. finalize 方法"></a>5. finalize 方法</h2><blockquote>
+<p>该方法自 Java 9 之后被废弃。</p>
+</blockquote>
+<p>源码：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Deprecated(since&#x3D;&quot;9&quot;) protected void finalize() throws Throwable &#123; &#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>说明：该方法并非一两句话能解释清楚，这里引入一篇博客、可供参考学习。<a href="https://www.jianshu.com/p/9d2788fffd5f" target="_blank" rel="noopener">https://www.jianshu.com/p/9d2788fffd5f</a></p>
+</blockquote>
+<h2 id="6-getClass-方法"><a href="#6-getClass-方法" class="headerlink" title="6. getClass 方法"></a>6. getClass 方法</h2><blockquote>
+<p>返回运行时该对象的 class 对象，返回的 class 对象是被表示对象的类的 static synchronized 方法锁定的对象。</p>
+</blockquote>
+<blockquote>
+<p>该方法一般常见于反射技术。</p>
+</blockquote>
+<h2 id="7-wait-方法"><a href="#7-wait-方法" class="headerlink" title="7. wait 方法"></a>7. wait 方法</h2><blockquote>
+<p>导致当前线程等待，可设置等待的毫秒数，知道其他线程调用 notify 方法或者调用该对象的 notifyAll 方法唤醒该线程。</p>
+</blockquote>
+<p>源码：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public final void wait() throws InterruptedException &#123;</span><br><span class="line">    wait(0L);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public final native void wait(long timeoutMillis) throws InterruptedException;</span><br></pre></td></tr></table></figure>
+<h2 id="8-notify-方法"><a href="#8-notify-方法" class="headerlink" title="8. notify 方法"></a>8. notify 方法</h2><blockquote>
+<p>唤醒正在此对象的监听器上等待的单个线程。如果该对象的监听器等待的线程存在多个、则唤醒其中一个线程，该线程的唤醒是随机的。</p>
+</blockquote>
+<p>源码：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@HotSpotIntrinsicCandidate public final native void notify();</span><br></pre></td></tr></table></figure>
+<h2 id="9-notifyAll-方法"><a href="#9-notifyAll-方法" class="headerlink" title="9. notifyAll 方法"></a>9. notifyAll 方法</h2><blockquote>
+<p>唤醒正在此对象的监听器上等待的所有线程。</p>
+</blockquote>
+<p>源码：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@HotSpotIntrinsicCandidate public final native void notifyAll();</span><br></pre></td></tr></table></figure>
 ]]></content>
       <tags>
         <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>解析XML</title>
+    <url>/2020/06/16/%E8%A7%A3%E6%9E%90XML/</url>
+    <content><![CDATA[<p>Java 8 官方API : <a href="https://docs.oracle.com/javase/8/docs/api/" target="_blank" rel="noopener">Java 8 API</a></p>
+<hr>
+<h2 id="1-DOM解析XML"><a href="#1-DOM解析XML" class="headerlink" title="1. DOM解析XML"></a>1. DOM解析XML</h2><p><strong>xml文档</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot; ?&gt;</span><br><span class="line">&lt;class&gt;</span><br><span class="line">    &lt;student&gt;</span><br><span class="line">        &lt;name nameAttr&#x3D;&quot;sungm&quot;&gt;sungm&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age ageAttr&#x3D;&quot;25&quot;&gt;25&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex sexAttr&#x3D;&quot;Man&quot;&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className classAttr&#x3D;&quot;ClassOne&quot;&gt;Class One&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">    &lt;student&gt;</span><br><span class="line">        &lt;name nameAttr&#x3D;&quot;sunhw&quot;&gt;sunhw&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age ageAttr&#x3D;&quot;1&quot;&gt;1&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex sexAttr&#x3D;&quot;Man&quot;&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className classAttr&#x3D;&quot;ClassTwo&quot;&gt;Class Two&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">&lt;&#x2F;class&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>java代码</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import org.w3c.dom.*;</span><br><span class="line"></span><br><span class="line">import javax.xml.parsers.DocumentBuilder;</span><br><span class="line">import javax.xml.parsers.DocumentBuilderFactory;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2020-06-16 16:59</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class Main &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        &#x2F;&#x2F;获取一个xml解析器的文档构建者工厂实例（设计模式：工厂模式）</span><br><span class="line">        DocumentBuilderFactory factory &#x3D; DocumentBuilderFactory.newInstance();</span><br><span class="line">        &#x2F;&#x2F;获取一个xml解析器的文档构建者实例（设计模式：Builder模式）</span><br><span class="line">        DocumentBuilder builder &#x3D; factory.newDocumentBuilder();</span><br><span class="line">        &#x2F;&#x2F;使用xml解析器builder解析文档，获取解析后的Document对象</span><br><span class="line">        Document document &#x3D; builder.parse(&quot;src&#x2F;main&#x2F;resources&#x2F;student.xml&quot;);</span><br><span class="line">        &#x2F;&#x2F;获取根元素</span><br><span class="line">        Element rootElement &#x3D; document.getDocumentElement();</span><br><span class="line">        &#x2F;&#x2F;获取文档中student元素列表（也可以直接通过document.getElementsByTagName(&quot;student&quot;)获取所有的student元素）</span><br><span class="line">        NodeList studentNodes &#x3D; rootElement.getElementsByTagName(&quot;student&quot;);</span><br><span class="line">        for (int index &#x3D; 0, size &#x3D; studentNodes.getLength(); index &lt; size; index++) &#123;</span><br><span class="line">            Element element &#x3D; (Element) studentNodes.item(index);</span><br><span class="line">            &#x2F;&#x2F;元素（备注：通过getElementsByTagName()方法获取指定的元素）</span><br><span class="line">            Element nameElement &#x3D; (Element) element.getElementsByTagName(&quot;name&quot;).item(0);</span><br><span class="line">            Element ageElement &#x3D; (Element) element.getElementsByTagName(&quot;age&quot;).item(0);</span><br><span class="line">            Element sexElement &#x3D; (Element) element.getElementsByTagName(&quot;sex&quot;).item(0);</span><br><span class="line">            Element classElement &#x3D; (Element) element.getElementsByTagName(&quot;className&quot;).item(0);</span><br><span class="line"></span><br><span class="line">            &#x2F;&#x2F;文本（备注：通过getNodeName()方法获取元素名称，通过getTextContent()方法获取文本内容）</span><br><span class="line">            System.out.println(nameElement.getNodeName()  + &quot; : &quot; + nameElement.getTextContent());</span><br><span class="line">            System.out.println(ageElement.getNodeName()   + &quot; : &quot; + ageElement.getTextContent());</span><br><span class="line">            System.out.println(sexElement.getNodeName()   + &quot; : &quot; + sexElement.getTextContent());</span><br><span class="line">            System.out.println(classElement.getNodeName() + &quot; : &quot; + classElement.getTextContent());</span><br><span class="line"></span><br><span class="line">            &#x2F;&#x2F;属性（备注：通过getAttributeNode(name)方法属性节点，通过getAttribute(name)方法获取属性内容）</span><br><span class="line">            Attr nameAttr &#x3D; nameElement.getAttributeNode(&quot;nameAttr&quot;);</span><br><span class="line">            Attr ageAttr &#x3D; ageElement.getAttributeNode(&quot;ageAttr&quot;);</span><br><span class="line">            Attr sexAttr &#x3D; sexElement.getAttributeNode(&quot;sexAttr&quot;);</span><br><span class="line">            Attr classAttr &#x3D; classElement.getAttributeNode(&quot;classAttr&quot;);</span><br><span class="line">            System.out.println(nameAttr.getName()  + &quot; : &quot; + nameAttr.getValue());</span><br><span class="line">            System.out.println(ageAttr.getName()   + &quot; : &quot; + ageAttr.getValue());</span><br><span class="line">            System.out.println(sexAttr.getName()   + &quot; : &quot; + sexAttr.getValue());</span><br><span class="line">            System.out.println(classAttr.getName()   + &quot; : &quot; + classAttr.getValue());</span><br><span class="line">            System.out.println();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>输出结果</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">name : sungm</span><br><span class="line">age : 25</span><br><span class="line">sex : Man</span><br><span class="line">className : Class One</span><br><span class="line">nameAttr : sungm</span><br><span class="line">ageAttr : 25</span><br><span class="line">sexAttr : Man</span><br><span class="line">classAttr : ClassOne</span><br><span class="line"></span><br><span class="line">name : sunhw</span><br><span class="line">age : 1</span><br><span class="line">sex : Man</span><br><span class="line">className : Class Two</span><br><span class="line">nameAttr : sunhw</span><br><span class="line">ageAttr : 1</span><br><span class="line">sexAttr : Man</span><br><span class="line">classAttr : ClassTwo</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="2-SAX解析XML"><a href="#2-SAX解析XML" class="headerlink" title="2. SAX解析XML"></a>2. SAX解析XML</h2><p><strong>xml文档</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot; ?&gt;</span><br><span class="line">&lt;class&gt;</span><br><span class="line">    &lt;student&gt;</span><br><span class="line">        &lt;name nameAttr&#x3D;&quot;sungm&quot;&gt;sungm&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age ageAttr&#x3D;&quot;25&quot;&gt;25&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex sexAttr&#x3D;&quot;Man&quot;&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className classAttr&#x3D;&quot;ClassOne&quot;&gt;Class One&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">    &lt;student&gt;</span><br><span class="line">        &lt;name nameAttr&#x3D;&quot;sunhw&quot;&gt;sunhw&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age ageAttr&#x3D;&quot;1&quot;&gt;1&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex sexAttr&#x3D;&quot;Man&quot;&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className classAttr&#x3D;&quot;ClassTwo&quot;&gt;Class Two&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">&lt;&#x2F;class&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>自定义Handler处理器</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import org.xml.sax.Attributes;</span><br><span class="line">import org.xml.sax.SAXException;</span><br><span class="line">import org.xml.sax.helpers.DefaultHandler;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2020-06-17 17:42</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class StudentParserHandler extends DefaultHandler &#123;</span><br><span class="line"></span><br><span class="line">    interface Constants &#123;</span><br><span class="line"></span><br><span class="line">        String ROOT_ELEMENT &#x3D; &quot;class&quot;;</span><br><span class="line"></span><br><span class="line">        String EMPTY &#x3D; &quot;&quot;;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void startDocument() throws SAXException &#123;</span><br><span class="line">        super.startDocument();</span><br><span class="line">        System.out.println(&quot;开始解析XML文档&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void endDocument() throws SAXException &#123;</span><br><span class="line">        super.endDocument();</span><br><span class="line">        System.out.println(&quot;解析XML文档结束&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException &#123;</span><br><span class="line">        super.startElement(uri, localName, qName, attributes);</span><br><span class="line">        if (Constants.ROOT_ELEMENT.equals(qName)) &#123;</span><br><span class="line">            System.out.println(&quot;开始解析根节点&quot;);</span><br><span class="line">        &#125; &#123;</span><br><span class="line">            System.out.println(&quot;节点名称 ： &quot; + qName);</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F;获取元素的属性</span><br><span class="line">        for (int index &#x3D; 0, size &#x3D; attributes.getLength(); index &lt; size; index++) &#123;</span><br><span class="line">            String attrName &#x3D; attributes.getLocalName(index);</span><br><span class="line">            String attrValue &#x3D; attributes.getValue(index);</span><br><span class="line">            System.out.println(&quot;attrName &#x3D; &quot; + attrName + &quot;, attrValue &#x3D; &quot; + attrValue);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void endElement(String uri, String localName, String qName) throws SAXException &#123;</span><br><span class="line">        if (Constants.ROOT_ELEMENT.equals(qName)) &#123;</span><br><span class="line">            System.out.println(&quot;解析根节点结束&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void characters(char[] ch, int start, int length) throws SAXException &#123;</span><br><span class="line">        super.characters(ch, start, length);</span><br><span class="line">        String value &#x3D; new String(ch, start, length).trim();</span><br><span class="line">        if (!Constants.EMPTY.equals(value)) &#123;</span><br><span class="line">            System.out.println(&quot;节点值：&quot; + value);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;方法执行顺序：startDocument -&gt; startElement -&gt; characters -&gt; endElement -&gt; characters -&gt; endDocument</span><br><span class="line">&#x2F;&#x2F;执行次数        只执行一次      元素循环执行    元素循环执行   元素循环执行   元素循环执行    只执行一次</span><br></pre></td></tr></table></figure>
+
+<p><strong>程序入口</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import javax.xml.parsers.SAXParser;</span><br><span class="line">import javax.xml.parsers.SAXParserFactory;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2020-06-17 17:33</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class Main &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        &#x2F;&#x2F;获取一个Sax解析工厂实例</span><br><span class="line">        SAXParserFactory saxParserFactory &#x3D; SAXParserFactory.newInstance();</span><br><span class="line">        &#x2F;&#x2F;获取一个Sax解析器实例</span><br><span class="line">        SAXParser saxParser &#x3D; saxParserFactory.newSAXParser();</span><br><span class="line">        &#x2F;&#x2F;创建一个Handel实例</span><br><span class="line">        StudentParserHandler handler &#x3D; new StudentParserHandler();</span><br><span class="line">        &#x2F;&#x2F;解析文件</span><br><span class="line">        saxParser.parse(&quot;src&#x2F;main&#x2F;resources&#x2F;student.xml&quot;, handler);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>输出结果</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">开始解析XML文档</span><br><span class="line">开始解析根节点</span><br><span class="line">节点名称 ： class</span><br><span class="line">节点名称 ： student</span><br><span class="line">节点名称 ： name</span><br><span class="line">attrName &#x3D; nameAttr, attrValue &#x3D; sungm</span><br><span class="line">节点值：sungm</span><br><span class="line">节点名称 ： age</span><br><span class="line">attrName &#x3D; ageAttr, attrValue &#x3D; 25</span><br><span class="line">节点值：25</span><br><span class="line">节点名称 ： sex</span><br><span class="line">attrName &#x3D; sexAttr, attrValue &#x3D; Man</span><br><span class="line">节点值：Man</span><br><span class="line">节点名称 ： className</span><br><span class="line">attrName &#x3D; classAttr, attrValue &#x3D; ClassOne</span><br><span class="line">节点值：Class One</span><br><span class="line">节点名称 ： student</span><br><span class="line">节点名称 ： name</span><br><span class="line">attrName &#x3D; nameAttr, attrValue &#x3D; sunhw</span><br><span class="line">节点值：sunhw</span><br><span class="line">节点名称 ： age</span><br><span class="line">attrName &#x3D; ageAttr, attrValue &#x3D; 1</span><br><span class="line">节点值：1</span><br><span class="line">节点名称 ： sex</span><br><span class="line">attrName &#x3D; sexAttr, attrValue &#x3D; Man</span><br><span class="line">节点值：Man</span><br><span class="line">节点名称 ： className</span><br><span class="line">attrName &#x3D; classAttr, attrValue &#x3D; ClassTwo</span><br><span class="line">节点值：Class Two</span><br><span class="line">解析根节点结束</span><br><span class="line">解析XML文档结束</span><br></pre></td></tr></table></figure>
+
+
+]]></content>
+      <tags>
+        <tag>Java</tag>
+        <tag>XML</tag>
       </tags>
   </entry>
   <entry>
@@ -725,6 +695,70 @@
       </tags>
   </entry>
   <entry>
+    <title>正确的避免NullPointException</title>
+    <url>/2020/06/13/%E6%AD%A3%E7%A1%AE%E7%9A%84%E9%81%BF%E5%85%8DNullPointException/</url>
+    <content><![CDATA[<h2 id="1-正确使用-String类的-equals-方法-和-Object类的-equals-方法"><a href="#1-正确使用-String类的-equals-方法-和-Object类的-equals-方法" class="headerlink" title="1. 正确使用 String类的 equals()方法 和 Object类的 equals() 方法"></a>1. 正确使用 String类的 equals()方法 和 Object类的 equals() 方法</h2><blockquote>
+<p>已知对象在前，未知对象在后。注意：已知对象不为 null</p>
+</blockquote>
+<a id="more"></a>
+
+<p>######正确示例</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    String name &#x3D; &quot;sungm&quot;; </span><br><span class="line">    &#x2F;&#x2F;name为已知对象且被赋予初始值不为空</span><br><span class="line">    if (name.equals(getOtherName())) &#123;</span><br><span class="line">        &#x2F;&#x2F;todo do something</span><br><span class="line">        System.out.println(&quot;todo do something&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static String getOtherName() &#123;</span><br><span class="line">    return &quot;sungm&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>######错误示例</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">    String name &#x3D; &quot;sungm&quot;;</span><br><span class="line">    &#x2F;&#x2F;getOtherName()方法返回值为 null。抛出NPE</span><br><span class="line">    if (getOtherName().equals(name)) &#123;</span><br><span class="line">        &#x2F;&#x2F;todo do something</span><br><span class="line">        System.out.println(&quot;todo do something&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static String getOtherName() &#123;</span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="2-未知对象转String使用String-valueOf-方法"><a href="#2-未知对象转String使用String-valueOf-方法" class="headerlink" title="2. 未知对象转String使用String.valueOf()方法"></a>2. 未知对象转String使用String.valueOf()方法</h2><blockquote>
+<p>空对象调用 toString() 方法会抛出NPE，使用 String.valueOf() 替代</p>
+</blockquote>
+<p>#####示例</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    &#x2F;&#x2F;抛NPE</span><br><span class="line">    System.out.println(getPrice().toString());</span><br><span class="line">    &#x2F;&#x2F;不抛NPE</span><br><span class="line">    System.out.println(String.valueOf(getPrice()));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static BigDecimal getPrice() &#123;</span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="String-valueOf-方法源码"><a href="#String-valueOf-方法源码" class="headerlink" title="String.valueOf() 方法源码"></a>String.valueOf() 方法源码</h5><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static String valueOf(Object obj) &#123;</span><br><span class="line">    return (obj &#x3D;&#x3D; null) ? &quot;null&quot; : obj.toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="3-使用第三方类库或者自己封装的工具类"><a href="#3-使用第三方类库或者自己封装的工具类" class="headerlink" title="3. 使用第三方类库或者自己封装的工具类"></a>3. 使用第三方类库或者自己封装的工具类</h2><blockquote>
+<p>例如 Apache 的 StringUtils 类</p>
+</blockquote>
+<p>#####Apache 的 StringUtils工具类部分源码</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">public static boolean isEmpty(String str) &#123;</span><br><span class="line">    return str &#x3D;&#x3D; null || str.length() &#x3D;&#x3D; 0;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static boolean isNotEmpty(String str) &#123;</span><br><span class="line">    return !isEmpty(str);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static boolean isBlank(String str) &#123;</span><br><span class="line">    int strLen;</span><br><span class="line">    if (str !&#x3D; null &amp;&amp; (strLen &#x3D; str.length()) !&#x3D; 0) &#123;</span><br><span class="line">        for(int i &#x3D; 0; i &lt; strLen; ++i) &#123;</span><br><span class="line">            if (!Character.isWhitespace(str.charAt(i))) &#123;</span><br><span class="line">                return false;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return true;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static boolean isNotBlank(String str) &#123;</span><br><span class="line">    return !isBlank(str);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>#####Apache 中 StringUtils 中 isEmpty() 方法 和 isBlank() 方法的区别：</p>
+<blockquote>
+<p>1: isEmpty() 方法：当Sting为null或者空（””）时返回true<br>2: isBlank() 方法 ：当Sting为null或者空（””）或者空字符串（”     “）时返回true</p>
+</blockquote>
+<p>#####示例</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">    String empty &#x3D; null;</span><br><span class="line">    System.out.println(StringUtils.isEmpty(empty));</span><br><span class="line"></span><br><span class="line">    empty &#x3D; &quot;&quot;;</span><br><span class="line">    System.out.println(StringUtils.isEmpty(empty));</span><br><span class="line"></span><br><span class="line">    empty &#x3D; &quot;      &quot;;</span><br><span class="line">    System.out.println(StringUtils.isBlank(empty));</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="4-避免自动拆箱可能抛出NPE"><a href="#4-避免自动拆箱可能抛出NPE" class="headerlink" title="4. 避免自动拆箱可能抛出NPE"></a>4. 避免自动拆箱可能抛出NPE</h2><blockquote>
+<p>自动拆箱可能抛出NPE</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;反例</span><br><span class="line">public int function() &#123;</span><br><span class="line">    return Integer对象;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="5-数据库查出的数据可能为null，做空判断"><a href="#5-数据库查出的数据可能为null，做空判断" class="headerlink" title="5. 数据库查出的数据可能为null，做空判断"></a>5. 数据库查出的数据可能为null，做空判断</h2><blockquote>
+<p>数据库非空字段可以加非空约束；对可能为空的字段做空判断、防止NPE。</p>
+</blockquote>
+<hr>
+<h2 id="6-级联调用容易抛出NPE，建议使用Java-8-的-Optional类"><a href="#6-级联调用容易抛出NPE，建议使用Java-8-的-Optional类" class="headerlink" title="6. 级联调用容易抛出NPE，建议使用Java 8 的 Optional类"></a>6. 级联调用容易抛出NPE，建议使用Java 8 的 Optional类</h2><blockquote>
+<p>例如 object.getMehtodA().getMethodB().getMethodC()；很容易抛出NPE</p>
+</blockquote>
+<hr>
+<h2 id="7-远程调用返回对象容易抛出NPE，建议做空判断"><a href="#7-远程调用返回对象容易抛出NPE，建议做空判断" class="headerlink" title="7. 远程调用返回对象容易抛出NPE，建议做空判断"></a>7. 远程调用返回对象容易抛出NPE，建议做空判断</h2><blockquote>
+<p>调用第三方接口等返回对象可能为空，建议对该对象操作之前做空判断。</p>
+</blockquote>
+<hr>
+<h2 id="8-取Session中-的值之前做空判断"><a href="#8-取Session中-的值之前做空判断" class="headerlink" title="8. 取Session中 的值之前做空判断"></a>8. 取Session中 的值之前做空判断</h2><blockquote>
+<p> 取Session的值之前对Session做空判断，对获取的Session值操作之前对Session值做空判断、避免NPE</p>
+</blockquote>
+<hr>
+<h2 id="9-对集合的操作之前做空判断"><a href="#9-对集合的操作之前做空判断" class="headerlink" title="9. 对集合的操作之前做空判断"></a>9. 对集合的操作之前做空判断</h2><blockquote>
+<p> 取集合中的值之前对集合做空判断，对获取的集合值操作之前对集合值做空判断、避免NPE</p>
+</blockquote>
+<hr>
+]]></content>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>通用Builder</title>
     <url>/2020/06/15/%E9%80%9A%E7%94%A8Builder/</url>
     <content><![CDATA[<blockquote>
@@ -753,27 +787,6 @@
         <tag>Java</tag>
         <tag>工具类</tag>
         <tag>设计模式</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>解析XML</title>
-    <url>/2020/06/16/%E8%A7%A3%E6%9E%90XML/</url>
-    <content><![CDATA[<h2 id="1-使用DOM解析XML"><a href="#1-使用DOM解析XML" class="headerlink" title="1. 使用DOM解析XML"></a>1. 使用DOM解析XML</h2><p>官方API : <a href="https://docs.oracle.com/javase/8/docs/api/" target="_blank" rel="noopener">Java 8 API</a></p>
-<p><strong>xml文档</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot; ?&gt;</span><br><span class="line">&lt;class&gt;</span><br><span class="line">    &lt;student&gt;</span><br><span class="line">        &lt;name nameAttr&#x3D;&quot;sungm&quot;&gt;sungm&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age ageAttr&#x3D;&quot;25&quot;&gt;25&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex sexAtt&#x3D;&quot;Man&quot;&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;class classAttr&#x3D;&quot;ClassOne&quot;&gt;Class One&lt;&#x2F;class&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">    &lt;student&gt;</span><br><span class="line">        &lt;name nameAttr&#x3D;&quot;sunhw&quot;&gt;sunhw&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age ageAttr&#x3D;&quot;1&quot;&gt;1&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex sexAtt&#x3D;&quot;Man&quot;&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;class classAttr&#x3D;&quot;ClassTwo&quot;&gt;Class Two&lt;&#x2F;class&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">&lt;&#x2F;class&gt;</span><br></pre></td></tr></table></figure>
-
-<p><strong>java代码</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import org.w3c.dom.*;</span><br><span class="line"></span><br><span class="line">import javax.xml.parsers.DocumentBuilder;</span><br><span class="line">import javax.xml.parsers.DocumentBuilderFactory;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2020-06-16 16:59</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class Main &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        &#x2F;&#x2F;获取一个xml解析器的文档构建者工厂实例（设计模式：工厂模式）</span><br><span class="line">        DocumentBuilderFactory factory &#x3D; DocumentBuilderFactory.newInstance();</span><br><span class="line">        &#x2F;&#x2F;获取一个xml解析器的文档构建者实例（设计模式：Builder模式）</span><br><span class="line">        DocumentBuilder builder &#x3D; factory.newDocumentBuilder();</span><br><span class="line">        &#x2F;&#x2F;使用xml解析器builder解析文档，获取解析后的Document对象</span><br><span class="line">        Document document &#x3D; builder.parse(&quot;src&#x2F;main&#x2F;resources&#x2F;student.xml&quot;);</span><br><span class="line">        &#x2F;&#x2F;获取根元素</span><br><span class="line">        Element rootElement &#x3D; document.getDocumentElement();</span><br><span class="line">        &#x2F;&#x2F;获取文档中student元素列表（也可以直接通过document.getElementsByTagName(&quot;student&quot;)获取所有的student元素）</span><br><span class="line">        NodeList studentNodes &#x3D; rootElement.getElementsByTagName(&quot;student&quot;);</span><br><span class="line">        for (int index &#x3D; 0, size &#x3D; studentNodes.getLength(); index &lt; size; index++) &#123;</span><br><span class="line">            Element element &#x3D; (Element) studentNodes.item(index);</span><br><span class="line">            &#x2F;&#x2F;元素（备注：通过getElementsByTagName()方法获取指定的元素）</span><br><span class="line">            Element nameElement &#x3D; (Element) element.getElementsByTagName(&quot;name&quot;).item(0);</span><br><span class="line">            Element ageElement &#x3D; (Element) element.getElementsByTagName(&quot;age&quot;).item(0);</span><br><span class="line">            Element sexElement &#x3D; (Element) element.getElementsByTagName(&quot;sex&quot;).item(0);</span><br><span class="line">            Element classElement &#x3D; (Element) element.getElementsByTagName(&quot;class&quot;).item(0);</span><br><span class="line">            &#x2F;&#x2F;文本（备注：通过getNodeName()方法获取元素名称，通过getTextContent()方法获取文本内容）</span><br><span class="line">            System.out.println(nameElement.getNodeName()  + &quot; : &quot; + nameElement.getTextContent());</span><br><span class="line">            System.out.println(ageElement.getNodeName()   + &quot; : &quot; + ageElement.getTextContent());</span><br><span class="line">            System.out.println(sexElement.getNodeName()   + &quot; : &quot; + sexElement.getTextContent());</span><br><span class="line">            System.out.println(classElement.getNodeName() + &quot; : &quot; + classElement.getTextContent());</span><br><span class="line">            &#x2F;&#x2F;属性（备注：通过getAttributeNode()方法属性节点，通过getAttribute()方法获取属性内容）</span><br><span class="line">            System.out.println(nameElement.getNodeName()  + &quot; : &quot; + nameElement.getAttribute(&quot;nameAttr&quot;));</span><br><span class="line">            System.out.println(ageElement.getNodeName()   + &quot; : &quot; + ageElement.getAttribute(&quot;ageAttr&quot;));</span><br><span class="line">            System.out.println(sexElement.getNodeName()   + &quot; : &quot; + sexElement.getAttribute(&quot;sexAtt&quot;));</span><br><span class="line">            System.out.println(classElement.getNodeName() + &quot; : &quot; + classElement.getAttribute(&quot;classAttr&quot;));</span><br><span class="line">            System.out.println();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>输出结果</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">name : sungm</span><br><span class="line">age : 25</span><br><span class="line">sex : Man</span><br><span class="line">class : Class One</span><br><span class="line">name : sungm</span><br><span class="line">age : 25</span><br><span class="line">sex : Man</span><br><span class="line">class : ClassOne</span><br><span class="line"></span><br><span class="line">name : sunhw</span><br><span class="line">age : 1</span><br><span class="line">sex : Man</span><br><span class="line">class : Class Two</span><br><span class="line">name : sunhw</span><br><span class="line">age : 1</span><br><span class="line">sex : Man</span><br><span class="line">class : ClassTwo</span><br></pre></td></tr></table></figure>
-
-
-
-
-]]></content>
-      <tags>
-        <tag>Java</tag>
-        <tag>XML</tag>
       </tags>
   </entry>
 </search>
