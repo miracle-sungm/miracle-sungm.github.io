@@ -1,6 +1,184 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Effective Java 总结</title>
+    <url>/2020/06/28/Effective-Java-%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<h2 id="1-考虑使用静态工厂方法代替构造方法"><a href="#1-考虑使用静态工厂方法代替构造方法" class="headerlink" title="1. 考虑使用静态工厂方法代替构造方法"></a>1. 考虑使用静态工厂方法代替构造方法</h2><p>例如：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static Boolean valueOf(boolean b) &#123;</span><br><span class="line">    return b ? Boolean.TRUE : Boolean.FALSE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-1-静态工厂方法代替构造方法的优缺点"><a href="#1-1-静态工厂方法代替构造方法的优缺点" class="headerlink" title="1.1 静态工厂方法代替构造方法的优缺点"></a>1.1 静态工厂方法代替构造方法的优缺点</h4><blockquote>
+<p>优点：</p>
+<ul>
+<li>静态工厂方法不需要每次都创建一个对象，而构造方法每次都会创建一个对象。</li>
+<li>静态工厂方法返回值可以是任何对象，而构造方法返回指定的对象。</li>
+<li>静态工厂方法返回值可以根据入参的不同而不同。</li>
+<li>静态工厂方法有自定义的方法名，构造方法方法名与类名相同。</li>
+</ul>
+</blockquote>
+<blockquote>
+<p>缺点:</p>
+<ul>
+<li>限制：没有公共或受保护的构造方法不能被子类化。（假如定义一个Person类，且该类没有公共或受保护的构造函数，如果我们想定义一个类来继承Person类，将发生编译错误）</li>
+<li>静态方法不如构造方法易发现，不仔细阅读源码我们很难找到他们。</li>
+</ul>
+</blockquote>
+<h4 id="1-2-总结"><a href="#1-2-总结" class="headerlink" title="1.2 总结"></a>1.2 总结</h4><blockquote>
+<ul>
+<li>定义静态工厂方法代替构造方法时，建议将构造方法设置成私有的（private）或受保护的（protected）。</li>
+<li>如果定义一个静态工厂方法用来代替构造方法，且静态构造方法每次被调用都返回一个新对象，那么使用静态工厂方法代替构造方法将意义不大。</li>
+<li>根据需要，重载静态工厂方法。</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="2-当构造方法参数过多时，使用Builder模式"><a href="#2-当构造方法参数过多时，使用Builder模式" class="headerlink" title="2 当构造方法参数过多时，使用Builder模式"></a>2 当构造方法参数过多时，使用Builder模式</h2><p>说明：</p>
+<blockquote>
+<p>使用Builder模式可以使用简化代码，提高代码可读性。（这里对Builder模式不做过多的解释，若您想了解Builder模式，请百度。）</p>
+</blockquote>
+<h4 id="2-1-方式一：使用Lombok插件"><a href="#2-1-方式一：使用Lombok插件" class="headerlink" title="2.1 方式一：使用Lombok插件"></a>2.1 方式一：使用Lombok插件</h4><blockquote>
+<p> 安装Lombok插件，引入Lombok依赖之后使用Lombok的@Builder注解。</p>
+</blockquote>
+<p>示例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 定义响应值</span><br><span class="line"> *</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @date : 2020-06-23 17:28</span><br><span class="line"> *&#x2F;</span><br><span class="line">@Data</span><br><span class="line">@Builder</span><br><span class="line">@NoArgsConstructor</span><br><span class="line">@AllArgsConstructor</span><br><span class="line">@EqualsAndHashCode</span><br><span class="line">public class ResponseDTO implements Serializable &#123;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;序列化</span><br><span class="line">    private static final long serialVersionUID &#x3D; 1L;</span><br><span class="line"></span><br><span class="line">    private String resultCode;</span><br><span class="line">    private String resultMessage;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * 主函数</span><br><span class="line"> * </span><br><span class="line"> * @param args      入参</span><br><span class="line"> *&#x2F;</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    ResponseDTO response &#x3D; ResponseDTO.builder()</span><br><span class="line">        .resultCode(ResultEnum.ONE.getResultCode())</span><br><span class="line">        .resultMessage(ResultEnum.ONE.getResultMessage())</span><br><span class="line">        .build();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>备注：</p>
+<blockquote>
+<p>使用Lombok插件还是蛮香的，我们可以通过使用Lombok定义的注解，来减少了我们编写的代码量、提高了代码可读性，但是Lombok插件会增加我们程序编译的时间，且通常情况下我们也可以通过使用IDEA的快捷键来自动生成代码。</p>
+</blockquote>
+<h4 id="2-2-方式二：使用通用Builder工具类"><a href="#2-2-方式二：使用通用Builder工具类" class="headerlink" title="2.2 方式二：使用通用Builder工具类"></a>2.2 方式二：使用通用Builder工具类</h4><p>Builder工具类博客地址：</p>
+<blockquote>
+<p><a href="https://miracle-sungm.github.io/2020/06/15/%E9%80%9A%E7%94%A8Builder/" target="_blank" rel="noopener">https://miracle-sungm.github.io/2020/06/15/%E9%80%9A%E7%94%A8Builder/</a></p>
+</blockquote>
+<h4 id="2-3-总结"><a href="#2-3-总结" class="headerlink" title="2.3 总结"></a>2.3 总结</h4><blockquote>
+<ul>
+<li>对于方式一和方式二的选择，仁者见仁智者见智，你更喜欢哪种方式呢？或者你还有其他更好的方式？</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="3-使用私有构造方法或枚举实现单例模式"><a href="#3-使用私有构造方法或枚举实现单例模式" class="headerlink" title="3. 使用私有构造方法或枚举实现单例模式"></a>3. 使用私有构造方法或枚举实现单例模式</h2><p>说明：</p>
+<blockquote>
+<p>单例是一个仅实例化一次的类，通常情况下表示无状态对象。</p>
+</blockquote>
+<h4 id="3-1-使用私有构造方法实现单例模式"><a href="#3-1-使用私有构造方法实现单例模式" class="headerlink" title="3.1 使用私有构造方法实现单例模式"></a>3.1 使用私有构造方法实现单例模式</h4><p><em>两种常见的单例模式实现方式</em></p>
+<p>方式一：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 单例模式：声明公共属性的方式</span><br><span class="line"> *</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @date : 2020-06-29 11:49</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class SingletonOne &#123;</span><br><span class="line"></span><br><span class="line">    public static final SingletonOne INSTANCE &#x3D; new SingletonOne();</span><br><span class="line"></span><br><span class="line">    private SingletonOne() &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>方式二：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 单例模式：声明静态工厂方法的方式</span><br><span class="line"> *</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @date : 2020-06-29 11:51</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class SingletonTwo &#123;</span><br><span class="line"></span><br><span class="line">    private static final SingletonTwo INSTANCE &#x3D; new SingletonTwo();</span><br><span class="line"></span><br><span class="line">    private SingletonTwo() &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static SingletonTwo getInstance() &#123;</span><br><span class="line">        return INSTANCE;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明：</p>
+<blockquote>
+<ul>
+<li>方式一和方式二的构造函数都是私有构造函数，且定义了一个 static final 类型的INSTANCE变量，并使其实例化，确保了该类只能被实例化一次，保证了全局的唯一性。</li>
+<li>不论是方式一还是方式二，特殊情况下可以通过使用反射的方式调用构造方法创建对象，如果需要防止此操作的产生，需修改构造方法，使其请求创建第二个对象时抛出异常。</li>
+</ul>
+</blockquote>
+<p>建议：</p>
+<blockquote>
+<p>建议通过静态工厂方法（方式二）来创建单例。原因是通过静态工厂的方式更加灵活，并且可以根据需要设计泛型单例工厂，并且还能使用函数式接口Supplier，例如Singleton::getInstance。</p>
+</blockquote>
+<h4 id="3-2-通过使用枚举设计单例模式"><a href="#3-2-通过使用枚举设计单例模式" class="headerlink" title="3.2 通过使用枚举设计单例模式"></a>3.2 通过使用枚举设计单例模式</h4><p>例如：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public enum Singleton &#123;</span><br><span class="line">    INSTANCE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明：</p>
+<blockquote>
+<p>这种方式类似于公共属性方法，但更简洁，提供了免费的序列化机制，并提供了针对多个实例化的坚固保证，即使是在复杂的序列化或反射攻击的情况下。这种方法可能感觉有点不自然，但是单一元素枚举类通常是实现单例的最佳方式。</p>
+</blockquote>
+<p>注意：</p>
+<blockquote>
+<p>如果单例必须继承 Enum 以外的父类 (尽管可以声明一个 Enum 来实现接口)，那么就不能使用这种方法。</p>
+</blockquote>
+<hr>
+<h2 id="4-使用私有构造方法执行非实例化"><a href="#4-使用私有构造方法执行非实例化" class="headerlink" title="4. 使用私有构造方法执行非实例化"></a>4. 使用私有构造方法执行非实例化</h2><p>场景说明：</p>
+<blockquote>
+<p>当我们希望设计一个类只包含静态方法和静态属性时，为了避免这样的类被实例化，可以通过声明私有的构造方法达到类不被实例化的目的。</p>
+</blockquote>
+<p>副作用：</p>
+<blockquote>
+<p>当我们想设计一个子类来继承私有化构造函数的父类时，将报编译异常。因为所有构造方法都必须显示或者隐式的调用父类的构造方法，若父类的构造函数被私有化，则子类没有访问父类构造函数的权限，因此报错。</p>
+</blockquote>
+<hr>
+<h2 id="5-比起硬资源连接，优先使用依赖注入"><a href="#5-比起硬资源连接，优先使用依赖注入" class="headerlink" title="5. 比起硬资源连接，优先使用依赖注入"></a>5. 比起硬资源连接，优先使用依赖注入</h2><p>硬资源连接:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Dictionary &#123;</span><br><span class="line">    &#x2F;&#x2F;定义字典</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">public class SpellChecker &#123;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;硬资源连接：想当然的认为一本字典就够了，无法承载多字典的场景</span><br><span class="line">    private static final Dictionary DICTIONARY &#x3D; new ChineseDictionary();</span><br><span class="line"></span><br><span class="line">    private SpellChecker() &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public boolean check(String word) &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>依赖注入：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 定义字典接口 </span><br><span class="line"> *</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @date : 2020-06-29 20:53</span><br><span class="line"> *&#x2F;</span><br><span class="line">public interface Dictionary &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * 定义中文字典</span><br><span class="line"> * </span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @date : 2020-06-29 20:53</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class ChineseDictionary implements Dictionary&#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * 定义英文字典</span><br><span class="line"> * </span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @date : 2020-06-29 20:56</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class EnglishDictionary implements Dictionary &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * 拼写检查器</span><br><span class="line"> *</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @date : 2020-06-29 20:56</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class SpellChecker &#123;</span><br><span class="line"></span><br><span class="line">    private final Dictionary DICTIONARY;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;使用依赖注入的方式，创建对象时将字典注入到对象属性中</span><br><span class="line">    public SpellChecker(Dictionary dictionary) &#123;</span><br><span class="line">        this.DICTIONARY &#x3D; dictionary;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public boolean check(String word) &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明：</p>
+<blockquote>
+<p>当一个类依赖于一个或多个底层资源时，该类的实现方式不要使用单例或静态的实用类，这些资源的行为会影响类的行为，并且不让类直接创建这些资源。相反，将资源或工厂传递给构造方法（或静态工厂或 builder 模式）。这种称为依赖注入的实践将极大地增强类的灵活性、可重用性和可测试性。</p>
+</blockquote>
+<hr>
+<h2 id="6-避免创建不必要的对象"><a href="#6-避免创建不必要的对象" class="headerlink" title="6. 避免创建不必要的对象"></a>6. 避免创建不必要的对象</h2><p>说明：</p>
+<blockquote>
+<p>通常情况下，重用对象比创建一个相同功能的对象的做法更恰当，重用可以使程序更快的执行且耗用更少的内存。如果一个对象是不可变的，他总是可以被重用。</p>
+</blockquote>
+<p>举例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;请不要这样写代码</span><br><span class="line">String name &#x3D; new String(&quot;sungm&quot;);</span><br></pre></td></tr></table></figure>
+
+<p>这样写代码产生的结果：</p>
+<blockquote>
+<p>该语句每次执行时都会创建一个新的String实例，并且这些对象都不是必须的。String的构造方法String(String original)的入参original本身就是一个String实例，它与构造方法创建的对象的功能相同。</p>
+</blockquote>
+<p>优化后：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">String name &#x3D; &quot;sungm&quot;;</span><br></pre></td></tr></table></figure>
+
+<p>总结：</p>
+<ul>
+<li>通过使用静态工厂方法，可以避免创建不必要的对象。<blockquote>
+<p>例如：使用静态工厂方法 Boolean.parseBoolean(String) 比构造方法 Boolean(String) 好的多，构造方法每次调用都会创建一个新的对象，而工厂方法永远不需要这样做，在实践中也不需要。</p>
+</blockquote>
+</li>
+<li>一些对象的创建比其他对象的创建的代价要昂贵的多，如果要使用这样一个昂贵的对象，建议将其缓存起来以便重复使用。<blockquote>
+<p>例如创建创建正则表达式的 Pattern 对象，因为它需要将正则表达式编译成有限状态机（finite state machine）。</p>
+</blockquote>
+</li>
+<li>当一些对象是不可变（final定义的对象）的时侯，很明显它可以被重用，但是在其他情况下，没有很明显的可以被重用，这种情况下需谨慎考虑是否重用对象。</li>
+<li>自动装箱的情况下是不需要创建不必要的对象的，自动装箱允许程序员混用基本数据类型和装箱类型，根据需要自动装箱和拆箱。<blockquote>
+<p>建议：优先使用基本数据类型而不是装箱的基本类型，也要注意无意识的自动装箱。</p>
+</blockquote>
+</li>
+</ul>
+<hr>
+<h2 id="7-消除过期对象的引用"><a href="#7-消除过期对象的引用" class="headerlink" title="7. 消除过期对象的引用"></a>7. 消除过期对象的引用</h2><p>举例：</p>
+<blockquote>
+<p>《Effective Java》原书中该章节举了一个栈（Stock）弹出元素（pop）没有及时清空弹出的元素引用，当Stock扩容后收缩，容易发生内存溢出异常。</p>
+</blockquote>
+<p>好处：</p>
+<blockquote>
+<ul>
+<li>及时消除过期对象的引用，减少内存消耗，增加程序执行速度，同时可以避免因内存溢出导致程序异常。</li>
+<li>消除过期对象的引用有一个好处是程序错误的引用过期的对象之后能及时抛出NPE(空指针异常)，而不是让程序在引用过期的对象之后继续悄悄地做错误的事请。</li>
+</ul>
+</blockquote>
+<p>不建议：</p>
+<blockquote>
+<ul>
+<li>不建议程序结束后立即清空所有对象的引用，因为这是Java垃圾回收器的工作。清空对象引用应该是例外而不是规范，程序结束后立即清空所有对象的引用是不必要的，也是不可取的。</li>
+</ul>
+</blockquote>
+<p>常见的内存溢出：</p>
+<blockquote>
+<ul>
+<li>当一个类自己管理内存时，应警惕内存泄漏的问题</li>
+<li>缓存：防止业务数据缓存之后没有及时清空</li>
+<li>监听器和回调，防止程序执行时间过长导致内存溢出。</li>
+</ul>
+</blockquote>
+<p>总结：</p>
+<blockquote>
+<ul>
+<li>内存溢出问题通常情况下不会变现出明显的故障，但一些没必要的内存消耗可能一直存在于系统中，建议多留意代码细节和实现方式，减少不必要的内存消耗。</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="8-避免使用-Finalizer-和-Cleaner-机制"><a href="#8-避免使用-Finalizer-和-Cleaner-机制" class="headerlink" title="8. 避免使用 Finalizer 和 Cleaner 机制"></a>8. 避免使用 Finalizer 和 Cleaner 机制</h2><p>//TODO 待完成</p>
+<hr>
+]]></content>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Check工具类</title>
     <url>/2020/06/15/Check%E5%B7%A5%E5%85%B7%E7%B1%BB/</url>
     <content><![CDATA[<blockquote>
@@ -29,121 +207,6 @@
       <tags>
         <tag>Java</tag>
         <tag>工具类</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Java NIO 概述</title>
-    <url>/2020/06/13/Java-NIO-%E6%A6%82%E8%BF%B0/</url>
-    <content><![CDATA[<h2 id="1-什么是NIO？"><a href="#1-什么是NIO？" class="headerlink" title="1.  什么是NIO？"></a>1.  什么是NIO？</h2><blockquote>
-<p>java.nio 全称 java non-blocking IO，是指 JDK1.4 及以上版本里提供的新 API（New IO） ，为所有的原始类型（ boolean 类型除外）提供<a href="https://baike.baidu.com/item/%E7%BC%93%E5%AD%98/100710" target="_blank" rel="noopener">缓存</a>支持的数据容器，使用它可以提供非阻塞式的高伸缩性网络。【百度百科】 </p>
-</blockquote>
-<a id="more"></a>
-
-<hr>
-<p>优点：NIO 比 AIO（异步I/O） 更加强大，处理数据更快。它可以大大的提高IO吞吐量，常用在高性能服务器上面。</p>
-<h2 id="2-NIO原理"><a href="#2-NIO原理" class="headerlink" title="2. NIO原理"></a>2. NIO原理</h2><blockquote>
-<p>使用较少的线程执行更多的任务。</p>
-</blockquote>
-<blockquote>
-<p>如下图所示，使用较少的线程，通过 Selector 选择器来执行不同 Channel 通道中的任务，执行任务再结合 AIO（异步I/O）就能发挥服务器的最大性能，更大程度上提升服务器的运行效率。</p>
-</blockquote>
-<p><div class="img-item" data-src="https://upload-images.jianshu.io/upload_images/11864885-0a82f84999ea3e77.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-sub-html=".caption"><img src="https://upload-images.jianshu.io/upload_images/11864885-0a82f84999ea3e77.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="原理图"><div class="img-caption d-block text-center"><span class="center-caption text-muted border-bottom">原理图</span></div></div></p>
-<hr>
-<h2 id="3-与常规-I-O-的区别"><a href="#3-与常规-I-O-的区别" class="headerlink" title="3. 与常规 I/O 的区别"></a>3. 与常规 I/O 的区别</h2><blockquote>
-<p>常规 I/O （如 InputStream 和 OutputStream）存在很大的缺点，就是他们是阻塞的，而 NIO 解决的就是常规 I/O 执行效率低的问题，即采用非阻塞高性能运行的方式来避免以前以前“笨拙” I/O 带来的低效率问题。NIO在大文件操作上相比常规 I/O 更加优秀，对常规 I/O 使用的 byte[] 和 char[] 进行封装，采用 ByteBuffer 类来操作数据，再结合针对 File 或者 Socket 技术的 Channel，采用同步非阻塞技术实现高性能处理。</p>
-</blockquote>
-<hr>
-<h2 id="4-缓冲区介绍"><a href="#4-缓冲区介绍" class="headerlink" title="4. 缓冲区介绍"></a>4. 缓冲区介绍</h2><blockquote>
-<p>在使用传统的I/O流API时，如 InputStream 和 OutputStream ，以及Reader和Writer联合使用时，常常把字节流中的数据放入byte[]字节数组中，或把字符流中的数据放入char[]字符数组中，也可以从 byte[] 或 char[] 数组中获取数据来实现功能上的需求，但由于在 Java 语言中对 array 数组自身进行操作的 API 非常少，常用的操作仅仅是 length 属性和下标[x]了，在 JDK 中也没有提供更加方便操作数组中数据的 API，如果对数组中的数据进行高级处理，需要程序员自己写代码进行实现，处理的方式是比较原始的，这个问题可以使用 NIO 技术中的缓冲区Buffer类来解决，它提供了很多工具方法，大大提高了程序开发的效率。</p>
-</blockquote>
-<hr>
-<p>推荐书籍：</p>
-<ul>
-<li>[高洪岩]《Java多线程编程核心技术》</li>
-<li>[高洪岩]《Java并发编程：核心方法与框架》</li>
-<li>[高洪岩]《NIO与Socket编程技术指南》</li>
-</ul>
-]]></content>
-      <tags>
-        <tag>Java</tag>
-        <tag>Java NIO</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>XML基础</title>
-    <url>/2020/06/16/XML%E5%9F%BA%E7%A1%80/</url>
-    <content><![CDATA[<h2 id="1-XML概述"><a href="#1-XML概述" class="headerlink" title="1. XML概述"></a>1. XML概述</h2><p>XML : 可拓展标记语言（Extensible Markup Language, XML）。 是一个非常有用的、用来描述结构化信息的技术。</p>
-<h3 id="1-1-XML文档头"><a href="#1-1-XML文档头" class="headerlink" title="1.1 XML文档头"></a>1.1 XML文档头</h3><p>XML 文档应当以一个文档头开始，严格来说，文档头是可选的，但是强烈建议使用文档头。文档类型定义的是确保文档正确的一个重要机制。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br></pre></td></tr></table></figure>
-
-<h3 id="1-2-XML元素"><a href="#1-2-XML元素" class="headerlink" title="1.2 XML元素"></a>1.2 XML元素</h3><p>XML 文档的正文包含根元素，根元素包含其他元素。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;config&gt;</span><br><span class="line">    &lt;title&gt;miracle&#39;s blog&lt;&#x2F;title&gt;</span><br><span class="line">    &lt;content&gt;XML基础与解析&lt;&#x2F;content&gt;</span><br><span class="line">&lt;&#x2F;config&gt;</span><br></pre></td></tr></table></figure>
-<p>注意：</p>
-<blockquote>
-<p>元素可以有子元素、文本或两者兼有。在设计XML文档时，对元素的设计的最好的方式是：要么全部使用元素，要么全部使用文本，这样做的目的是方便解析。</p>
-</blockquote>
-<p>我们应该避免下面这种设计:</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;!-- 不推荐：元素config既包含文本、又包含元素 --&gt;</span><br><span class="line">&lt;config&gt;</span><br><span class="line">    miracle&#39;s blog</span><br><span class="line">    &lt;content&gt;XML基础与解析&lt;&#x2F;content&gt;</span><br><span class="line">&lt;&#x2F;config&gt;</span><br></pre></td></tr></table></figure>
-
-<h3 id="1-3-XML属性"><a href="#1-3-XML属性" class="headerlink" title="1.3 XML属性"></a>1.3 XML属性</h3><p>XML 元素可以包含属性，例如：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;config version&#x3D;&quot;1.0&quot;&gt;&lt;&#x2F;config&gt;</span><br></pre></td></tr></table></figure>
-
-<p>问题：什么时候使用属性，什么时候使用元素？</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">文档一：</span><br><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;config version&#x3D;&quot;1.0&quot;&gt;&lt;&#x2F;config&gt;</span><br><span class="line"></span><br><span class="line">文档二：</span><br><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;config&gt;</span><br><span class="line">    &lt;version&gt;1.0&lt;&#x2F;version&gt;</span><br><span class="line">&lt;&#x2F;config&gt;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>从上面示例来看，文档一似乎比文档二要更简单一些。然而，属性的灵活性要比元素差很多，通常情况下属性只应该用来作为值的解释，而不是用来作为值。</p>
-</blockquote>
-<p>结论：</p>
-<blockquote>
-<p>优先使用元素，通常情况下属性只应该用来作为值的解释，而不是用来作为值。</p>
-</blockquote>
-<p>注意：</p>
-<blockquote>
-<p>在HTML中，所有的属性都不会展示在HTML中。</p>
-</blockquote>
-<hr>
-<h2 id="2-XML与属性文件（property-file）的区别"><a href="#2-XML与属性文件（property-file）的区别" class="headerlink" title="2. XML与属性文件（property file）的区别"></a>2. XML与属性文件（property file）的区别</h2><p>属性文件包含了各种键值对，例如：</p>
-<blockquote>
-<p>name=sungm</p>
-</blockquote>
-<p>区别：</p>
-<blockquote>
-<ol>
-<li>属性文件结构更加简洁，在要描述的信息更加复杂的场景下，属性文件不能更好的处理它，XML文件可以处理更加复杂的结构化信息。</li>
-<li>属性文件采用的是单一的平面结构，XML文件采用的是层次结构，也可以说是树型结构，更加清晰。</li>
-<li>属性文件中key是不能重复的，XML文件可以存在重复的元素。</li>
-</ol>
-</blockquote>
-<p>结论：</p>
-<blockquote>
-<p>在处理不复杂的结构化信息时优先考虑使用属性文件，在处理复杂的结构化信息时考虑使用XML文件</p>
-</blockquote>
-<hr>
-<h2 id="3-XML与HTML的区别"><a href="#3-XML与HTML的区别" class="headerlink" title="3. XML与HTML的区别"></a>3. XML与HTML的区别</h2><p>HTML : 超文本标记语言（Hyper Text Markup Language）</p>
-<p>区别：</p>
-<blockquote>
-<ol>
-<li>HTML对大小写不敏感；XML对大小写敏感</li>
-<li>在HTML中，如果从上下文中可以分清哪里是段落或者列表项的结尾，那么结束标签可以省略；XML不可省略结束标签</li>
-<li>在XML中，只有单个标签而没有对应的结束标签的元素必须以 / 结尾。</li>
-<li>在XML中，属性值必须用引号括起来；在HTML中，引号可有可无</li>
-<li>在HTML中，属性可以没有值；在XML中，属性必须都有属性值</li>
-</ol>
-</blockquote>
-<h2 id="4-良好的XML文档格式"><a href="#4-良好的XML文档格式" class="headerlink" title="4. 良好的XML文档格式"></a>4. 良好的XML文档格式</h2><blockquote>
-<ul>
-<li>XML文档必须有根元素，且只能有1个根元素</li>
-<li>XML文档必须有关闭标签</li>
-<li>XML文档对大小写敏感</li>
-<li>XML对大小写敏感</li>
-<li>XML元素必须被正确的嵌套</li>
-<li>XML属性必须加引号</li>
-</ul>
-</blockquote>
-]]></content>
-      <tags>
-        <tag>Java</tag>
-        <tag>XML</tag>
       </tags>
   </entry>
   <entry>
@@ -265,6 +328,137 @@
       <tags>
         <tag>Java</tag>
         <tag>函数式编程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>做有意义的命名</title>
+    <url>/2020/06/13/%E5%81%9A%E6%9C%89%E6%84%8F%E4%B9%89%E7%9A%84%E5%91%BD%E5%90%8D/</url>
+    <content><![CDATA[<blockquote>
+<p>软件中随处可见命名。我们给变量、函数、参数、类和封包命名。我们给源代码及源码所在的目录命名。我们给 jar 文件、 war 文件 和 ear 文件命名。有很多命名要做、不妨做好它。下面列出几条简单规则。</p>
+</blockquote>
+<a id="more"></a>
+
+<h2 id="1-名副其实"><a href="#1-名副其实" class="headerlink" title="1. 名副其实"></a>1. 名副其实</h2><blockquote>
+<p>变量、函数或类的名称应该已经答复了所有的大问题。它该告诉你，它为什么会存在，它做了什么事，应该怎么用。如果名称需要注释来补充，那就不算是名副其实。</p>
+</blockquote>
+<hr>
+<h2 id="2-避免误导"><a href="#2-避免误导" class="headerlink" title="2. 避免误导"></a>2. 避免误导</h2><blockquote>
+<ol>
+<li><strong>避免留下掩藏代码本意的错误线索。</strong><br>例如：使用某些专有名词作为变量名，使用缩写。</li>
+<li><strong>避免使用与本意相悖的词</strong><br>例如：<br>String[] accountList = new String[10];  accountList 实质是一个数组对象，命名后缀为<br>List产生误导作用。</li>
+<li><strong>避免使用外形相似的命名</strong><br>例如：两个变量</li>
+<li><strong>避免使用小写字母 l 与 大写字母 O 作为变量名，跟数组1 和数字 0 难以区分。</strong></li>
+</ol>
+</blockquote>
+<hr>
+<h2 id="3-做有意义的区分"><a href="#3-做有意义的区分" class="headerlink" title="3. 做有意义的区分"></a>3. 做有意义的区分</h2><blockquote>
+<p>如果只是为了满足编译器或解释器的需要而写代码，肯定会制造麻烦。</p>
+</blockquote>
+<blockquote>
+<p>#####错误示例：<br><strong>1. 添加数字系列，这样的名称纯属误导。</strong></p>
+<ul>
+<li>例如：<br>定义两个学生对象<br>Student student1 = new Student();<br>Student student2 = new Student();</li>
+</ul>
+<p><strong>2. 少使用废话，废话都是冗余。要区分名称，要以读者能鉴别之处来区分。</strong></p>
+<ul>
+<li><p>例如：假设已有一个 Product 类，还有ProductInfo 类 和 ProductData 类，虽然名称不同，意思却无差别。 Info 和 Data 就i想 a、an、the 一样，都是意义含混的废话。</p>
+</li>
+<li><p>例如：如果你需要获取账户信息，你该调用那个方法呢 ？<br>getAccount();<br>getAccounts();<br>getAccountInfo();</p>
+</li>
+<li><p>例如：<br>moneyAmount 和 money 没区别，<br>customerInfo 与 customer 没区别，<br>accountData 和 account 没区别，<br>theMessage 和 message 没区别 。</p>
+</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="4-使用读的出来的名称"><a href="#4-使用读的出来的名称" class="headerlink" title="4. 使用读的出来的名称"></a>4. 使用读的出来的名称</h2><blockquote>
+<p>#####错误示例：<br><strong>1.  使用汉语拼音，只会让别人觉得你写的代码很 low.</strong></p>
+<p><strong>2. 使用罕见的英语词汇</strong></p>
+</blockquote>
+<hr>
+<h2 id="5-使用可搜索的名称"><a href="#5-使用可搜索的名称" class="headerlink" title="5. 使用可搜索的名称"></a>5. 使用可搜索的名称</h2><blockquote>
+<p>#####建议:<br><strong>1. 使用长名称，长名称胜于短名称。</strong></p>
+<ul>
+<li>例如： WORK_DAYS_PER_WEEK 比数字 5 好找得多。</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="6-避免使用编码"><a href="#6-避免使用编码" class="headerlink" title="6. 避免使用编码"></a>6. 避免使用编码</h2><blockquote>
+<p>编码已经太多，不需要自找麻烦。</p>
+</blockquote>
+<hr>
+<h2 id="7-避免使用前缀"><a href="#7-避免使用前缀" class="headerlink" title="7. 避免使用前缀"></a>7. 避免使用前缀</h2><blockquote>
+<p>不必使用 m_ 前缀来表名成员变量，很多时候阅读代码的人不会去看前缀，直接看后面有意义的名称，前缀反而成了废代码。</p>
+</blockquote>
+<hr>
+<h2 id="8-接口和实现"><a href="#8-接口和实现" class="headerlink" title="8. 接口和实现"></a>8. 接口和实现</h2><p>略</p>
+<hr>
+<h2 id="9-类名"><a href="#9-类名" class="headerlink" title="9. 类名"></a>9. 类名</h2><blockquote>
+<p>类名和对象名应该是名词或者名词短语，不应该是动词。</p>
+<ul>
+<li>正例：Customer</li>
+<li>反例：CustomerInfo、CustomerData、 Data .</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="10-方法名"><a href="#10-方法名" class="headerlink" title="10. 方法名"></a>10. 方法名</h2><blockquote>
+<p>方法名应该是动词或者动词短语，不应该是名词。</p>
+<ul>
+<li>例如：getName(); setName() 等。</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="11-避免思维映射"><a href="#11-避免思维映射" class="headerlink" title="11. 避免思维映射"></a>11. 避免思维映射</h2><blockquote>
+<ul>
+<li>例如：变量 i、j 通常用于 for 循环中，传统惯用这种单字母名词作为循环计数器，并不是一种好的选择。</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="12-避免使用双关语"><a href="#12-避免使用双关语" class="headerlink" title="12. 避免使用双关语"></a>12. 避免使用双关语</h2><blockquote>
+<ul>
+<li>例如：add方法用来添加一个对象，返回结果应该是布尔类型（添加成功或者失败） ，如果你需要添加一个对象并返回添加后产生的新值，建议使用append方法和insert方法。</li>
+</ul>
+</blockquote>
+]]></content>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Java NIO 概述</title>
+    <url>/2020/06/13/Java-NIO-%E6%A6%82%E8%BF%B0/</url>
+    <content><![CDATA[<h2 id="1-什么是NIO？"><a href="#1-什么是NIO？" class="headerlink" title="1.  什么是NIO？"></a>1.  什么是NIO？</h2><blockquote>
+<p>java.nio 全称 java non-blocking IO，是指 JDK1.4 及以上版本里提供的新 API（New IO） ，为所有的原始类型（ boolean 类型除外）提供<a href="https://baike.baidu.com/item/%E7%BC%93%E5%AD%98/100710" target="_blank" rel="noopener">缓存</a>支持的数据容器，使用它可以提供非阻塞式的高伸缩性网络。【百度百科】 </p>
+</blockquote>
+<a id="more"></a>
+
+<hr>
+<p>优点：NIO 比 AIO（异步I/O） 更加强大，处理数据更快。它可以大大的提高IO吞吐量，常用在高性能服务器上面。</p>
+<h2 id="2-NIO原理"><a href="#2-NIO原理" class="headerlink" title="2. NIO原理"></a>2. NIO原理</h2><blockquote>
+<p>使用较少的线程执行更多的任务。</p>
+</blockquote>
+<blockquote>
+<p>如下图所示，使用较少的线程，通过 Selector 选择器来执行不同 Channel 通道中的任务，执行任务再结合 AIO（异步I/O）就能发挥服务器的最大性能，更大程度上提升服务器的运行效率。</p>
+</blockquote>
+<p><div class="img-item" data-src="https://upload-images.jianshu.io/upload_images/11864885-0a82f84999ea3e77.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-sub-html=".caption"><img src="https://upload-images.jianshu.io/upload_images/11864885-0a82f84999ea3e77.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="原理图"><div class="img-caption d-block text-center"><span class="center-caption text-muted border-bottom">原理图</span></div></div></p>
+<hr>
+<h2 id="3-与常规-I-O-的区别"><a href="#3-与常规-I-O-的区别" class="headerlink" title="3. 与常规 I/O 的区别"></a>3. 与常规 I/O 的区别</h2><blockquote>
+<p>常规 I/O （如 InputStream 和 OutputStream）存在很大的缺点，就是他们是阻塞的，而 NIO 解决的就是常规 I/O 执行效率低的问题，即采用非阻塞高性能运行的方式来避免以前以前“笨拙” I/O 带来的低效率问题。NIO在大文件操作上相比常规 I/O 更加优秀，对常规 I/O 使用的 byte[] 和 char[] 进行封装，采用 ByteBuffer 类来操作数据，再结合针对 File 或者 Socket 技术的 Channel，采用同步非阻塞技术实现高性能处理。</p>
+</blockquote>
+<hr>
+<h2 id="4-缓冲区介绍"><a href="#4-缓冲区介绍" class="headerlink" title="4. 缓冲区介绍"></a>4. 缓冲区介绍</h2><blockquote>
+<p>在使用传统的I/O流API时，如 InputStream 和 OutputStream ，以及Reader和Writer联合使用时，常常把字节流中的数据放入byte[]字节数组中，或把字符流中的数据放入char[]字符数组中，也可以从 byte[] 或 char[] 数组中获取数据来实现功能上的需求，但由于在 Java 语言中对 array 数组自身进行操作的 API 非常少，常用的操作仅仅是 length 属性和下标[x]了，在 JDK 中也没有提供更加方便操作数组中数据的 API，如果对数组中的数据进行高级处理，需要程序员自己写代码进行实现，处理的方式是比较原始的，这个问题可以使用 NIO 技术中的缓冲区Buffer类来解决，它提供了很多工具方法，大大提高了程序开发的效率。</p>
+</blockquote>
+<hr>
+<p>推荐书籍：</p>
+<ul>
+<li>[高洪岩]《Java多线程编程核心技术》</li>
+<li>[高洪岩]《Java并发编程：核心方法与框架》</li>
+<li>[高洪岩]《NIO与Socket编程技术指南》</li>
+</ul>
+]]></content>
+      <tags>
+        <tag>Java</tag>
+        <tag>Java NIO</tag>
       </tags>
   </entry>
   <entry>
@@ -412,6 +606,133 @@
       </tags>
   </entry>
   <entry>
+    <title>原始类型特化</title>
+    <url>/2020/06/13/%E5%8E%9F%E5%A7%8B%E7%B1%BB%E5%9E%8B%E7%89%B9%E5%8C%96/</url>
+    <content><![CDATA[<p><strong>引言</strong></p>
+<blockquote>
+<p>上篇我们介绍了三个函数式接口：Predicate<T>、Consumer<T>、Function&lt;T，R&gt; 。还有一些函数式接口是专门为某些类型涉及的。<a href="https://www.jianshu.com/p/4c93e1f7c19b" target="_blank" rel="noopener">https://www.jianshu.com/p/4c93e1f7c19b</a></p>
+</blockquote>
+<a id="more"></a>
+
+<p> <strong>Java 类型</strong></p>
+<blockquote>
+<ul>
+<li>引用类型（如 Byte、Integer、Long、Object、List）</li>
+<li>原始类型（byte、short、int、float、double、long、char、boolean）</li>
+</ul>
+</blockquote>
+<p> <strong>回顾知识点：</strong></p>
+<blockquote>
+<ul>
+<li>Java 类型要么是引用类型，要么是原始类型。</li>
+<li>泛型只能绑定到引用类型上面、这是由泛型内部的实现方式造成的。</li>
+<li>在 Java 中有一个将原始类型转换为对应的引用类型的机制、这个机智就叫做装箱。相反的操作、也就是将引用类型转换成对应的原始类型的机制，这种机智叫做拆箱。Java 还有一个自动装拆箱的机智来帮助我们程序员执行这一任务：装箱和拆箱都是自动完成的。</li>
+</ul>
+</blockquote>
+<p><strong>注意：</strong></p>
+<blockquote>
+<p>虽然 Java 提供了自动装拆箱的机智，但这在性能方面是要付出代价的，装箱的本质是就是把原始类型包裹起来，并保存在堆里。因此、装箱后的值需要更多的内存、并需要额外的内存搜索来获取被包裹的值。因此、为提高程序的执行效率、Java  8 为我们前面所提到的函数式接口提供了一个专门的版本、以便在输入和输出都是原始类型时避免自动装拆箱的操作。</p>
+</blockquote>
+<p><strong>举例</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;IntPredicate 源码</span><br><span class="line"></span><br><span class="line">@FunctionalInterface</span><br><span class="line">public interface IntPredicate &#123;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * Evaluates this predicate on the given argument.</span><br><span class="line">     *</span><br><span class="line">     * @param value the input argument</span><br><span class="line">     * @return &#123;@code true&#125; if the input argument matches the predicate,</span><br><span class="line">     * otherwise &#123;@code false&#125;</span><br><span class="line">     *&#x2F;</span><br><span class="line">    boolean test(int value);</span><br><span class="line">  </span><br><span class="line">    &#x2F;&#x2F; 其他默认方法省略</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>说明</strong></p>
+<blockquote>
+<p> IntPredicate 源码解析：IntPredicate 类的 test方法接收一个原始类型 int类型的入参，其返回值为 boolean，避免了输入和输出都是原始类型时自动装拆箱的操作。 </p>
+</blockquote>
+<p><strong>Java 8中的常用函数式接口</strong></p>
+<p><div class="img-item" data-src="https://upload-images.jianshu.io/upload_images/11864885-b49768e2e438afa1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-sub-html=".caption"><img src="https://upload-images.jianshu.io/upload_images/11864885-b49768e2e438afa1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><div class="img-caption d-block text-center"><span class="center-caption text-muted border-bottom"></span></div></div></p>
+<p><div class="img-item" data-src="https://upload-images.jianshu.io/upload_images/11864885-b03a23c45dc9e0d6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-sub-html=".caption"><img src="https://upload-images.jianshu.io/upload_images/11864885-b03a23c45dc9e0d6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="常用函数式接口"><div class="img-caption d-block text-center"><span class="center-caption text-muted border-bottom">常用函数式接口</span></div></div></p>
+<p><strong>Lambdas及函数式接口的例子</strong><br><div class="img-item" data-src="https://upload-images.jianshu.io/upload_images/11864885-049343497380171b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-sub-html=".caption"><img src="https://upload-images.jianshu.io/upload_images/11864885-049343497380171b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Lambdas及函数式接口的例子"><div class="img-caption d-block text-center"><span class="center-caption text-muted border-bottom">Lambdas及函数式接口的例子</span></div></div></p>
+<hr>
+<p><strong>推荐书籍</strong></p>
+<blockquote>
+<ul>
+<li>《Java 8 in Action》</li>
+</ul>
+</blockquote>
+]]></content>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>XML基础</title>
+    <url>/2020/06/16/XML%E5%9F%BA%E7%A1%80/</url>
+    <content><![CDATA[<h2 id="1-XML概述"><a href="#1-XML概述" class="headerlink" title="1. XML概述"></a>1. XML概述</h2><p>XML : 可拓展标记语言（Extensible Markup Language, XML）。 是一个非常有用的、用来描述结构化信息的技术。</p>
+<h3 id="1-1-XML文档头"><a href="#1-1-XML文档头" class="headerlink" title="1.1 XML文档头"></a>1.1 XML文档头</h3><p>XML 文档应当以一个文档头开始，严格来说，文档头是可选的，但是强烈建议使用文档头。文档类型定义的是确保文档正确的一个重要机制。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-XML元素"><a href="#1-2-XML元素" class="headerlink" title="1.2 XML元素"></a>1.2 XML元素</h3><p>XML 文档的正文包含根元素，根元素包含其他元素。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;config&gt;</span><br><span class="line">    &lt;title&gt;miracle&#39;s blog&lt;&#x2F;title&gt;</span><br><span class="line">    &lt;content&gt;XML基础与解析&lt;&#x2F;content&gt;</span><br><span class="line">&lt;&#x2F;config&gt;</span><br></pre></td></tr></table></figure>
+<p>注意：</p>
+<blockquote>
+<p>元素可以有子元素、文本或两者兼有。在设计XML文档时，对元素的设计的最好的方式是：要么全部使用元素，要么全部使用文本，这样做的目的是方便解析。</p>
+</blockquote>
+<p>我们应该避免下面这种设计:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;!-- 不推荐：元素config既包含文本、又包含元素 --&gt;</span><br><span class="line">&lt;config&gt;</span><br><span class="line">    miracle&#39;s blog</span><br><span class="line">    &lt;content&gt;XML基础与解析&lt;&#x2F;content&gt;</span><br><span class="line">&lt;&#x2F;config&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-3-XML属性"><a href="#1-3-XML属性" class="headerlink" title="1.3 XML属性"></a>1.3 XML属性</h3><p>XML 元素可以包含属性，例如：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;config version&#x3D;&quot;1.0&quot;&gt;&lt;&#x2F;config&gt;</span><br></pre></td></tr></table></figure>
+
+<p>问题：什么时候使用属性，什么时候使用元素？</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">文档一：</span><br><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;config version&#x3D;&quot;1.0&quot;&gt;&lt;&#x2F;config&gt;</span><br><span class="line"></span><br><span class="line">文档二：</span><br><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;config&gt;</span><br><span class="line">    &lt;version&gt;1.0&lt;&#x2F;version&gt;</span><br><span class="line">&lt;&#x2F;config&gt;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>从上面示例来看，文档一似乎比文档二要更简单一些。然而，属性的灵活性要比元素差很多，通常情况下属性只应该用来作为值的解释，而不是用来作为值。</p>
+</blockquote>
+<p>结论：</p>
+<blockquote>
+<p>优先使用元素，通常情况下属性只应该用来作为值的解释，而不是用来作为值。</p>
+</blockquote>
+<p>注意：</p>
+<blockquote>
+<p>在HTML中，所有的属性都不会展示在HTML中。</p>
+</blockquote>
+<hr>
+<h2 id="2-XML与属性文件（property-file）的区别"><a href="#2-XML与属性文件（property-file）的区别" class="headerlink" title="2. XML与属性文件（property file）的区别"></a>2. XML与属性文件（property file）的区别</h2><p>属性文件包含了各种键值对，例如：</p>
+<blockquote>
+<p>name=sungm</p>
+</blockquote>
+<p>区别：</p>
+<blockquote>
+<ol>
+<li>属性文件结构更加简洁，在要描述的信息更加复杂的场景下，属性文件不能更好的处理它，XML文件可以处理更加复杂的结构化信息。</li>
+<li>属性文件采用的是单一的平面结构，XML文件采用的是层次结构，也可以说是树型结构，更加清晰。</li>
+<li>属性文件中key是不能重复的，XML文件可以存在重复的元素。</li>
+</ol>
+</blockquote>
+<p>结论：</p>
+<blockquote>
+<p>在处理不复杂的结构化信息时优先考虑使用属性文件，在处理复杂的结构化信息时考虑使用XML文件</p>
+</blockquote>
+<hr>
+<h2 id="3-XML与HTML的区别"><a href="#3-XML与HTML的区别" class="headerlink" title="3. XML与HTML的区别"></a>3. XML与HTML的区别</h2><p>HTML : 超文本标记语言（Hyper Text Markup Language）</p>
+<p>区别：</p>
+<blockquote>
+<ol>
+<li>HTML对大小写不敏感；XML对大小写敏感</li>
+<li>在HTML中，如果从上下文中可以分清哪里是段落或者列表项的结尾，那么结束标签可以省略；XML不可省略结束标签</li>
+<li>在XML中，只有单个标签而没有对应的结束标签的元素必须以 / 结尾。</li>
+<li>在XML中，属性值必须用引号括起来；在HTML中，引号可有可无</li>
+<li>在HTML中，属性可以没有值；在XML中，属性必须都有属性值</li>
+</ol>
+</blockquote>
+<h2 id="4-良好的XML文档格式"><a href="#4-良好的XML文档格式" class="headerlink" title="4. 良好的XML文档格式"></a>4. 良好的XML文档格式</h2><blockquote>
+<ul>
+<li>XML文档必须有根元素，且只能有1个根元素</li>
+<li>XML文档必须有关闭标签</li>
+<li>XML文档对大小写敏感</li>
+<li>XML对大小写敏感</li>
+<li>XML元素必须被正确的嵌套</li>
+<li>XML属性必须加引号</li>
+</ul>
+</blockquote>
+]]></content>
+      <tags>
+        <tag>Java</tag>
+        <tag>XML</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>java.lang.Object 类详解</title>
     <url>/2020/06/12/java-lang-Object-%E7%B1%BB%E8%AF%A6%E8%A7%A3/</url>
     <content><![CDATA[<h2 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h2><blockquote>
@@ -514,149 +835,6 @@
       </tags>
   </entry>
   <entry>
-    <title>做有意义的命名</title>
-    <url>/2020/06/13/%E5%81%9A%E6%9C%89%E6%84%8F%E4%B9%89%E7%9A%84%E5%91%BD%E5%90%8D/</url>
-    <content><![CDATA[<blockquote>
-<p>软件中随处可见命名。我们给变量、函数、参数、类和封包命名。我们给源代码及源码所在的目录命名。我们给 jar 文件、 war 文件 和 ear 文件命名。有很多命名要做、不妨做好它。下面列出几条简单规则。</p>
-</blockquote>
-<a id="more"></a>
-
-<h2 id="1-名副其实"><a href="#1-名副其实" class="headerlink" title="1. 名副其实"></a>1. 名副其实</h2><blockquote>
-<p>变量、函数或类的名称应该已经答复了所有的大问题。它该告诉你，它为什么会存在，它做了什么事，应该怎么用。如果名称需要注释来补充，那就不算是名副其实。</p>
-</blockquote>
-<hr>
-<h2 id="2-避免误导"><a href="#2-避免误导" class="headerlink" title="2. 避免误导"></a>2. 避免误导</h2><blockquote>
-<ol>
-<li><strong>避免留下掩藏代码本意的错误线索。</strong><br>例如：使用某些专有名词作为变量名，使用缩写。</li>
-<li><strong>避免使用与本意相悖的词</strong><br>例如：<br>String[] accountList = new String[10];  accountList 实质是一个数组对象，命名后缀为<br>List产生误导作用。</li>
-<li><strong>避免使用外形相似的命名</strong><br>例如：两个变量</li>
-<li><strong>避免使用小写字母 l 与 大写字母 O 作为变量名，跟数组1 和数字 0 难以区分。</strong></li>
-</ol>
-</blockquote>
-<hr>
-<h2 id="3-做有意义的区分"><a href="#3-做有意义的区分" class="headerlink" title="3. 做有意义的区分"></a>3. 做有意义的区分</h2><blockquote>
-<p>如果只是为了满足编译器或解释器的需要而写代码，肯定会制造麻烦。</p>
-</blockquote>
-<blockquote>
-<p>#####错误示例：<br><strong>1. 添加数字系列，这样的名称纯属误导。</strong></p>
-<ul>
-<li>例如：<br>定义两个学生对象<br>Student student1 = new Student();<br>Student student2 = new Student();</li>
-</ul>
-<p><strong>2. 少使用废话，废话都是冗余。要区分名称，要以读者能鉴别之处来区分。</strong></p>
-<ul>
-<li><p>例如：假设已有一个 Product 类，还有ProductInfo 类 和 ProductData 类，虽然名称不同，意思却无差别。 Info 和 Data 就i想 a、an、the 一样，都是意义含混的废话。</p>
-</li>
-<li><p>例如：如果你需要获取账户信息，你该调用那个方法呢 ？<br>getAccount();<br>getAccounts();<br>getAccountInfo();</p>
-</li>
-<li><p>例如：<br>moneyAmount 和 money 没区别，<br>customerInfo 与 customer 没区别，<br>accountData 和 account 没区别，<br>theMessage 和 message 没区别 。</p>
-</li>
-</ul>
-</blockquote>
-<hr>
-<h2 id="4-使用读的出来的名称"><a href="#4-使用读的出来的名称" class="headerlink" title="4. 使用读的出来的名称"></a>4. 使用读的出来的名称</h2><blockquote>
-<p>#####错误示例：<br><strong>1.  使用汉语拼音，只会让别人觉得你写的代码很 low.</strong></p>
-<p><strong>2. 使用罕见的英语词汇</strong></p>
-</blockquote>
-<hr>
-<h2 id="5-使用可搜索的名称"><a href="#5-使用可搜索的名称" class="headerlink" title="5. 使用可搜索的名称"></a>5. 使用可搜索的名称</h2><blockquote>
-<p>#####建议:<br><strong>1. 使用长名称，长名称胜于短名称。</strong></p>
-<ul>
-<li>例如： WORK_DAYS_PER_WEEK 比数字 5 好找得多。</li>
-</ul>
-</blockquote>
-<hr>
-<h2 id="6-避免使用编码"><a href="#6-避免使用编码" class="headerlink" title="6. 避免使用编码"></a>6. 避免使用编码</h2><blockquote>
-<p>编码已经太多，不需要自找麻烦。</p>
-</blockquote>
-<hr>
-<h2 id="7-避免使用前缀"><a href="#7-避免使用前缀" class="headerlink" title="7. 避免使用前缀"></a>7. 避免使用前缀</h2><blockquote>
-<p>不必使用 m_ 前缀来表名成员变量，很多时候阅读代码的人不会去看前缀，直接看后面有意义的名称，前缀反而成了废代码。</p>
-</blockquote>
-<hr>
-<h2 id="8-接口和实现"><a href="#8-接口和实现" class="headerlink" title="8. 接口和实现"></a>8. 接口和实现</h2><p>略</p>
-<hr>
-<h2 id="9-类名"><a href="#9-类名" class="headerlink" title="9. 类名"></a>9. 类名</h2><blockquote>
-<p>类名和对象名应该是名词或者名词短语，不应该是动词。</p>
-<ul>
-<li>正例：Customer</li>
-<li>反例：CustomerInfo、CustomerData、 Data .</li>
-</ul>
-</blockquote>
-<hr>
-<h2 id="10-方法名"><a href="#10-方法名" class="headerlink" title="10. 方法名"></a>10. 方法名</h2><blockquote>
-<p>方法名应该是动词或者动词短语，不应该是名词。</p>
-<ul>
-<li>例如：getName(); setName() 等。</li>
-</ul>
-</blockquote>
-<hr>
-<h2 id="11-避免思维映射"><a href="#11-避免思维映射" class="headerlink" title="11. 避免思维映射"></a>11. 避免思维映射</h2><blockquote>
-<ul>
-<li>例如：变量 i、j 通常用于 for 循环中，传统惯用这种单字母名词作为循环计数器，并不是一种好的选择。</li>
-</ul>
-</blockquote>
-<hr>
-<h2 id="12-避免使用双关语"><a href="#12-避免使用双关语" class="headerlink" title="12. 避免使用双关语"></a>12. 避免使用双关语</h2><blockquote>
-<ul>
-<li>例如：add方法用来添加一个对象，返回结果应该是布尔类型（添加成功或者失败） ，如果你需要添加一个对象并返回添加后产生的新值，建议使用append方法和insert方法。</li>
-</ul>
-</blockquote>
-]]></content>
-      <tags>
-        <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>原始类型特化</title>
-    <url>/2020/06/13/%E5%8E%9F%E5%A7%8B%E7%B1%BB%E5%9E%8B%E7%89%B9%E5%8C%96/</url>
-    <content><![CDATA[<p><strong>引言</strong></p>
-<blockquote>
-<p>上篇我们介绍了三个函数式接口：Predicate<T>、Consumer<T>、Function&lt;T，R&gt; 。还有一些函数式接口是专门为某些类型涉及的。<a href="https://www.jianshu.com/p/4c93e1f7c19b" target="_blank" rel="noopener">https://www.jianshu.com/p/4c93e1f7c19b</a></p>
-</blockquote>
-<a id="more"></a>
-
-<p> <strong>Java 类型</strong></p>
-<blockquote>
-<ul>
-<li>引用类型（如 Byte、Integer、Long、Object、List）</li>
-<li>原始类型（byte、short、int、float、double、long、char、boolean）</li>
-</ul>
-</blockquote>
-<p> <strong>回顾知识点：</strong></p>
-<blockquote>
-<ul>
-<li>Java 类型要么是引用类型，要么是原始类型。</li>
-<li>泛型只能绑定到引用类型上面、这是由泛型内部的实现方式造成的。</li>
-<li>在 Java 中有一个将原始类型转换为对应的引用类型的机制、这个机智就叫做装箱。相反的操作、也就是将引用类型转换成对应的原始类型的机制，这种机智叫做拆箱。Java 还有一个自动装拆箱的机智来帮助我们程序员执行这一任务：装箱和拆箱都是自动完成的。</li>
-</ul>
-</blockquote>
-<p><strong>注意：</strong></p>
-<blockquote>
-<p>虽然 Java 提供了自动装拆箱的机智，但这在性能方面是要付出代价的，装箱的本质是就是把原始类型包裹起来，并保存在堆里。因此、装箱后的值需要更多的内存、并需要额外的内存搜索来获取被包裹的值。因此、为提高程序的执行效率、Java  8 为我们前面所提到的函数式接口提供了一个专门的版本、以便在输入和输出都是原始类型时避免自动装拆箱的操作。</p>
-</blockquote>
-<p><strong>举例</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;IntPredicate 源码</span><br><span class="line"></span><br><span class="line">@FunctionalInterface</span><br><span class="line">public interface IntPredicate &#123;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * Evaluates this predicate on the given argument.</span><br><span class="line">     *</span><br><span class="line">     * @param value the input argument</span><br><span class="line">     * @return &#123;@code true&#125; if the input argument matches the predicate,</span><br><span class="line">     * otherwise &#123;@code false&#125;</span><br><span class="line">     *&#x2F;</span><br><span class="line">    boolean test(int value);</span><br><span class="line">  </span><br><span class="line">    &#x2F;&#x2F; 其他默认方法省略</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>说明</strong></p>
-<blockquote>
-<p> IntPredicate 源码解析：IntPredicate 类的 test方法接收一个原始类型 int类型的入参，其返回值为 boolean，避免了输入和输出都是原始类型时自动装拆箱的操作。 </p>
-</blockquote>
-<p><strong>Java 8中的常用函数式接口</strong></p>
-<p><div class="img-item" data-src="https://upload-images.jianshu.io/upload_images/11864885-b49768e2e438afa1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-sub-html=".caption"><img src="https://upload-images.jianshu.io/upload_images/11864885-b49768e2e438afa1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><div class="img-caption d-block text-center"><span class="center-caption text-muted border-bottom"></span></div></div></p>
-<p><div class="img-item" data-src="https://upload-images.jianshu.io/upload_images/11864885-b03a23c45dc9e0d6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-sub-html=".caption"><img src="https://upload-images.jianshu.io/upload_images/11864885-b03a23c45dc9e0d6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="常用函数式接口"><div class="img-caption d-block text-center"><span class="center-caption text-muted border-bottom">常用函数式接口</span></div></div></p>
-<p><strong>Lambdas及函数式接口的例子</strong><br><div class="img-item" data-src="https://upload-images.jianshu.io/upload_images/11864885-049343497380171b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-sub-html=".caption"><img src="https://upload-images.jianshu.io/upload_images/11864885-049343497380171b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Lambdas及函数式接口的例子"><div class="img-caption d-block text-center"><span class="center-caption text-muted border-bottom">Lambdas及函数式接口的例子</span></div></div></p>
-<hr>
-<p><strong>推荐书籍</strong></p>
-<blockquote>
-<ul>
-<li>《Java 8 in Action》</li>
-</ul>
-</blockquote>
-]]></content>
-      <tags>
-        <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>正确的避免NullPointException</title>
     <url>/2020/06/13/%E6%AD%A3%E7%A1%AE%E7%9A%84%E9%81%BF%E5%85%8DNullPointException/</url>
     <content><![CDATA[<h2 id="1-正确使用-String类的-equals-方法-和-Object类的-equals-方法"><a href="#1-正确使用-String类的-equals-方法-和-Object类的-equals-方法" class="headerlink" title="1. 正确使用 String类的 equals()方法 和 Object类的 equals() 方法"></a>1. 正确使用 String类的 equals()方法 和 Object类的 equals() 方法</h2><blockquote>
@@ -718,24 +896,6 @@
 ]]></content>
       <tags>
         <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>考虑使用静态工厂方法代替构造方法</title>
-    <url>/2020/06/13/%E8%80%83%E8%99%91%E4%BD%BF%E7%94%A8%E9%9D%99%E6%80%81%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%E4%BB%A3%E6%9B%BF%E6%9E%84%E9%80%A0%E6%96%B9%E6%B3%95/</url>
-    <content><![CDATA[<h2 id="1-静态工厂方法例子："><a href="#1-静态工厂方法例子：" class="headerlink" title="1. 静态工厂方法例子："></a>1. 静态工厂方法例子：</h2><p>如Boolean类中的valueOf(boolean b) 方法</p>
-<a id="more"></a>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * The &#123;@code Boolean&#125; object corresponding to the primitive</span><br><span class="line"> * value &#123;@code true&#125;.</span><br><span class="line"> *&#x2F;</span><br><span class="line">public static final Boolean TRUE &#x3D; new Boolean(true);</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * The &#123;@code Boolean&#125; object corresponding to the primitive</span><br><span class="line"> * value &#123;@code false&#125;.</span><br><span class="line"> *&#x2F;</span><br><span class="line">public static final Boolean FALSE &#x3D; new Boolean(false);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;...中间代码省略</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;静态工厂方法</span><br><span class="line">@HotSpotIntrinsicCandidate</span><br><span class="line">public static Boolean valueOf(boolean b) &#123;</span><br><span class="line">    return (b ? TRUE : FALSE);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>注意：</strong><br>静态工厂方法与工厂方法模式不同，类可以直接提供静态工厂方法，而不是公共的构造方法。</p>
-<h2 id="2-使用静态工厂方法代替构造方法的优缺点"><a href="#2-使用静态工厂方法代替构造方法的优缺点" class="headerlink" title="2. 使用静态工厂方法代替构造方法的优缺点"></a>2. 使用静态工厂方法代替构造方法的优缺点</h2><h3 id="2-1-优点"><a href="#2-1-优点" class="headerlink" title="2.1 优点"></a>2.1 优点</h3><p>（1）. 静态工厂方法不像构造方法，它们是有名字的。（属于类的方法）<br>（2）. 静态工厂方法与构造方法不同，他们被调用时不需要每次都创建一个对象。例如调用Boolean.valueOf(true)方法，返回的是Boolean类中定义的静态不变属性TRUE对象；<br>（3）. 静态工厂方法与构造方法不同，他们可以返回任意对象，构造方法只能返回当前类的对象。<br>（4）. 静态工厂方法返回对象的类可以根据输入类型不同而不同。例如使用泛型。<br>（5）. 在编写该方法的类时，返回的对象的类不需要存在。（static关键字的作用）</p>
-<h3 id="2-2-缺点"><a href="#2-2-缺点" class="headerlink" title="2.2 缺点"></a>2.2 缺点</h3><p>（1）. 只提供静态工厂方法、没有提供公共或者受保护的构造方法时不能被子类化。（主要限制）<br>（2）. 静态工厂方法并不像构造方法那样突出、不容易被程序员阅读。</p>
-<h3 id="2-3-总结"><a href="#2-3-总结" class="headerlink" title="2.3 总结"></a>2.3 总结</h3><p>静态工厂方法和公共构造方法都有他们的用途，并且了解他们的相对有点时值得的。通常，静态工厂方法更可取，因此避免在没有考虑静态工厂方法的情况下、提供公共构造方法。</p>
-]]></content>
-      <tags>
-        <tag>Java</tag>
-        <tag>设计模式</tag>
       </tags>
   </entry>
   <entry>
@@ -851,6 +1011,45 @@
       </tags>
   </entry>
   <entry>
+    <title>验证XML</title>
+    <url>/2020/06/18/%E9%AA%8C%E8%AF%81XML/</url>
+    <content><![CDATA[<h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h2><blockquote>
+<ul>
+<li>如果我们解析XML之后，获取到XML的内容，再校验XML内容或格式是否符合设计规范，这个工作是很繁琐的。</li>
+<li>幸好，XML解析器的一个很大的好处就是它能够自动校验某个文档是否具有正确的结构，这样解析工作就变的简单的多。</li>
+<li>通过定义一个 <a href="https://www.w3school.com.cn/dtd/dtd_intro.asp" target="_blank" rel="noopener">DTD</a> 或者 <a href="https://www.w3school.com.cn/schema/schema_intro.asp" target="_blank" rel="noopener">XML Schema</a>， DTD 或者 Schema 包含了用于解释文档如何构成的规则，这些规则指定了每个元素的合法子元素和属性。</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="2-定义DTD校验规则"><a href="#2-定义DTD校验规则" class="headerlink" title="2. 定义DTD校验规则"></a>2. 定义DTD校验规则</h2><p><strong>XML文档</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot; ?&gt;</span><br><span class="line">&lt;!-- 定义DTD校验规则 --&gt;</span><br><span class="line">&lt;!DOCTYPE class [</span><br><span class="line">    &lt;!-- 定义class至少包含一个student --&gt;</span><br><span class="line">    &lt;!ELEMENT class (student+)&gt;</span><br><span class="line">    &lt;!-- 定义student只包含name,age,sex,className属性 --&gt;</span><br><span class="line">    &lt;!ELEMENT student (name, age, sex, className)&gt;</span><br><span class="line">        &lt;!-- 定义id属性, 属性默认值为0 --&gt;</span><br><span class="line">        &lt;!ATTLIST student id CDATA &quot;0&quot;&gt;</span><br><span class="line">    &lt;!ELEMENT name (#PCDATA)&gt;</span><br><span class="line">    &lt;!ELEMENT age (#PCDATA)&gt;</span><br><span class="line">    &lt;!ELEMENT sex (#PCDATA)&gt;</span><br><span class="line">    &lt;!ELEMENT className (#PCDATA)&gt;</span><br><span class="line">]&gt;</span><br><span class="line">&lt;class&gt;</span><br><span class="line">    &lt;student id&#x3D;&quot;1&quot;&gt;</span><br><span class="line">        &lt;name&gt;sungm&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age&gt;25&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className&gt;Class One&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">    &lt;student id&#x3D;&quot;2&quot;&gt;</span><br><span class="line">        &lt;name&gt;sunhw&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age&gt;1&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className&gt;Class Two&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">&lt;&#x2F;class&gt;</span><br></pre></td></tr></table></figure>
+
+
+]]></content>
+      <tags>
+        <tag>Java</tag>
+        <tag>XML</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>考虑使用静态工厂方法代替构造方法</title>
+    <url>/2020/06/13/%E8%80%83%E8%99%91%E4%BD%BF%E7%94%A8%E9%9D%99%E6%80%81%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%E4%BB%A3%E6%9B%BF%E6%9E%84%E9%80%A0%E6%96%B9%E6%B3%95/</url>
+    <content><![CDATA[<h2 id="1-静态工厂方法例子："><a href="#1-静态工厂方法例子：" class="headerlink" title="1. 静态工厂方法例子："></a>1. 静态工厂方法例子：</h2><p>如Boolean类中的valueOf(boolean b) 方法</p>
+<a id="more"></a>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * The &#123;@code Boolean&#125; object corresponding to the primitive</span><br><span class="line"> * value &#123;@code true&#125;.</span><br><span class="line"> *&#x2F;</span><br><span class="line">public static final Boolean TRUE &#x3D; new Boolean(true);</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * The &#123;@code Boolean&#125; object corresponding to the primitive</span><br><span class="line"> * value &#123;@code false&#125;.</span><br><span class="line"> *&#x2F;</span><br><span class="line">public static final Boolean FALSE &#x3D; new Boolean(false);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;...中间代码省略</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;静态工厂方法</span><br><span class="line">@HotSpotIntrinsicCandidate</span><br><span class="line">public static Boolean valueOf(boolean b) &#123;</span><br><span class="line">    return (b ? TRUE : FALSE);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意：</strong><br>静态工厂方法与工厂方法模式不同，类可以直接提供静态工厂方法，而不是公共的构造方法。</p>
+<h2 id="2-使用静态工厂方法代替构造方法的优缺点"><a href="#2-使用静态工厂方法代替构造方法的优缺点" class="headerlink" title="2. 使用静态工厂方法代替构造方法的优缺点"></a>2. 使用静态工厂方法代替构造方法的优缺点</h2><h3 id="2-1-优点"><a href="#2-1-优点" class="headerlink" title="2.1 优点"></a>2.1 优点</h3><p>（1）. 静态工厂方法不像构造方法，它们是有名字的。（属于类的方法）<br>（2）. 静态工厂方法与构造方法不同，他们被调用时不需要每次都创建一个对象。例如调用Boolean.valueOf(true)方法，返回的是Boolean类中定义的静态不变属性TRUE对象；<br>（3）. 静态工厂方法与构造方法不同，他们可以返回任意对象，构造方法只能返回当前类的对象。<br>（4）. 静态工厂方法返回对象的类可以根据输入类型不同而不同。例如使用泛型。<br>（5）. 在编写该方法的类时，返回的对象的类不需要存在。（static关键字的作用）</p>
+<h3 id="2-2-缺点"><a href="#2-2-缺点" class="headerlink" title="2.2 缺点"></a>2.2 缺点</h3><p>（1）. 只提供静态工厂方法、没有提供公共或者受保护的构造方法时不能被子类化。（主要限制）<br>（2）. 静态工厂方法并不像构造方法那样突出、不容易被程序员阅读。</p>
+<h3 id="2-3-总结"><a href="#2-3-总结" class="headerlink" title="2.3 总结"></a>2.3 总结</h3><p>静态工厂方法和公共构造方法都有他们的用途，并且了解他们的相对有点时值得的。通常，静态工厂方法更可取，因此避免在没有考虑静态工厂方法的情况下、提供公共构造方法。</p>
+]]></content>
+      <tags>
+        <tag>Java</tag>
+        <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>通用Builder</title>
     <url>/2020/06/15/%E9%80%9A%E7%94%A8Builder/</url>
     <content><![CDATA[<blockquote>
@@ -879,27 +1078,6 @@
         <tag>Java</tag>
         <tag>工具类</tag>
         <tag>设计模式</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>验证XML</title>
-    <url>/2020/06/18/%E9%AA%8C%E8%AF%81XML/</url>
-    <content><![CDATA[<h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h2><blockquote>
-<ul>
-<li>如果我们解析XML之后，获取到XML的内容，再校验XML内容或格式是否符合设计规范，这个工作是很繁琐的。</li>
-<li>幸好，XML解析器的一个很大的好处就是它能够自动校验某个文档是否具有正确的结构，这样解析工作就变的简单的多。</li>
-<li>通过定义一个 <a href="https://www.w3school.com.cn/dtd/dtd_intro.asp" target="_blank" rel="noopener">DTD</a> 或者 <a href="https://www.w3school.com.cn/schema/schema_intro.asp" target="_blank" rel="noopener">XML Schema</a>， DTD 或者 Schema 包含了用于解释文档如何构成的规则，这些规则指定了每个元素的合法子元素和属性。</li>
-</ul>
-</blockquote>
-<hr>
-<h2 id="2-定义DTD校验规则"><a href="#2-定义DTD校验规则" class="headerlink" title="2. 定义DTD校验规则"></a>2. 定义DTD校验规则</h2><p><strong>XML文档</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot; ?&gt;</span><br><span class="line">&lt;!-- 定义DTD校验规则 --&gt;</span><br><span class="line">&lt;!DOCTYPE class [</span><br><span class="line">    &lt;!-- 定义class至少包含一个student --&gt;</span><br><span class="line">    &lt;!ELEMENT class (student+)&gt;</span><br><span class="line">    &lt;!-- 定义student只包含name,age,sex,className属性 --&gt;</span><br><span class="line">    &lt;!ELEMENT student (name, age, sex, className)&gt;</span><br><span class="line">        &lt;!-- 定义id属性, 属性默认值为0 --&gt;</span><br><span class="line">        &lt;!ATTLIST student id CDATA &quot;0&quot;&gt;</span><br><span class="line">    &lt;!ELEMENT name (#PCDATA)&gt;</span><br><span class="line">    &lt;!ELEMENT age (#PCDATA)&gt;</span><br><span class="line">    &lt;!ELEMENT sex (#PCDATA)&gt;</span><br><span class="line">    &lt;!ELEMENT className (#PCDATA)&gt;</span><br><span class="line">]&gt;</span><br><span class="line">&lt;class&gt;</span><br><span class="line">    &lt;student id&#x3D;&quot;1&quot;&gt;</span><br><span class="line">        &lt;name&gt;sungm&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age&gt;25&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className&gt;Class One&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">    &lt;student id&#x3D;&quot;2&quot;&gt;</span><br><span class="line">        &lt;name&gt;sunhw&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age&gt;1&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className&gt;Class Two&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">&lt;&#x2F;class&gt;</span><br></pre></td></tr></table></figure>
-
-
-]]></content>
-      <tags>
-        <tag>Java</tag>
-        <tag>XML</tag>
       </tags>
   </entry>
 </search>

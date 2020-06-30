@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+<!--Description-->
+
+
+
+    <meta name="description" content="1. 考虑使用静态工厂方法代替构造方法例如：
+123public static Boolean valueOf(boolean b) &amp;#123;    return b ? Boolean.TRUE : Boolean.FALSE;&amp;#125;
+
+1.1 静态工厂方法代替构造方法的优缺点
+优点：
+"/>
+
+
+<!--Author-->
+
+    <meta name="author" content="sungm"/>
+
+
+<!--Open Graph Title-->
+
+    <meta property="og:title" content="Effective Java 总结"/>
+
+
+<!--Open Graph Description-->
+
+    <meta property="og:description" content="1. 考虑使用静态工厂方法代替构造方法例如：
+123public static Boolean valueOf(boolean b) &amp;#123;    return b ? Boolean.TRUE : Boolean.FALSE;&amp;#125;
+
+1.1 静态工厂方法代替构造方法的优缺点
+优点：
+"/>
+
+
+<!--Open Graph Site Name-->
+    <meta property="og:site_name" content="Miracle&#39;s Blog"/>
+
+<!--Type page-->
+
+    <meta property="og:type" content="article"/>
+
+
+<!--Page Cover-->
+
+
+    <meta property="og:image" content="http://yoursite.com/img/home-bg.jpg"/>
+
+
+<meta name="twitter:card" content="summary_large_image"/>
+
+
+
+
+    <meta name="twitter:image" content="http://yoursite.com/img/home-bg.jpg"/>
+
+
+<!-- Title -->
+
+<title>Effective Java 总结 - Miracle&#39;s Blog</title>
+
+<!-- Bootstrap Core CSS -->
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+
+<!-- Custom CSS -->
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<!-- Custom Fonts -->
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.0/css/all.min.css" />
+<link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css"/>
+<link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css"/>
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+<!-- Gallery -->
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/featherlight@1.4.0/src/featherlight.css" integrity="sha256-30DV/STftlyQ6v8yaOWlabammvCYtRJERLj/m0b3zno=" crossorigin="anonymous">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/lightgallery@1.6.11/dist/css/lightgallery.min.css">
+
+<!-- favicon -->
+
+<link rel="icon" href="/img/favicon.png"/>
+
+
+
+    <!-- Google Analytics -->
+    
+
+
+<meta name="generator" content="Hexo 4.2.1"><link rel="alternate" href="/atom.xml" title="Miracle's Blog" type="application/atom+xml">
+</head>
+<!-- Head tag -->
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top bg-transparent position-absolute w-100 p-0" id="nav">
+    <div class="container pl-0 pr-0">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <a class="navbar-brand text-white p-1 pl-3" href="/">Miracle's Blog</a>
+        </div>
+        <div class="navbar-nav float-right">
+            <button class="btn btn-link search-btn navbar-item" data-toggle="modal" data-target="#searchModal">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    </div>
+    <!-- /.container -->
+</nav>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 text-center">
+                <div class="post-heading text-white">
+                    <h1>Effective Java 总结</h1>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Main Content -->
+            <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
+                
+                    <span class="meta d-inline-block">
+    
+    
+    <!-- Date -->
+    
+        <span class="post-meta-split">&nbsp;|&nbsp;</span>
+        <i class="far fa-calendar-check fa-fw"></i>
+        2020-06-28
+    
+    <!-- word count and read count -->
+    
+
+    
+
+    
+</span>  
+                
+                <h2 id="1-考虑使用静态工厂方法代替构造方法"><a href="#1-考虑使用静态工厂方法代替构造方法" class="headerlink" title="1. 考虑使用静态工厂方法代替构造方法"></a>1. 考虑使用静态工厂方法代替构造方法</h2><p>例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public static Boolean valueOf(boolean b) &#123;</span><br><span class="line">    return b ? Boolean.TRUE : Boolean.FALSE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-1-静态工厂方法代替构造方法的优缺点"><a href="#1-1-静态工厂方法代替构造方法的优缺点" class="headerlink" title="1.1 静态工厂方法代替构造方法的优缺点"></a>1.1 静态工厂方法代替构造方法的优缺点</h4><blockquote>
+<p>优点：</p>
+<ul>
+<li>静态工厂方法不需要每次都创建一个对象，而构造方法每次都会创建一个对象。</li>
+<li>静态工厂方法返回值可以是任何对象，而构造方法返回指定的对象。</li>
+<li>静态工厂方法返回值可以根据入参的不同而不同。</li>
+<li>静态工厂方法有自定义的方法名，构造方法方法名与类名相同。</li>
+</ul>
+</blockquote>
+<blockquote>
+<p>缺点:</p>
+<ul>
+<li>限制：没有公共或受保护的构造方法不能被子类化。（假如定义一个Person类，且该类没有公共或受保护的构造函数，如果我们想定义一个类来继承Person类，将发生编译错误）</li>
+<li>静态方法不如构造方法易发现，不仔细阅读源码我们很难找到他们。</li>
+</ul>
+</blockquote>
+<h4 id="1-2-总结"><a href="#1-2-总结" class="headerlink" title="1.2 总结"></a>1.2 总结</h4><blockquote>
+<ul>
+<li>定义静态工厂方法代替构造方法时，建议将构造方法设置成私有的（private）或受保护的（protected）。</li>
+<li>如果定义一个静态工厂方法用来代替构造方法，且静态构造方法每次被调用都返回一个新对象，那么使用静态工厂方法代替构造方法将意义不大。</li>
+<li>根据需要，重载静态工厂方法。</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="2-当构造方法参数过多时，使用Builder模式"><a href="#2-当构造方法参数过多时，使用Builder模式" class="headerlink" title="2 当构造方法参数过多时，使用Builder模式"></a>2 当构造方法参数过多时，使用Builder模式</h2><p>说明：</p>
+<blockquote>
+<p>使用Builder模式可以使用简化代码，提高代码可读性。（这里对Builder模式不做过多的解释，若您想了解Builder模式，请百度。）</p>
+</blockquote>
+<h4 id="2-1-方式一：使用Lombok插件"><a href="#2-1-方式一：使用Lombok插件" class="headerlink" title="2.1 方式一：使用Lombok插件"></a>2.1 方式一：使用Lombok插件</h4><blockquote>
+<p> 安装Lombok插件，引入Lombok依赖之后使用Lombok的@Builder注解。</p>
+</blockquote>
+<p>示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 定义响应值</span><br><span class="line"> *</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @date : 2020-06-23 17:28</span><br><span class="line"> *&#x2F;</span><br><span class="line">@Data</span><br><span class="line">@Builder</span><br><span class="line">@NoArgsConstructor</span><br><span class="line">@AllArgsConstructor</span><br><span class="line">@EqualsAndHashCode</span><br><span class="line">public class ResponseDTO implements Serializable &#123;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;序列化</span><br><span class="line">    private static final long serialVersionUID &#x3D; 1L;</span><br><span class="line"></span><br><span class="line">    private String resultCode;</span><br><span class="line">    private String resultMessage;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * 主函数</span><br><span class="line"> * </span><br><span class="line"> * @param args      入参</span><br><span class="line"> *&#x2F;</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    ResponseDTO response &#x3D; ResponseDTO.builder()</span><br><span class="line">        .resultCode(ResultEnum.ONE.getResultCode())</span><br><span class="line">        .resultMessage(ResultEnum.ONE.getResultMessage())</span><br><span class="line">        .build();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>备注：</p>
+<blockquote>
+<p>使用Lombok插件还是蛮香的，我们可以通过使用Lombok定义的注解，来减少了我们编写的代码量、提高了代码可读性，但是Lombok插件会增加我们程序编译的时间，且通常情况下我们也可以通过使用IDEA的快捷键来自动生成代码。</p>
+</blockquote>
+<h4 id="2-2-方式二：使用通用Builder工具类"><a href="#2-2-方式二：使用通用Builder工具类" class="headerlink" title="2.2 方式二：使用通用Builder工具类"></a>2.2 方式二：使用通用Builder工具类</h4><p>Builder工具类博客地址：</p>
+<blockquote>
+<p><a href="https://miracle-sungm.github.io/2020/06/15/%E9%80%9A%E7%94%A8Builder/" target="_blank" rel="noopener">https://miracle-sungm.github.io/2020/06/15/%E9%80%9A%E7%94%A8Builder/</a></p>
+</blockquote>
+<h4 id="2-3-总结"><a href="#2-3-总结" class="headerlink" title="2.3 总结"></a>2.3 总结</h4><blockquote>
+<ul>
+<li>对于方式一和方式二的选择，仁者见仁智者见智，你更喜欢哪种方式呢？或者你还有其他更好的方式？</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="3-使用私有构造方法或枚举实现单例模式"><a href="#3-使用私有构造方法或枚举实现单例模式" class="headerlink" title="3. 使用私有构造方法或枚举实现单例模式"></a>3. 使用私有构造方法或枚举实现单例模式</h2><p>说明：</p>
+<blockquote>
+<p>单例是一个仅实例化一次的类，通常情况下表示无状态对象。</p>
+</blockquote>
+<h4 id="3-1-使用私有构造方法实现单例模式"><a href="#3-1-使用私有构造方法实现单例模式" class="headerlink" title="3.1 使用私有构造方法实现单例模式"></a>3.1 使用私有构造方法实现单例模式</h4><p><em>两种常见的单例模式实现方式</em></p>
+<p>方式一：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 单例模式：声明公共属性的方式</span><br><span class="line"> *</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @date : 2020-06-29 11:49</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class SingletonOne &#123;</span><br><span class="line"></span><br><span class="line">    public static final SingletonOne INSTANCE &#x3D; new SingletonOne();</span><br><span class="line"></span><br><span class="line">    private SingletonOne() &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>方式二：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 单例模式：声明静态工厂方法的方式</span><br><span class="line"> *</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @date : 2020-06-29 11:51</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class SingletonTwo &#123;</span><br><span class="line"></span><br><span class="line">    private static final SingletonTwo INSTANCE &#x3D; new SingletonTwo();</span><br><span class="line"></span><br><span class="line">    private SingletonTwo() &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static SingletonTwo getInstance() &#123;</span><br><span class="line">        return INSTANCE;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明：</p>
+<blockquote>
+<ul>
+<li>方式一和方式二的构造函数都是私有构造函数，且定义了一个 static final 类型的INSTANCE变量，并使其实例化，确保了该类只能被实例化一次，保证了全局的唯一性。</li>
+<li>不论是方式一还是方式二，特殊情况下可以通过使用反射的方式调用构造方法创建对象，如果需要防止此操作的产生，需修改构造方法，使其请求创建第二个对象时抛出异常。</li>
+</ul>
+</blockquote>
+<p>建议：</p>
+<blockquote>
+<p>建议通过静态工厂方法（方式二）来创建单例。原因是通过静态工厂的方式更加灵活，并且可以根据需要设计泛型单例工厂，并且还能使用函数式接口Supplier，例如Singleton::getInstance。</p>
+</blockquote>
+<h4 id="3-2-通过使用枚举设计单例模式"><a href="#3-2-通过使用枚举设计单例模式" class="headerlink" title="3.2 通过使用枚举设计单例模式"></a>3.2 通过使用枚举设计单例模式</h4><p>例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public enum Singleton &#123;</span><br><span class="line">    INSTANCE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明：</p>
+<blockquote>
+<p>这种方式类似于公共属性方法，但更简洁，提供了免费的序列化机制，并提供了针对多个实例化的坚固保证，即使是在复杂的序列化或反射攻击的情况下。这种方法可能感觉有点不自然，但是单一元素枚举类通常是实现单例的最佳方式。</p>
+</blockquote>
+<p>注意：</p>
+<blockquote>
+<p>如果单例必须继承 Enum 以外的父类 (尽管可以声明一个 Enum 来实现接口)，那么就不能使用这种方法。</p>
+</blockquote>
+<hr>
+<h2 id="4-使用私有构造方法执行非实例化"><a href="#4-使用私有构造方法执行非实例化" class="headerlink" title="4. 使用私有构造方法执行非实例化"></a>4. 使用私有构造方法执行非实例化</h2><p>场景说明：</p>
+<blockquote>
+<p>当我们希望设计一个类只包含静态方法和静态属性时，为了避免这样的类被实例化，可以通过声明私有的构造方法达到类不被实例化的目的。</p>
+</blockquote>
+<p>副作用：</p>
+<blockquote>
+<p>当我们想设计一个子类来继承私有化构造函数的父类时，将报编译异常。因为所有构造方法都必须显示或者隐式的调用父类的构造方法，若父类的构造函数被私有化，则子类没有访问父类构造函数的权限，因此报错。</p>
+</blockquote>
+<hr>
+<h2 id="5-比起硬资源连接，优先使用依赖注入"><a href="#5-比起硬资源连接，优先使用依赖注入" class="headerlink" title="5. 比起硬资源连接，优先使用依赖注入"></a>5. 比起硬资源连接，优先使用依赖注入</h2><p>硬资源连接:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">public class Dictionary &#123;</span><br><span class="line">    &#x2F;&#x2F;定义字典</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">public class SpellChecker &#123;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;硬资源连接：想当然的认为一本字典就够了，无法承载多字典的场景</span><br><span class="line">    private static final Dictionary DICTIONARY &#x3D; new ChineseDictionary();</span><br><span class="line"></span><br><span class="line">    private SpellChecker() &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public boolean check(String word) &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>依赖注入：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 定义字典接口 </span><br><span class="line"> *</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @date : 2020-06-29 20:53</span><br><span class="line"> *&#x2F;</span><br><span class="line">public interface Dictionary &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * 定义中文字典</span><br><span class="line"> * </span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @date : 2020-06-29 20:53</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class ChineseDictionary implements Dictionary&#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * 定义英文字典</span><br><span class="line"> * </span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @date : 2020-06-29 20:56</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class EnglishDictionary implements Dictionary &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * 拼写检查器</span><br><span class="line"> *</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @date : 2020-06-29 20:56</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class SpellChecker &#123;</span><br><span class="line"></span><br><span class="line">    private final Dictionary DICTIONARY;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;使用依赖注入的方式，创建对象时将字典注入到对象属性中</span><br><span class="line">    public SpellChecker(Dictionary dictionary) &#123;</span><br><span class="line">        this.DICTIONARY &#x3D; dictionary;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public boolean check(String word) &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明：</p>
+<blockquote>
+<p>当一个类依赖于一个或多个底层资源时，该类的实现方式不要使用单例或静态的实用类，这些资源的行为会影响类的行为，并且不让类直接创建这些资源。相反，将资源或工厂传递给构造方法（或静态工厂或 builder 模式）。这种称为依赖注入的实践将极大地增强类的灵活性、可重用性和可测试性。</p>
+</blockquote>
+<hr>
+<h2 id="6-避免创建不必要的对象"><a href="#6-避免创建不必要的对象" class="headerlink" title="6. 避免创建不必要的对象"></a>6. 避免创建不必要的对象</h2><p>说明：</p>
+<blockquote>
+<p>通常情况下，重用对象比创建一个相同功能的对象的做法更恰当，重用可以使程序更快的执行且耗用更少的内存。如果一个对象是不可变的，他总是可以被重用。</p>
+</blockquote>
+<p>举例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;请不要这样写代码</span><br><span class="line">String name &#x3D; new String(&quot;sungm&quot;);</span><br></pre></td></tr></table></figure>
+
+<p>这样写代码产生的结果：</p>
+<blockquote>
+<p>该语句每次执行时都会创建一个新的String实例，并且这些对象都不是必须的。String的构造方法String(String original)的入参original本身就是一个String实例，它与构造方法创建的对象的功能相同。</p>
+</blockquote>
+<p>优化后：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">String name &#x3D; &quot;sungm&quot;;</span><br></pre></td></tr></table></figure>
+
+<p>总结：</p>
+<ul>
+<li>通过使用静态工厂方法，可以避免创建不必要的对象。<blockquote>
+<p>例如：使用静态工厂方法 Boolean.parseBoolean(String) 比构造方法 Boolean(String) 好的多，构造方法每次调用都会创建一个新的对象，而工厂方法永远不需要这样做，在实践中也不需要。</p>
+</blockquote>
+</li>
+<li>一些对象的创建比其他对象的创建的代价要昂贵的多，如果要使用这样一个昂贵的对象，建议将其缓存起来以便重复使用。<blockquote>
+<p>例如创建创建正则表达式的 Pattern 对象，因为它需要将正则表达式编译成有限状态机（finite state machine）。</p>
+</blockquote>
+</li>
+<li>当一些对象是不可变（final定义的对象）的时侯，很明显它可以被重用，但是在其他情况下，没有很明显的可以被重用，这种情况下需谨慎考虑是否重用对象。</li>
+<li>自动装箱的情况下是不需要创建不必要的对象的，自动装箱允许程序员混用基本数据类型和装箱类型，根据需要自动装箱和拆箱。<blockquote>
+<p>建议：优先使用基本数据类型而不是装箱的基本类型，也要注意无意识的自动装箱。</p>
+</blockquote>
+</li>
+</ul>
+<hr>
+<h2 id="7-消除过期对象的引用"><a href="#7-消除过期对象的引用" class="headerlink" title="7. 消除过期对象的引用"></a>7. 消除过期对象的引用</h2><p>举例：</p>
+<blockquote>
+<p>《Effective Java》原书中该章节举了一个栈（Stock）弹出元素（pop）没有及时清空弹出的元素引用，当Stock扩容后收缩，容易发生内存溢出异常。</p>
+</blockquote>
+<p>好处：</p>
+<blockquote>
+<ul>
+<li>及时消除过期对象的引用，减少内存消耗，增加程序执行速度，同时可以避免因内存溢出导致程序异常。</li>
+<li>消除过期对象的引用有一个好处是程序错误的引用过期的对象之后能及时抛出NPE(空指针异常)，而不是让程序在引用过期的对象之后继续悄悄地做错误的事请。</li>
+</ul>
+</blockquote>
+<p>不建议：</p>
+<blockquote>
+<ul>
+<li>不建议程序结束后立即清空所有对象的引用，因为这是Java垃圾回收器的工作。清空对象引用应该是例外而不是规范，程序结束后立即清空所有对象的引用是不必要的，也是不可取的。</li>
+</ul>
+</blockquote>
+<p>常见的内存溢出：</p>
+<blockquote>
+<ul>
+<li>当一个类自己管理内存时，应警惕内存泄漏的问题</li>
+<li>缓存：防止业务数据缓存之后没有及时清空</li>
+<li>监听器和回调，防止程序执行时间过长导致内存溢出。</li>
+</ul>
+</blockquote>
+<p>总结：</p>
+<blockquote>
+<ul>
+<li>内存溢出问题通常情况下不会变现出明显的故障，但一些没必要的内存消耗可能一直存在于系统中，建议多留意代码细节和实现方式，减少不必要的内存消耗。</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="8-避免使用-Finalizer-和-Cleaner-机制"><a href="#8-避免使用-Finalizer-和-Cleaner-机制" class="headerlink" title="8. 避免使用 Finalizer 和 Cleaner 机制"></a>8. 避免使用 Finalizer 和 Cleaner 机制</h2><p>//TODO 待完成</p>
+<hr>
+
+            </div>
+
+            <!-- Post information -->
+            
+    <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 post-tags">
+        
+            <i class="fas fa-tag" style="vertical-align: middle;font-size: .8rem;"></i>
+            tags:&nbsp;
+            
+            
+        
+            <a href="/tags/Java/">#Java</a>
+        
+    </div>
+
+            
+    <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
+        <ul class="pagination d-block text-center">
+            
+            
+                <li class="next page-item d-inline"><a href="/2020/06/18/%E9%AA%8C%E8%AF%81XML/" class="page-link float-right">上一页  &rarr;</a></li>
+            
+        </ul>
+    </div>
+
+
+            
+                <!-- Comments -->
+                
+
+                
+
+            
+
+        </div>
+    </div>
+</article> 
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+    <style>
+        #toc-content .toc-link::before {
+            background-color: transparent;
+            max-height: 25px;
+        }
+
+        #toc-content .toc-link.is-active-link::before {
+            background-color: #404040;
+        }
+    </style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    <div class="ui-toc dropup scrollspy-body pull-right" style="right: 3%;">
+        <button type="button" class="toc-btn btn btn-light" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
+            <i class="fas fa-list"></i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right p-2"  aria-labelledby="tocLabel">
+            <div class="toc-widget">
+                <div id="toc-content" class="text-truncate">
+                </div>
+            </div>
+            <div class="toc-menu pt-3 pl-4">
+                <a class="expand-toggle d-block py-1" href="#"><span class="expand-text">全部展开</span><span class="close-text" style="display: none;">全部收起</span></a>
+                <a class="back-to-top d-block py-1" href="#">回到顶部</a>
+                <a class="go-to-bottom d-block py-1" href="#">移至底部</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        tocbot.init({
+            // Where to render the table of contents.
+            tocSelector: '#toc-content',
+            // Where to grab the headings to build the table of contents.
+            contentSelector: 'article',
+            // Which headings to grab inside of the contentSelector element.
+            headingSelector: 'h1, h2, h3',
+            // For headings inside relative or absolute positioned containers within content.
+            hasInnerContainers: true,
+        });
+    </script>
+
+
+    
+
+
+    <!-- Footer -->
+    <hr />
+
+<!-- Footer -->
+<footer id="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 text-center">
+                <ul class="list-inline">
+                    
+
+                    
+
+                    
+
+                    
+
+                    
+
+                    
+                </ul>
+                <ul class="copyright footer-menu list-inline">
+                    
+                    
+                        <li class="list-inline-item">
+                            
+                            
+                            <a href="/">
+                                
+                                    Home
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/archives">
+                                
+                                    Archives
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/tags">
+                                
+                                    Tags
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/categories">
+                                
+                                    Categories
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/about">
+                                
+                                    About
+                                
+                            </a>
+                        </li>
+                    
+                </ul>
+                <p class="copyright footer-author">
+                    &copy; -2020 
+                    <a rel="external" class="copyright-link" href="" target="_blank">sungm</a><br/>
+                    Powered by <a rel="external" class="copyright-link" href="https://hexo.io/" target="_blank">Hexo</a>  
+                    <span class="copyright-split">&nbsp;|&nbsp;&nbsp;</span>
+                    Theme <a rel="external" class="copyright-link" href="https://github.com/luswdev/hexo-theme-clean.git" target="_blank">Clean</a>
+                    
+                    
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    <!-- After footer scripts -->
+    <!-- jQuery -->
+<script src="//cdn.jsdelivr.net/npm/jquery@2.1.4/dist/jquery.min.js"></script>
+
+<!-- For drop down -->
+<script src="//cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="//cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
+<!-- Gallery -->
+<script src="//cdn.jsdelivr.net/npm/lightgallery@1.6.11/dist/js/lightgallery-all.min.js"></script>
+<!-- Busuanzi -->
+
+
+<!-- Search script -->
+<script src="/js/search.js"></script>
+<script type="text/javascript">
+    $(function () {
+        searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+    });
+</script>
+
+
+<script src="/js/main.js"></script>
+
+
+    <!-- Search Modal -->
+    <!-- Modal -->
+<div class="modal fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+        <div class="modal-content overflow-auto">
+            <div class="modal-header">
+                <input type="text" class="form-control" placeholder="搜索关键词..." id="searchInput">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div id="searchResult">
+                    <div class="search-empty text-center text-muted p-5">
+                        <i class="far fa-meh"></i>
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>
