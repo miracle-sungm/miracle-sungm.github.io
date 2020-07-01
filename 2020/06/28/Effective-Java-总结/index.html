@@ -24,7 +24,7 @@
 
 <!--Open Graph Title-->
 
-    <meta property="og:title" content="Effective Java 总结"/>
+    <meta property="og:title" content="Effective Java"/>
 
 
 <!--Open Graph Description-->
@@ -61,7 +61,7 @@
 
 <!-- Title -->
 
-<title>Effective Java 总结 - Miracle&#39;s Blog</title>
+<title>Effective Java - Miracle&#39;s Blog</title>
 
 <!-- Bootstrap Core CSS -->
 <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
@@ -129,7 +129,7 @@
         <div class="row">
             <div class="col-lg-12 col-md-12 text-center">
                 <div class="post-heading text-white">
-                    <h1>Effective Java 总结</h1>
+                    <h1>Effective Java</h1>
                     
                 </div>
             </div>
@@ -331,6 +331,36 @@
 <hr>
 <h2 id="8-避免使用-Finalizer-和-Cleaner-机制"><a href="#8-避免使用-Finalizer-和-Cleaner-机制" class="headerlink" title="8. 避免使用 Finalizer 和 Cleaner 机制"></a>8. 避免使用 Finalizer 和 Cleaner 机制</h2><p>//TODO 待完成</p>
 <hr>
+<h2 id="9-使用-try-with-resource-语句代替-try-finally-语句"><a href="#9-使用-try-with-resource-语句代替-try-finally-语句" class="headerlink" title="9. 使用 try-with-resource 语句代替 try-finally 语句"></a>9. 使用 try-with-resource 语句代替 try-finally 语句</h2><p>说明：</p>
+<blockquote>
+<ul>
+<li>Java 类库中有很多必须通过调用 close 方法手动关闭的资源。比如 InputStream、OutputStream 等等。年轻的程序员可能经常忽略关闭这些资源，未及时关闭资源会影响系统性能，甚至终止程序。尽管这些资源中有很多使用 finalizer 机制作为安全网，但 finalizer 机制却不能很好地工作。</li>
+<li>在我们 JDK 7 发布之前，我们使用 try-finally 语句保证资源的正确关闭是最佳的方式，JDK 7 发布之后，我们可以通过使用 try-with-resource 更好的关闭资源，但是使用 try-with-resource 关闭资源必须满足一些条件，详见下文。</li>
+</ul>
+</blockquote>
+<p>使用 try-with-resource 语句需满足的条件：</p>
+<blockquote>
+<ul>
+<li>资源需实现 AutoCloseable 接口， Java 类库中和第三方类库中许多类都实现或继承了该接口，如果我们程序设计的类需要关闭资源，那么这个类也应该实现 AutoCloseable 接口。</li>
+</ul>
+</blockquote>
+<p>使用 try-with-resource 语句的优点：</p>
+<blockquote>
+<p>比 try-finally 语句更加精简，具有更好的可读性，并且生成的异常更有用。<br>比 try-finally 语句关闭资源更容易，也不会出错。</p>
+</blockquote>
+<p>使用 try-with-resource 语句关闭资源时的特征：</p>
+<blockquote>
+<p>先声明的资源先关闭，后声明的资源后关闭。</p>
+</blockquote>
+<p>例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;先关闭 fin 资源, 接着关闭 fout 资源, 最后关闭 out 资源</span><br><span class="line">try (</span><br><span class="line">        FileInputStream fin &#x3D; new FileInputStream(input);</span><br><span class="line">        FileOutputStream fout &#x3D; new FileOutputStream(output);</span><br><span class="line">        GZIPOutputStream out &#x3D; new GZIPOutputStream(fout)</span><br><span class="line">) &#123;</span><br><span class="line">    &#x2F;&#x2F;do something...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>备注：</p>
+<blockquote>
+<p>这里不详细说明 try-with-resource 语句的用法，想要了解的同学可以网上搜索相关资料。</p>
+</blockquote>
+<hr>
+<h2 id="10-重写-equals-方法时遵守通用约定"><a href="#10-重写-equals-方法时遵守通用约定" class="headerlink" title="10. 重写 equals 方法时遵守通用约定"></a>10. 重写 equals 方法时遵守通用约定</h2><p>//TODO 待完成</p>
 
             </div>
 
@@ -350,6 +380,8 @@
             
     <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
         <ul class="pagination d-block text-center">
+            
+                <li class="previous page-item d-inline"><a href="/2020/07/01/%E5%87%BD%E6%95%B0%E5%BC%8F%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86/" class="page-link float-left">&larr;  下一页</a></li>
             
             
                 <li class="next page-item d-inline"><a href="/2020/06/18/%E9%AA%8C%E8%AF%81XML/" class="page-link float-right">上一页  &rarr;</a></li>
