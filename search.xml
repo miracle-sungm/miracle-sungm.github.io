@@ -1,6 +1,605 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Java NIO 概述</title>
+    <url>/2020/06/13/Java-NIO-%E6%A6%82%E8%BF%B0/</url>
+    <content><![CDATA[<h2 id="1-什么是NIO？"><a href="#1-什么是NIO？" class="headerlink" title="1.  什么是NIO？"></a>1.  什么是NIO？</h2><blockquote>
+<p>java.nio 全称 java non-blocking IO，是指 JDK1.4 及以上版本里提供的新 API（New IO） ，为所有的原始类型（ boolean 类型除外）提供<a href="https://baike.baidu.com/item/%E7%BC%93%E5%AD%98/100710" target="_blank" rel="noopener">缓存</a>支持的数据容器，使用它可以提供非阻塞式的高伸缩性网络。【百度百科】 </p>
+</blockquote>
+<a id="more"></a>
+
+<hr>
+<p>优点：NIO 比 AIO（异步I/O） 更加强大，处理数据更快。它可以大大的提高IO吞吐量，常用在高性能服务器上面。</p>
+<h2 id="2-NIO原理"><a href="#2-NIO原理" class="headerlink" title="2. NIO原理"></a>2. NIO原理</h2><blockquote>
+<p>使用较少的线程执行更多的任务。</p>
+</blockquote>
+<blockquote>
+<p>如下图所示，使用较少的线程，通过 Selector 选择器来执行不同 Channel 通道中的任务，执行任务再结合 AIO（异步I/O）就能发挥服务器的最大性能，更大程度上提升服务器的运行效率。</p>
+</blockquote>
+<p><div class="img-item" data-src="https://upload-images.jianshu.io/upload_images/11864885-0a82f84999ea3e77.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-sub-html=".caption"><img src="https://upload-images.jianshu.io/upload_images/11864885-0a82f84999ea3e77.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="原理图"><div class="img-caption d-block text-center"><span class="center-caption text-muted border-bottom">原理图</span></div></div></p>
+<hr>
+<h2 id="3-与常规-I-O-的区别"><a href="#3-与常规-I-O-的区别" class="headerlink" title="3. 与常规 I/O 的区别"></a>3. 与常规 I/O 的区别</h2><blockquote>
+<p>常规 I/O （如 InputStream 和 OutputStream）存在很大的缺点，就是他们是阻塞的，而 NIO 解决的就是常规 I/O 执行效率低的问题，即采用非阻塞高性能运行的方式来避免以前以前“笨拙” I/O 带来的低效率问题。NIO在大文件操作上相比常规 I/O 更加优秀，对常规 I/O 使用的 byte[] 和 char[] 进行封装，采用 ByteBuffer 类来操作数据，再结合针对 File 或者 Socket 技术的 Channel，采用同步非阻塞技术实现高性能处理。</p>
+</blockquote>
+<hr>
+<h2 id="4-缓冲区介绍"><a href="#4-缓冲区介绍" class="headerlink" title="4. 缓冲区介绍"></a>4. 缓冲区介绍</h2><blockquote>
+<p>在使用传统的I/O流API时，如 InputStream 和 OutputStream ，以及Reader和Writer联合使用时，常常把字节流中的数据放入byte[]字节数组中，或把字符流中的数据放入char[]字符数组中，也可以从 byte[] 或 char[] 数组中获取数据来实现功能上的需求，但由于在 Java 语言中对 array 数组自身进行操作的 API 非常少，常用的操作仅仅是 length 属性和下标[x]了，在 JDK 中也没有提供更加方便操作数组中数据的 API，如果对数组中的数据进行高级处理，需要程序员自己写代码进行实现，处理的方式是比较原始的，这个问题可以使用 NIO 技术中的缓冲区Buffer类来解决，它提供了很多工具方法，大大提高了程序开发的效率。</p>
+</blockquote>
+<hr>
+<p>推荐书籍：</p>
+<ul>
+<li>[高洪岩]《Java多线程编程核心技术》</li>
+<li>[高洪岩]《Java并发编程：核心方法与框架》</li>
+<li>[高洪岩]《NIO与Socket编程技术指南》</li>
+</ul>
+]]></content>
+      <tags>
+        <tag>Java</tag>
+        <tag>Java NIO</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Lambda 表达式</title>
+    <url>/2020/06/13/Lambda-%E8%A1%A8%E8%BE%BE%E5%BC%8F/</url>
+    <content><![CDATA[<h2 id="1-引言"><a href="#1-引言" class="headerlink" title="1. 引言"></a>1. 引言</h2><blockquote>
+<p>我希望通过这一篇文章、可以让读者全面了解Lambda表达式、也许不够全面、我在尽力完善它、也希望你能留下宝贵意见、在下方留言。文章有点长、请耐心看完。</p>
+</blockquote>
+<a id="more"></a>
+
+<h2 id="2-描述"><a href="#2-描述" class="headerlink" title="2. 描述"></a>2. 描述</h2><blockquote>
+<ul>
+<li>可以将 Lambda 表达式理解为简洁的表示可传递匿名函数的一种方式：它没有名称，但它有参数列表、函数主体、返回类型，可能还有一个可抛出的异常列表。</li>
+<li>Lambda 表达式是实现行为参数化的一种方式，这种方式比起使用匿名内部类的方式更加的简洁、易读。</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="3-组成"><a href="#3-组成" class="headerlink" title="3. 组成"></a>3. 组成</h2><blockquote>
+<ul>
+<li>参数</li>
+<li>箭头</li>
+<li>主体</li>
+</ul>
+</blockquote>
+<p><strong>例如</strong><br> <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">(Apple a1, Apple a2) -&gt; a1.getWeight().compareTo(a2.getWeight())</span><br></pre></td></tr></table></figure></p>
+<hr>
+<h2 id="4-Lambda-语法"><a href="#4-Lambda-语法" class="headerlink" title="4. Lambda 语法"></a>4. Lambda 语法</h2><blockquote>
+<ul>
+<li>(parameters) -&gt; expression  </li>
+<li>(parameters) -&gt; { statements; }  </li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="5-有效的-Lambda-表达式"><a href="#5-有效的-Lambda-表达式" class="headerlink" title="5.有效的 Lambda 表达式"></a>5.有效的 Lambda 表达式</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;* 表示有一个 String 类型的入参，且返回一个 int 类型的结果。  *&#x2F;</span><br><span class="line">(String s) -&gt; s.length()</span><br><span class="line"></span><br><span class="line">&#x2F;* 表示有一个 Apple 类型的入参，且返回一个 boolean 类型的结果。 *&#x2F;</span><br><span class="line">(Apple a) -&gt; a.getWeight() &gt; 150</span><br><span class="line"></span><br><span class="line">&#x2F;* 表示有两个 int 类型的入参，且没有返回值（返回 void ）。 *&#x2F;</span><br><span class="line">(int x, int y) -&gt; &#123;</span><br><span class="line">    System.out.println(&quot;Result:&quot;);</span><br><span class="line">    System.out.println(x+y);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;* 表示没有入参，且返回一个 int 类型的结果。 *&#x2F;</span><br><span class="line">() -&gt; 1</span><br><span class="line"></span><br><span class="line">&#x2F;* 表示有两个 Apple 类型的入参，且返回一个 int 类型的结果，比较两个苹果的重量。 *&#x2F;</span><br><span class="line">(Apple a1, Apple a2) -&gt; a1.getWeight().compareTo(a2.getWeight())</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="6-使用-Lambda-表达式"><a href="#6-使用-Lambda-表达式" class="headerlink" title="6. 使用 Lambda 表达式"></a>6. 使用 Lambda 表达式</h2><h3 id="6-1-函数式接口"><a href="#6-1-函数式接口" class="headerlink" title="6.1 函数式接口"></a>6.1 函数式接口</h3><blockquote>
+<ul>
+<li><strong>定义：</strong>只定义了一个抽象方法的接口称为函数式接口。接口中可以包含多个 default 方法，只要接口只定义了一个抽象方法、那么该接口就是函数式接口，比如java.lang.Runnable 类和 java.util.Comparator 类。</li>
+<li><strong>作用：</strong>Lambda 表达式允许你直接以内联的形式为函数式接口的抽象方法提供实现，且将整个表达式作为函数式接口的实例（具体来说、Lambda表达式是函数式接口的一个实例）。</li>
+<li><strong>备注：</strong>可以使用 @FunctionalInterface 注解注明接口是函数式接口，提高代码的可读性。若接口包含多个抽象方法（非函数式接口），使用该注解将会编译报错。</li>
+</ul>
+</blockquote>
+<p><em>示例</em></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">    Runnable r1 &#x3D; () -&gt; System.out.println(&quot; 使用 Lambda 表达式。  &quot;);</span><br><span class="line"></span><br><span class="line">    Runnable r2 &#x3D; new Runnable() &#123;</span><br><span class="line">        @Override</span><br><span class="line">        public void run() &#123;</span><br><span class="line">            System.out.println(&quot; 使用匿名类。  &quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    process(r1);</span><br><span class="line">    process(r2);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static void process(Runnable r1) &#123;</span><br><span class="line">    if (Objects.nonNull(r1)) &#123;</span><br><span class="line">        r1.run();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><strong>结论：</strong> 函数式接口通过使用 Lambda 表达式的方式创建接口的一个实例，比通过匿名类的方式，代码更加的简洁大方。</p>
+</blockquote>
+<h3 id="6-2-常用函数式接口"><a href="#6-2-常用函数式接口" class="headerlink" title="6.2 常用函数式接口"></a>6.2 常用函数式接口</h3><blockquote>
+<p>Java API中已经有几个函数式接口，如Comparable、Runnable、Callable</p>
+</blockquote>
+<h5 id="6-2-1-Predicate"><a href="#6-2-1-Predicate" class="headerlink" title="6.2.1 Predicate"></a>6.2.1 Predicate</h5><p>   java.util.function.Predicate<T> 接口是一个函数式接口，只包含一个test()抽象方法，接受泛型 T 对象，返回一个 boolean 值。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 定义学生类</span><br><span class="line"> *</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2019&#x2F;8&#x2F;7</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class Student &#123;</span><br><span class="line"></span><br><span class="line">    private String id;</span><br><span class="line">    private String name;</span><br><span class="line">    private String sex;</span><br><span class="line">    private Integer age;</span><br><span class="line">    private Double weight;</span><br><span class="line">    private Long height;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;省略了 get&#x2F;set方法, 默认构造函数, 全构造函数</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * 主类</span><br><span class="line"> *</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2019-08-23 16:24</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class Main &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        &#x2F;* 通过Lambda表达式创建一个Predicate实例（test方法表达式为年龄大于10岁） *&#x2F;</span><br><span class="line">        Predicate&lt;Student&gt; agePredicate &#x3D; (Student student) -&gt; student.getAge() &gt; 10;</span><br><span class="line">        &#x2F;* 通过Lambda表达式创建一个Predicate实例（test方法表达式为身高高于165cm） *&#x2F;</span><br><span class="line">        Predicate&lt;Student&gt; heightPredicate &#x3D; (Student student) -&gt; student.getHeight() &gt; 165L;</span><br><span class="line"></span><br><span class="line">        &#x2F;* 创建一些数据 *&#x2F;</span><br><span class="line">        Student sungm &#x3D; new Student(&quot;1&quot;, &quot;sungm&quot;, &quot;1&quot;, 25, 69.1D, 178L);</span><br><span class="line">        Student sunzm &#x3D; new Student(&quot;2&quot;, &quot;sunzm&quot;, &quot;1&quot;, 22, 60.0D, 176L);</span><br><span class="line">        Student sunhw &#x3D; new Student(&quot;3&quot;, &quot;sunhw&quot;, &quot;1&quot;, 1 , 4.1D , 53L);</span><br><span class="line">        Student sunll &#x3D; new Student(&quot;4&quot;, &quot;sunll&quot;, &quot;2&quot;, 24, 55.2D, 168L);</span><br><span class="line">        List&lt;Student&gt; students &#x3D; Arrays.asList(sungm, sunzm, sunhw, sunll);</span><br><span class="line"></span><br><span class="line">        &#x2F;* 筛选出年龄大于10岁的学生 *&#x2F;</span><br><span class="line">        List&lt;Student&gt; ageFilterStudents &#x3D; students.stream().filter(agePredicate).collect(Collectors.toList());</span><br><span class="line"></span><br><span class="line">        &#x2F;* 筛选出年龄小于或等于10岁的学生 *&#x2F;</span><br><span class="line">        List&lt;Student&gt; ageNegateFilterStudents &#x3D; students.stream().filter(agePredicate.negate()).collect(Collectors.toList());</span><br><span class="line"></span><br><span class="line">        &#x2F;* 筛选出身高高于165cm的学生 *&#x2F;</span><br><span class="line">        List&lt;Student&gt; heightFilterStudents &#x3D; students.stream().filter(heightPredicate).collect(Collectors.toList());</span><br><span class="line"></span><br><span class="line">        &#x2F;* 筛选出 年龄大于10岁 且 身高高于165cm 的学生 *&#x2F;</span><br><span class="line">        List&lt;Student&gt; ageAndHeightFilterStudents &#x3D; students.stream().filter(agePredicate.and(heightPredicate))</span><br><span class="line">                .collect(Collectors.toList());</span><br><span class="line"></span><br><span class="line">        &#x2F;* 筛选出 年龄大于10岁 或 身高高于165cm 的学生 *&#x2F;</span><br><span class="line">        List&lt;Student&gt; ageOrHeightFilterStudents &#x3D; students.stream().filter(agePredicate.or(heightPredicate))</span><br><span class="line">                .collect(Collectors.toList());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> <strong>注意：</strong> Stream.filter()方法接收一个Predicate<T>入参，可用于Java 8 的 Stream 中，其源码如下</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public interface Stream&lt;T&gt; extends BaseStream&lt;T, Stream&lt;T&gt;&gt; &#123;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * Returns a stream consisting of the elements of this stream that match</span><br><span class="line">     * the given predicate.</span><br><span class="line">     *</span><br><span class="line">     * &lt;p&gt;This is an &lt;a href&#x3D;&quot;package-summary.html#StreamOps&quot;&gt;intermediate</span><br><span class="line">     * operation&lt;&#x2F;a&gt;.</span><br><span class="line">     *</span><br><span class="line">     * @param predicate a &lt;a href&#x3D;&quot;package-summary.html#NonInterference&quot;&gt;non-interfering&lt;&#x2F;a&gt;,</span><br><span class="line">     *                  &lt;a href&#x3D;&quot;package-summary.html#Statelessness&quot;&gt;stateless&lt;&#x2F;a&gt;</span><br><span class="line">     *                  predicate to apply to each element to determine if it</span><br><span class="line">     *                  should be included</span><br><span class="line">     * @return the new stream</span><br><span class="line">     *&#x2F;</span><br><span class="line">    Stream&lt;T&gt; filter(Predicate&lt;? super T&gt; predicate);</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;其他方法省略</span><br><span class="line">    ... </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="6-2-2-Consumer"><a href="#6-2-2-Consumer" class="headerlink" title="6.2.2 Consumer"></a>6.2.2 Consumer</h5><p> java.util.function.Consumer<T> 接口是一个函数式接口，只包含一个accept()抽象方法，接受泛型 T 对象，没有返回值（void）。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    &#x2F;&#x2F;造一批假数据、用于测试</span><br><span class="line">    List&lt;Student&gt; students &#x3D; createStudents();</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;定义一个Consumer</span><br><span class="line">    Consumer&lt;Student&gt; studentConsumer &#x3D; (Student student) -&gt; student.setOverWeight(student.getWeight() &gt; 50);</span><br><span class="line">    for (Student student : students) &#123;</span><br><span class="line">        &#x2F;&#x2F;消费student</span><br><span class="line">        studentConsumer.accept(student);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="6-2-3-Function"><a href="#6-2-3-Function" class="headerlink" title="6.2.3 Function"></a>6.2.3 Function</h5><p>  java.util.function.Function&lt;T, R&gt;接口定义了一个叫作apply的方法，它接受一个<br>泛型T的对象，并返回一个泛型R的对象。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    &#x2F;&#x2F;造一批假数据、用于测试</span><br><span class="line">    List&lt;Student&gt; students &#x3D; Test1.createStudents();</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;定义一个function, 其接收一个student对象，返回student的名称</span><br><span class="line">    Function&lt;Student, String&gt; function &#x3D; Student::getName;</span><br><span class="line">    List&lt;String&gt; studentNames &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">    for (Student student : students) &#123;</span><br><span class="line">        studentNames.add(function.apply(student));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    System.out.println(studentNames);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意</strong></p>
+<blockquote>
+<p>任何函数式接口都不允许抛出受检异常（checked exception）。如果你需要 Lambda 表达式来抛出异常，有两种办法：定义一个自己的函数式接口，并声明受检异常，或者把Lambda 包在一个try/catch块中。</p>
+</blockquote>
+<hr>
+<h2 id="7-类型检查、类型推断及限制"><a href="#7-类型检查、类型推断及限制" class="headerlink" title="7. 类型检查、类型推断及限制"></a>7. 类型检查、类型推断及限制</h2><h3 id="7-1-类型检查"><a href="#7-1-类型检查" class="headerlink" title="7.1 类型检查"></a>7.1 类型检查</h3><blockquote>
+<p>Lambda 类型是从使用 Lambda 的上下文推断出来的，上下文中 Lambda 表达式需要的类型成为目标类型。</p>
+</blockquote>
+<p><div class="img-item" data-src="https://upload-images.jianshu.io/upload_images/11864885-fdfe543b21cdabb2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-sub-html=".caption"><img src="https://upload-images.jianshu.io/upload_images/11864885-fdfe543b21cdabb2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="类型检查示例图"><div class="img-caption d-block text-center"><span class="center-caption text-muted border-bottom">类型检查示例图</span></div></div></p>
+<h3 id="7-2-同样的-Lambda-不同的函数式接口"><a href="#7-2-同样的-Lambda-不同的函数式接口" class="headerlink" title="7.2 同样的 Lambda , 不同的函数式接口"></a>7.2 同样的 Lambda , 不同的函数式接口</h3><blockquote>
+<p>有了目标类型的概念，同一个 Lambda 表达式就可以与不同的函数式接口联系起来，只要他们的抽象方法能够兼容。</p>
+</blockquote>
+<p><strong>举例</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Callable&lt;Integer&gt; c &#x3D; () -&gt; 42;</span><br><span class="line">PrivilegedAction&lt;Integer&gt; p &#x3D; () -&gt; 42;</span><br></pre></td></tr></table></figure>
+<p><strong>特殊的void兼容规则</strong></p>
+<blockquote>
+<p>如果一个Lambda的主体是一个语句表达式， 它就和一个返回void的函数描述符兼容（当<br>然需要参数列表也兼容）</p>
+</blockquote>
+<p><strong>举例</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; Predicate返回了一个boolean</span><br><span class="line">Predicate&lt;String&gt; p &#x3D; s -&gt; list.add(s);</span><br><span class="line">&#x2F;&#x2F; Consumer返回了一个void</span><br><span class="line">Consumer&lt;String&gt; b &#x3D; s -&gt; list.add(s);</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-3-类型推断"><a href="#7-3-类型推断" class="headerlink" title="7.3 类型推断"></a>7.3 类型推断</h3><blockquote>
+<p>你还可以进一步简化你的代码。Java编译器会从上下文（目标类型）推断出用什么函数式接口来配合 Lambda 表达式，这意味着它也可以推断出适合 Lambda 的签名，因为函数描述符可以通过目标类型来得到。这样做的好处在于，编译器可以了解 Lambda 表达式的参数类型，这样就可以在 Lambda 语法中省去标注参数类型。</p>
+</blockquote>
+<p><strong>举例</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 没有推断类型</span><br><span class="line">Comparator&lt;Apple&gt; c &#x3D; (Apple a1, Apple a2) -&gt; a1.getWeight().compareTo(a2.getWeight());</span><br><span class="line">&#x2F;&#x2F; 有推断类型</span><br><span class="line">Comparator&lt;Apple&gt; c &#x3D; (a1, a2) -&gt; a1.getWeight().compareTo(a2.getWeight());</span><br></pre></td></tr></table></figure>
+<p><strong>注意</strong></p>
+<blockquote>
+<p>有时候显式写出类型更易读，有时候去掉它们更易读。没有什么法则说哪种更好；对于如何让代码更易读，你必须做出自己的选择。</p>
+</blockquote>
+<h3 id="7-4-使用局部变量"><a href="#7-4-使用局部变量" class="headerlink" title="7.4 使用局部变量"></a>7.4 使用局部变量</h3><blockquote>
+<p>我们迄今为止所介绍的所有Lambda表达式都只用到了其主体里面的参数。但Lambda表达式也允许使用自由变量（不是参数，而是在外层作用域中定义的变量），就像匿名类一样。</p>
+</blockquote>
+<p><strong>举例</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int x &#x3D; 1;</span><br><span class="line">&#x2F;&#x2F; Lambda 表达式使用了自由变量 x</span><br><span class="line">IntFunction&lt;Integer&gt; function &#x3D; y -&gt; x + y;</span><br></pre></td></tr></table></figure>
+
+<p><strong>说明</strong></p>
+<blockquote>
+<p>Lambda 可以无限制的获取实例变量和静态变量，但局部变量必须显示声明为 final 类型、或者事实上是 final 类型。换句话说，Lambda表达式只能捕获指派给它们的局部变量一次。（注：捕获实例变量可以被看作捕获最终局部变量this。）</p>
+</blockquote>
+<p><strong>为什么局部变量有这些限制</strong></p>
+<blockquote>
+<ol>
+<li>实例变量保存在堆中，局部变量保存在栈中。如果 Lambda 可以直接访问局部变量，则使用 Lambda的线程，它可能会在分配该局部变量的线程收回该局部变量之后访问该局部变量。因此，Java在访问自由局部变量时，实际上是在访问它的副本，而不是访问原始变量。如果局部变量仅仅赋值一次那就没有什么区别了——因此就有了这个限制。</li>
+<li>这一限制不鼓励你使用改变外部变量的典型命令式编程模式</li>
+</ol>
+</blockquote>
+<h3 id="7-5-方法引用"><a href="#7-5-方法引用" class="headerlink" title="7.5 方法引用"></a>7.5 方法引用</h3><blockquote>
+<p>方法引用可以让你重复的使用现有的方法定义，并像 Lambda 一样传递他们。在一些情况下，比起使用Lambda表达式，它们似乎更易读，感觉也更自然。</p>
+</blockquote>
+<p><strong>举例</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;使用 Lambda 表达式</span><br><span class="line">inventory.sort((Apple a1, Apple a2) -&gt; a1.getWeight().compareTo(a2.getWeight()));</span><br><span class="line">&#x2F;&#x2F;使用方法引用</span><br><span class="line">inventory.sort(comparing(Apple::getWeight));</span><br></pre></td></tr></table></figure>
+
+<h4 id="7-5-1-普通方法引用"><a href="#7-5-1-普通方法引用" class="headerlink" title="7.5.1 普通方法引用"></a>7.5.1 普通方法引用</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;定义</span><br><span class="line">public class Apple &#123;</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F;省略其他属性...</span><br><span class="line">    private String weight;</span><br><span class="line"></span><br><span class="line">    public String getWeight() &#123;</span><br><span class="line">        return this.weight;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;普通方法引用</span><br><span class="line">inventory.sort(comparing(Apple::getWeight));</span><br></pre></td></tr></table></figure>
+
+<h4 id="7-5-1-构造方法引用"><a href="#7-5-1-构造方法引用" class="headerlink" title="7.5.1 构造方法引用"></a>7.5.1 构造方法引用</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;定义</span><br><span class="line">public class Apple &#123;</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F;省略其他属性...</span><br><span class="line">    &#x2F;&#x2F;定义默认构造函数</span><br><span class="line">    public Apple() &#123;</span><br><span class="line">        return this.weight;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;构造方法引用(下例引用的是默认构造函数)</span><br><span class="line">Supplier&lt;Apple&gt; supplier &#x3D; Apple::new;</span><br></pre></td></tr></table></figure>
+
+<h4 id="7-5-1-静态方法引用"><a href="#7-5-1-静态方法引用" class="headerlink" title="7.5.1 静态方法引用"></a>7.5.1 静态方法引用</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;定义</span><br><span class="line">public class Apple &#123;</span><br><span class="line"></span><br><span class="line">    private static final Apple INSTANCE &#x3D; new Apple(); </span><br><span class="line">    </span><br><span class="line">    private Apple() &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static Apple getInstance() &#123;</span><br><span class="line">        return INSTANCE;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;静态方法引用</span><br><span class="line">Apple::getInstance;</span><br></pre></td></tr></table></figure>]]></content>
+      <tags>
+        <tag>Java 8 新特性</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>XML基础</title>
+    <url>/2020/06/16/XML%E5%9F%BA%E7%A1%80/</url>
+    <content><![CDATA[<h2 id="1-XML概述"><a href="#1-XML概述" class="headerlink" title="1. XML概述"></a>1. XML概述</h2><p>XML : 可拓展标记语言（Extensible Markup Language, XML）。 是一个非常有用的、用来描述结构化信息的技术。</p>
+<h3 id="1-1-XML文档头"><a href="#1-1-XML文档头" class="headerlink" title="1.1 XML文档头"></a>1.1 XML文档头</h3><p>XML 文档应当以一个文档头开始，严格来说，文档头是可选的，但是强烈建议使用文档头。文档类型定义的是确保文档正确的一个重要机制。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-XML元素"><a href="#1-2-XML元素" class="headerlink" title="1.2 XML元素"></a>1.2 XML元素</h3><p>XML 文档的正文包含根元素，根元素包含其他元素。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;config&gt;</span><br><span class="line">    &lt;title&gt;miracle&#39;s blog&lt;&#x2F;title&gt;</span><br><span class="line">    &lt;content&gt;XML基础与解析&lt;&#x2F;content&gt;</span><br><span class="line">&lt;&#x2F;config&gt;</span><br></pre></td></tr></table></figure>
+<p>注意：</p>
+<blockquote>
+<p>元素可以有子元素、文本或两者兼有。在设计XML文档时，对元素的设计的最好的方式是：要么全部使用元素，要么全部使用文本，这样做的目的是方便解析。</p>
+</blockquote>
+<p>我们应该避免下面这种设计:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;!-- 不推荐：元素config既包含文本、又包含元素 --&gt;</span><br><span class="line">&lt;config&gt;</span><br><span class="line">    miracle&#39;s blog</span><br><span class="line">    &lt;content&gt;XML基础与解析&lt;&#x2F;content&gt;</span><br><span class="line">&lt;&#x2F;config&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-3-XML属性"><a href="#1-3-XML属性" class="headerlink" title="1.3 XML属性"></a>1.3 XML属性</h3><p>XML 元素可以包含属性，例如：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;config version&#x3D;&quot;1.0&quot;&gt;&lt;&#x2F;config&gt;</span><br></pre></td></tr></table></figure>
+
+<p>问题：什么时候使用属性，什么时候使用元素？</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">文档一：</span><br><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;config version&#x3D;&quot;1.0&quot;&gt;&lt;&#x2F;config&gt;</span><br><span class="line"></span><br><span class="line">文档二：</span><br><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;config&gt;</span><br><span class="line">    &lt;version&gt;1.0&lt;&#x2F;version&gt;</span><br><span class="line">&lt;&#x2F;config&gt;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>从上面示例来看，文档一似乎比文档二要更简单一些。然而，属性的灵活性要比元素差很多，通常情况下属性只应该用来作为值的解释，而不是用来作为值。</p>
+</blockquote>
+<p>结论：</p>
+<blockquote>
+<p>优先使用元素，通常情况下属性只应该用来作为值的解释，而不是用来作为值。</p>
+</blockquote>
+<p>注意：</p>
+<blockquote>
+<p>在HTML中，所有的属性都不会展示在HTML中。</p>
+</blockquote>
+<hr>
+<h2 id="2-XML与属性文件（property-file）的区别"><a href="#2-XML与属性文件（property-file）的区别" class="headerlink" title="2. XML与属性文件（property file）的区别"></a>2. XML与属性文件（property file）的区别</h2><p>属性文件包含了各种键值对，例如：</p>
+<blockquote>
+<p>name=sungm</p>
+</blockquote>
+<p>区别：</p>
+<blockquote>
+<ol>
+<li>属性文件结构更加简洁，在要描述的信息更加复杂的场景下，属性文件不能更好的处理它，XML文件可以处理更加复杂的结构化信息。</li>
+<li>属性文件采用的是单一的平面结构，XML文件采用的是层次结构，也可以说是树型结构，更加清晰。</li>
+<li>属性文件中key是不能重复的，XML文件可以存在重复的元素。</li>
+</ol>
+</blockquote>
+<p>结论：</p>
+<blockquote>
+<p>在处理不复杂的结构化信息时优先考虑使用属性文件，在处理复杂的结构化信息时考虑使用XML文件</p>
+</blockquote>
+<hr>
+<h2 id="3-XML与HTML的区别"><a href="#3-XML与HTML的区别" class="headerlink" title="3. XML与HTML的区别"></a>3. XML与HTML的区别</h2><p>HTML : 超文本标记语言（Hyper Text Markup Language）</p>
+<p>区别：</p>
+<blockquote>
+<ol>
+<li>HTML对大小写不敏感；XML对大小写敏感</li>
+<li>在HTML中，如果从上下文中可以分清哪里是段落或者列表项的结尾，那么结束标签可以省略；XML不可省略结束标签</li>
+<li>在XML中，只有单个标签而没有对应的结束标签的元素必须以 / 结尾。</li>
+<li>在XML中，属性值必须用引号括起来；在HTML中，引号可有可无</li>
+<li>在HTML中，属性可以没有值；在XML中，属性必须都有属性值</li>
+</ol>
+</blockquote>
+<h2 id="4-良好的XML文档格式"><a href="#4-良好的XML文档格式" class="headerlink" title="4. 良好的XML文档格式"></a>4. 良好的XML文档格式</h2><blockquote>
+<ul>
+<li>XML文档必须有根元素，且只能有1个根元素</li>
+<li>XML文档必须有关闭标签</li>
+<li>XML文档对大小写敏感</li>
+<li>XML对大小写敏感</li>
+<li>XML元素必须被正确的嵌套</li>
+<li>XML属性必须加引号</li>
+</ul>
+</blockquote>
+]]></content>
+      <tags>
+        <tag>Java</tag>
+        <tag>XML</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Check工具类</title>
+    <url>/2020/06/15/Check%E5%B7%A5%E5%85%B7%E7%B1%BB/</url>
+    <content><![CDATA[<blockquote>
+<p>直接上代码</p>
+</blockquote>
+<blockquote>
+<p>定义Check注解</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import java.lang.annotation.ElementType;</span><br><span class="line">import java.lang.annotation.Retention;</span><br><span class="line">import java.lang.annotation.RetentionPolicy;</span><br><span class="line">import java.lang.annotation.Target;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since  : 2020-06-15</span><br><span class="line"> *&#x2F;</span><br><span class="line">@Target(ElementType.FIELD)</span><br><span class="line">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="line">public @interface Check &#123;</span><br><span class="line"></span><br><span class="line">    boolean notNull() default false;</span><br><span class="line"></span><br><span class="line">    boolean notEmpty() default false;</span><br><span class="line"></span><br><span class="line">    boolean notBlank() default false;</span><br><span class="line"></span><br><span class="line">    String regex() default &quot;&quot;;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>校验工具类</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import demo.annotations.Check;</span><br><span class="line"></span><br><span class="line">import java.lang.reflect.Field;</span><br><span class="line">import java.util.Objects;</span><br><span class="line">import java.util.regex.Pattern;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2020-06-15 16:01</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class CheckUtils &#123;</span><br><span class="line"></span><br><span class="line">    private static final String EMPTY &#x3D; &quot;&quot;;</span><br><span class="line"></span><br><span class="line">    public static &lt;T&gt; void check(T t) throws Exception &#123;</span><br><span class="line">        Class clazz &#x3D; t.getClass();</span><br><span class="line">        Field[] fields &#x3D; clazz.getDeclaredFields();</span><br><span class="line">        if (fields.length &#x3D;&#x3D; 0) &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        for (Field field : fields) &#123;</span><br><span class="line">            field.setAccessible(true);</span><br><span class="line">            check(field.get(t), field);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void check(Object value, Field field) throws Exception &#123;</span><br><span class="line">        Check check &#x3D; field.getAnnotation(Check.class);</span><br><span class="line">        if (Objects.isNull(check)) &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if (check.notNull() &amp;&amp; Objects.isNull(value)) &#123;</span><br><span class="line">            throw new Exception(&quot;Field (&quot; + field.getName() + &quot;) cannot be null.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        if (check.notEmpty() &amp;&amp; (Objects.isNull(value) || EMPTY.equals(value.toString()))) &#123;</span><br><span class="line">            throw new Exception(&quot;Field (&quot; + field.getName() + &quot;) cannot be empty.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        if (check.notBlank() &amp;&amp; (Objects.isNull(value) || EMPTY.equals(value.toString().trim()))) &#123;</span><br><span class="line">            throw new Exception(&quot;Field (&quot; + field.getName() + &quot;) cannot be blank.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        checkRegex(field, value, check.regex());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void checkRegex(Field field, Object value, String regex) throws Exception &#123;</span><br><span class="line">        if (EMPTY.equals(regex) || Objects.isNull(value)) &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if (!Pattern.matches(regex, value.toString())) &#123;</span><br><span class="line">            throw new Exception(&quot;Wrong data format : Field (&quot; + field.getName() + &quot;), value  is : &quot; + &quot; value&quot; + &quot;, regex is : &quot; + regex);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p>DTO 数据传输层</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class PersonDto &#123;</span><br><span class="line"></span><br><span class="line">    @Check(notBlank &#x3D; true)</span><br><span class="line">    private String name;</span><br><span class="line">    @Check(notNull &#x3D; true, regex &#x3D; &quot;\\d\\d&quot;)</span><br><span class="line">    private Integer age;</span><br><span class="line">    @Check(notBlank &#x3D; true, regex &#x3D; &quot;男|女&quot;)</span><br><span class="line">    private String sex;</span><br><span class="line">    private String idCard;</span><br><span class="line">    private String accessNumber;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;省略了getter、setter方法</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>程序入口</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2020-06-15 17:50</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class Main &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        PersonDto personDto &#x3D; new PersonDto();</span><br><span class="line">        personDto.setIdCard(&quot;0001&quot;);</span><br><span class="line">        personDto.setName(&quot;孙广明&quot;);</span><br><span class="line">        personDto.setSex(&quot;男&quot;);</span><br><span class="line">        personDto.setAge(25);</span><br><span class="line">        CheckUtils.check(personDto);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+      <tags>
+        <tag>Java</tag>
+        <tag>工具类</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Stream</title>
+    <url>/2020/07/01/%E5%87%BD%E6%95%B0%E5%BC%8F%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86/</url>
+    <content><![CDATA[<h2 id="1-Stream"><a href="#1-Stream" class="headerlink" title="1. Stream"></a>1. Stream</h2><p>概念：</p>
+<blockquote>
+<ul>
+<li>Stream：支持数据处理操作的源（集合、数组、输入/输出资源）生成的元素序列 。</li>
+<li>备注： 流是Java 8 API的新成员，它允许你以声明性方式处理数据集合。</li>
+<li><a href="https://miracle-sungm.github.io/2020/06/13/Lambda-%E8%A1%A8%E8%BE%BE%E5%BC%8F/" target="_blank" rel="noopener">Lambda表达式博客链接</a>   </li>
+</ul>
+</blockquote>
+<p>定义：</p>
+<blockquote>
+<ol>
+<li>源： 流会使用一个提供数据的源，如集合、数组或输入/输出资源。 请注意，从有序集合生成流时会保留原有的顺序。由列表生成的流，其元素顺序与列表一致。</li>
+<li>元素序列： 就像集合一样，流也提供了一个接口，可以访问特定元素类型的一组有序值。因为集合是数据结构，所以它的主要目的是以特定的时间/空间复杂度存储和访问元素（如ArrayList 与 LinkedList）。但流的目的在于表达计算，比如你前面见到的filter、sorted和map。集合讲的是数据，流讲的是计算。</li>
+<li>数据处理操作: 流的数据处理功能支持类似于数据库的操作，以及函数式编程语言中的常用操作，如filter、map、reduce、find、match、sort等。流操作可以顺序执行，也可并行执行。</li>
+</ol>
+</blockquote>
+<p>特点：</p>
+<blockquote>
+<ol>
+<li>流水线： 很多流操作本身会返回一个流，这样多个操作就可以链接起来，形成一个大的流水线。</li>
+<li>内部迭代： 与使用迭代器显式迭代的集合不同，流的迭代操作是在背后进行的。</li>
+</ol>
+</blockquote>
+<p>流的特性：</p>
+<blockquote>
+<ol>
+<li>只能遍历一次。和迭代器类似，流只能遍历一次。遍历完之后，我们就说这个流已经被消费掉了。你可以从原始数据源那里再获得一个新的流来重新遍历一遍，就像迭代器一样（这里假设它是集合之类的可重复的源，如果是I/O通道就没戏了）。</li>
+</ol>
+</blockquote>
+<p>Stream API 带来的好处：</p>
+<blockquote>
+<ul>
+<li>声明性 ： 更简洁易读</li>
+<li>可复合 ： 更灵活</li>
+<li>可并行 ： 性能更好</li>
+</ul>
+</blockquote>
+<p>流与集合</p>
+<blockquote>
+<p>粗略地说，集合与流之间的差异就在于什么时候进行计算。集合是一个内存中的数据结构，集合中的每个元素都得先计算出来才能添加到集合中。相比之下，流则是在概念上固定的数据结构（你不能添加或删除元素），其元素则是按需计算的。</p>
+</blockquote>
+<p>流与集合的差异：</p>
+<blockquote>
+<ol>
+<li>遍历数据的方式不同。使用Collection接口需要用户去做迭代（比如用for-each），这称为外部迭代。相反，Streams库使用内部迭代——它帮你把迭代做了，还把得到的流值存在了某个地方，你只要给出一个函数说要干什么就可以了。</li>
+<li>//TODO 待补充</li>
+</ol>
+</blockquote>
+<h4 id="API"><a href="#API" class="headerlink" title="API"></a>API</h4><div class="table-responsive">
+<table class="table table-bordered table-striped">
+<thead>
+<tr>
+<th align="left">操作</th>
+<th align="left">类型</th>
+<th align="left">返回类型</th>
+<th align="left">函数式接口</th>
+<th align="left">函数描述符</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">filter</td>
+<td align="left">中间</td>
+<td align="left">Stream<T></td>
+<td align="left">Predicate<T></td>
+<td align="left">T -&gt; boolean</td>
+</tr>
+<tr>
+<td align="left">distinct</td>
+<td align="left">中间(有状态 &amp; 无界)</td>
+<td align="left">Stream<T></td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">skip</td>
+<td align="left">中间(有状态 &amp; 有界)</td>
+<td align="left">Stream<T> long</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">limit</td>
+<td align="left">中间(有状态 &amp; 有界)</td>
+<td align="left">Stream<T> long</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">map</td>
+<td align="left">中间</td>
+<td align="left">Stream<R></td>
+<td align="left">Function&lt;T, R&gt;</td>
+<td align="left">T -&gt; R</td>
+</tr>
+<tr>
+<td align="left">flatMap</td>
+<td align="left">中间</td>
+<td align="left">Stream<R></td>
+<td align="left">Function&lt;T, Stream<R>&gt;</td>
+<td align="left">T -&gt; Stream<R></td>
+</tr>
+<tr>
+<td align="left">sorted</td>
+<td align="left">中间(有状态 &amp; 无界)</td>
+<td align="left">Stream<T></td>
+<td align="left">Comparator<T></td>
+<td align="left">(T, T) -&gt; int</td>
+</tr>
+<tr>
+<td align="left">anyMatch</td>
+<td align="left">终端</td>
+<td align="left">boolean</td>
+<td align="left">Predicate<T></td>
+<td align="left">T -&gt; boolean</td>
+</tr>
+<tr>
+<td align="left">noneMatch</td>
+<td align="left">终端</td>
+<td align="left">boolean</td>
+<td align="left">Predicate<T></td>
+<td align="left">T -&gt; boolean</td>
+</tr>
+<tr>
+<td align="left">allMatch</td>
+<td align="left">终端</td>
+<td align="left">boolean</td>
+<td align="left">Predicate<T></td>
+<td align="left">T -&gt; boolean</td>
+</tr>
+<tr>
+<td align="left">findAny</td>
+<td align="left">终端</td>
+<td align="left">Optional<T></td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">findFirst</td>
+<td align="left">终端</td>
+<td align="left">Optional<T></td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">forEach</td>
+<td align="left">终端</td>
+<td align="left">void</td>
+<td align="left">Consumer<T></td>
+<td align="left">T -&gt; void</td>
+</tr>
+<tr>
+<td align="left">collect</td>
+<td align="left">终端</td>
+<td align="left">R</td>
+<td align="left">Collector&lt;T, A, R&gt;</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">reduce</td>
+<td align="left">终端(有状态 &amp; 有界)</td>
+<td align="left">Optional<T></td>
+<td align="left">BinaryOperator<T></td>
+<td align="left">(T, T) -&gt; T</td>
+</tr>
+<tr>
+<td align="left">count</td>
+<td align="left">终端</td>
+<td align="left">long</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+<h2 id="2-使用-Stream"><a href="#2-使用-Stream" class="headerlink" title="2. 使用 Stream"></a>2. 使用 Stream</h2><h4 id="2-1-filter"><a href="#2-1-filter" class="headerlink" title="2.1 filter"></a>2.1 filter</h4><p>过滤流元素：该操作会接受一个 Predicate 函数式接口对象（一个返回boolean的函数）作为参数，并返回一个包括所有符合谓词的元素的流。</p>
+ <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    &#x2F;&#x2F;过滤出元素小于5的集合</span><br><span class="line">    List&lt;Integer&gt; result &#x3D; numbers.stream().filter(number -&gt; number &lt; 5).collect(Collectors.toList());</span><br><span class="line">    System.out.println(result.toString());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">[1, 2, 3, 4]</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-2-distinct"><a href="#2-2-distinct" class="headerlink" title="2.2 distinct"></a>2.2 distinct</h4><p>对流元素去重：根据流元素的hashCode和equals方法判断元素是否重复。</p>
+ <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 1, 1, 2, 2, 2, 3, 3);</span><br><span class="line">    &#x2F;&#x2F;去重数据</span><br><span class="line">    List&lt;Integer&gt; result &#x3D; numbers.stream().distinct().collect(Collectors.toList());</span><br><span class="line">    System.out.println(result.toString());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">[1, 2, 3]</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-3-limit"><a href="#2-3-limit" class="headerlink" title="2.3 limit"></a>2.3 limit</h4><p>截断流：该操作会接受一个 int 类型的入参，返回一个不超过给定长度的流。（如果流是有序的，则最多返回前 n 个元素）。</p>
+ <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    &#x2F;&#x2F;截断前2个元素</span><br><span class="line">    List&lt;Integer&gt; result &#x3D; numbers.stream().limit(2).collect(Collectors.toList());</span><br><span class="line">    System.out.println(result.toString());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">[1, 2]</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-4-skip"><a href="#2-4-skip" class="headerlink" title="2.4 skip"></a>2.4 skip</h4><p>跳过元素：该操作会接受一个 int 类型的入参，返回扔掉前 n 个元素的流。</p>
+ <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    &#x2F;&#x2F;跳过前2个元素，返回剩余元素的集合</span><br><span class="line">    List&lt;Integer&gt; result &#x3D; numbers.stream().skip(2).collect(Collectors.toList());</span><br><span class="line">    System.out.println(result.toString());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">[3, 4, 5, 6, 7, 8]</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-5-map"><a href="#2-5-map" class="headerlink" title="2.5 map"></a>2.5 map</h4><p>映射元素： 它会接受一个函数作为参数。这个函数会被应用到每个元素上，并将其映射成一个新的元素。</p>
+ <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    &#x2F;&#x2F;将int元素映射成String元素</span><br><span class="line">    List&lt;String&gt; result &#x3D; numbers.stream().map(Object::toString).collect(Collectors.toList());</span><br><span class="line">    System.out.println(result.toString());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">[1, 2, 3, 4, 5, 6, 7, 8]</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-6-flatMap"><a href="#2-6-flatMap" class="headerlink" title="2.6 flatMap"></a>2.6 flatMap</h4><p>扁平化流： 当流的元素可以转换成另外一个流时，扁平化流会得到一个流元素的流。</p>
+ <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;String&gt; a &#x3D; Arrays.asList(&quot;a&quot;, &quot;a1&quot;);</span><br><span class="line">    List&lt;String&gt; b &#x3D; Arrays.asList(&quot;b&quot;, &quot;b1&quot;);</span><br><span class="line">    List&lt;String&gt; c &#x3D; Arrays.asList(&quot;c&quot;, &quot;c1&quot;);</span><br><span class="line"></span><br><span class="line">    List&lt;List&lt;String&gt;&gt; listList &#x3D; Arrays.asList(a, b, c);</span><br><span class="line">    &#x2F;&#x2F;扁平化流：将 Stream&lt;List&lt;String&gt;&gt; 流转换成一个新的 Stream&lt;String&gt; 流。</span><br><span class="line">    List&lt;String&gt; list &#x3D; listList.stream().flatMap(List::stream).collect(Collectors.toList());</span><br><span class="line">    System.out.println(list.toString());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果：</span><br><span class="line">[a, a1, b, b1, c, c1]</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-7-anyMatch"><a href="#2-7-anyMatch" class="headerlink" title="2.7 anyMatch"></a>2.7 anyMatch</h4><p>判断流中是否存在元素与谓词（Predicate）匹配：接受一个 Predicate 对象，返回流元素是否存在与谓词匹配。（注意：该方法执行时，若找到一个相匹配的元素，则终止操作，并返回true）</p>
+ <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    if (numbers.stream().anyMatch(number -&gt; number &#x3D;&#x3D; 2)) &#123;</span><br><span class="line">        System.out.println(&quot;成功匹配到数字2&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果：</span><br><span class="line">成功匹配到数字2</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-8-allMatch"><a href="#2-8-allMatch" class="headerlink" title="2.8 allMatch"></a>2.8 allMatch</h4><p>判断流中所有元素是否都与谓词（Predicate）匹配：接受一个 Predicate 对象，返回流元素是否都与谓词匹配。 （注意：该方法执行时，若找到一个不匹配的元素，则终止操作，并返回false）</p>
+ <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;String&gt; list &#x3D; Arrays.asList(&quot;1,&quot;, &quot;2,&quot;, &quot;3,&quot;, &quot;4,&quot;, &quot;5,&quot;);</span><br><span class="line">    &#x2F;&#x2F;判断元素是否都以&#39;,&#39;结尾</span><br><span class="line">    if (list.stream().allMatch(s -&gt; s.endsWith(&quot;,&quot;))) &#123;</span><br><span class="line">        System.out.println(&quot;所有元素均以&#39;,&#39;结尾&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果：</span><br><span class="line">所有元素均以&#39;,&#39;结尾</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-9-nonMatch"><a href="#2-9-nonMatch" class="headerlink" title="2.9 nonMatch"></a>2.9 nonMatch</h4><p>与allMatch相反，nonMatch是判断流中所有元素是否都不与谓词（Predicate）匹配：接受一个 Predicate 对象，返回流元素是否都不与谓词匹配。 （注意：该方法执行时，若找到一个相匹配的元素，则终止操作，并返回false）</p>
+ <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;String&gt; list &#x3D; Arrays.asList(&quot;1,&quot;, &quot;2,&quot;, &quot;3,&quot;, &quot;4,&quot;, &quot;5,&quot;);</span><br><span class="line">    &#x2F;&#x2F;判断元素是否都以&#39; &#39;结尾</span><br><span class="line">    if (list.stream().noneMatch(s -&gt; s.endsWith(&quot; &quot;))) &#123;</span><br><span class="line">        System.out.println(&quot;所有元素都不以&#39; &#39;结尾&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果：</span><br><span class="line">所有元素都不以&#39; &#39;结尾</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-10-findFirst"><a href="#2-10-findFirst" class="headerlink" title="2.10 findFirst"></a>2.10 findFirst</h4><p>找到流中第一个元素，返回一个 Optional 对象。一般情况下配合filter使用，筛选流中元素后得到流中第一个元素。（注意：该方法执行时，找到第一个元素之后，则终止操作，并返回包含第一个元素的Optional对象）</p>
+ <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    &#x2F;&#x2F;找到第一个小于5的元素</span><br><span class="line">    Optional&lt;Integer&gt; number &#x3D; numbers.stream().filter(n -&gt; n &lt; 5).findFirst();</span><br><span class="line">    System.out.println(number.orElse(null));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果：</span><br><span class="line">1</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-11-findAny"><a href="#2-11-findAny" class="headerlink" title="2.11 findAny"></a>2.11 findAny</h4><p>找到流中任何一个元素，返回一个 Optional 对象。一般情况下配合filter使用，筛选流中元素后得到流中任何一个元素。（注意：该方法执行时，找到任何一个元素之后，则终止操作，并返回包含匹配的元素的Optional对象。该方法在并行情况下效率更佳）</p>
+ <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    &#x2F;&#x2F;找到任何一个小于5的元素</span><br><span class="line">    Optional&lt;Integer&gt; number &#x3D; numbers.stream().filter(n -&gt; n &lt; 5).findAny();</span><br><span class="line">    System.out.println(number.orElse(null));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果：</span><br><span class="line">1</span><br></pre></td></tr></table></figure>
+
+<p><strong>何时使用 findFirst 和 findAny</strong></p>
+<blockquote>
+<p>你可能会想，为什么会同时有findFirst和findAny呢？答案是并行。找到第一个元素在并行上限制更多。如果你不关心返回的元素是哪个，请使用findAny，因为它在使用并行流时限制较少。</p>
+</blockquote>
+<h4 id="2-12-reduce"><a href="#2-12-reduce" class="headerlink" title="2.12 reduce"></a>2.12 reduce</h4><p>规约：包含2个方法</p>
+<p><strong>第一个方法</strong></p>
+<p>该方法接受一个与流元素类型相同的泛型对象 T 和一个 BinaryOperator(该类继承了BiFunction)对象；返回一个与流元素类型相同的规约后的对象。<br> <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;Stream 源码</span><br><span class="line">T reduce(T identity, BinaryOperator&lt;T&gt; accumulator);</span><br></pre></td></tr></table></figure></p>
+<p>举例：对集合内元素求和<br> <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    int number &#x3D; numbers.stream().reduce(0, Integer::sum);</span><br><span class="line">    System.out.println(number);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">36</span><br></pre></td></tr></table></figure><br>举例：对集合内元素求积<br> <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    int number &#x3D; numbers.stream().reduce(1, (a, b) -&gt; a * b);</span><br><span class="line">    System.out.println(number);</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">40320</span><br></pre></td></tr></table></figure></p>
+<p><strong>第二个方法</strong></p>
+<p>该方法接受一个 BinaryOperator<T> 对象；返回 Optional<T> 对象。<br> <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;Stream 源码</span><br><span class="line">Optional&lt;T&gt; reduce(BinaryOperator&lt;T&gt; accumulator);</span><br></pre></td></tr></table></figure></p>
+<p>举例：对集合内元素求和<br> <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    Optional&lt;Integer&gt; numberOptional &#x3D; numbers.stream().reduce(Integer::sum);</span><br><span class="line">    System.out.println(numberOptional.orElse(0));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">36</span><br></pre></td></tr></table></figure><br>举例：对集合内元素求积<br> <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    Optional&lt;Integer&gt; numberOptional &#x3D; numbers.stream().reduce((a, b) -&gt; a * b);</span><br><span class="line">    System.out.println(numberOptional.orElse(0));</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">40320</span><br></pre></td></tr></table></figure><br>举例：对集合内元素最大值(若需要并行执行，可使用并行流parallelStream())<br> <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    Optional&lt;Integer&gt; numberOptional &#x3D; numbers.stream().reduce(Integer:max);</span><br><span class="line">    System.out.println(numberOptional.orElse(0));</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">8</span><br></pre></td></tr></table></figure><br>举例：对集合内元素最小值(若需要并行执行，可使用并行流parallelStream())<br> <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    Optional&lt;Integer&gt; numberOptional &#x3D; numbers.stream().reduce(Integer:min);</span><br><span class="line">    System.out.println(numberOptional.orElse(0));</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">1</span><br></pre></td></tr></table></figure></p>
+<p><strong>2个方法的区别</strong></p>
+<blockquote>
+<p>第一个方法接受了一个对象，执行规约方法时会将入参与流中的元素规约到一起。<br>第二个方法只对流中的元素进行规约，因为源可能是空的，所以返回一个Optional对象。</p>
+</blockquote>
+<h4 id="2-13-count"><a href="#2-13-count" class="headerlink" title="2.13 count"></a>2.13 count</h4><p>对流中元素进行计数，返回一个long类型的对象。</p>
+<p>举例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    long count &#x3D; numbers.stream().count();</span><br><span class="line">    System.out.println(count));</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">8</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="2-14-注意："><a href="#2-14-注意：" class="headerlink" title="2.14 注意："></a>2.14 注意：</h4><blockquote>
+<ul>
+<li>filter、sorted、map和collect等操作是与具体线程模型无关的高层次构件，所以它们的内部实现可以是单线程的，也可能透明地充分利用你的多核架构！在实践中，这意味着你用不着为了让某些数据处理任务并行而去操心线程和锁了，Stream API都替你做好了！</li>
+<li>对于流而言，某些操作（例如allMatch、anyMatch、noneMatch、findFirst和findAny）不用处理整个流就能得到结果。只要找到一个元素，就可以有结果了。同样，limit也是一个短路操作：它只需要创建一个给定大小的流，而用不着处理流中所有的元素。在碰到无限大小的流的时候，这种操作就有用了：它们可以把无限流变成有限流</li>
+</ul>
+</blockquote>
+<hr>
+]]></content>
+      <tags>
+        <tag>Java 8 新特性</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>做有意义的命名</title>
+    <url>/2020/06/13/%E5%81%9A%E6%9C%89%E6%84%8F%E4%B9%89%E7%9A%84%E5%91%BD%E5%90%8D/</url>
+    <content><![CDATA[<blockquote>
+<p>软件中随处可见命名。我们给变量、函数、参数、类和封包命名。我们给源代码及源码所在的目录命名。我们给 jar 文件、 war 文件 和 ear 文件命名。有很多命名要做、不妨做好它。下面列出几条简单规则。</p>
+</blockquote>
+<a id="more"></a>
+
+<h2 id="1-名副其实"><a href="#1-名副其实" class="headerlink" title="1. 名副其实"></a>1. 名副其实</h2><blockquote>
+<p>变量、函数或类的名称应该已经答复了所有的大问题。它该告诉你，它为什么会存在，它做了什么事，应该怎么用。如果名称需要注释来补充，那就不算是名副其实。</p>
+</blockquote>
+<hr>
+<h2 id="2-避免误导"><a href="#2-避免误导" class="headerlink" title="2. 避免误导"></a>2. 避免误导</h2><blockquote>
+<ol>
+<li><strong>避免留下掩藏代码本意的错误线索。</strong><br>例如：使用某些专有名词作为变量名，使用缩写。</li>
+<li><strong>避免使用与本意相悖的词</strong><br>例如：<br>String[] accountList = new String[10];  accountList 实质是一个数组对象，命名后缀为<br>List产生误导作用。</li>
+<li><strong>避免使用外形相似的命名</strong><br>例如：两个变量</li>
+<li><strong>避免使用小写字母 l 与 大写字母 O 作为变量名，跟数组1 和数字 0 难以区分。</strong></li>
+</ol>
+</blockquote>
+<hr>
+<h2 id="3-做有意义的区分"><a href="#3-做有意义的区分" class="headerlink" title="3. 做有意义的区分"></a>3. 做有意义的区分</h2><blockquote>
+<p>如果只是为了满足编译器或解释器的需要而写代码，肯定会制造麻烦。</p>
+</blockquote>
+<blockquote>
+<p>#####错误示例：<br><strong>1. 添加数字系列，这样的名称纯属误导。</strong></p>
+<ul>
+<li>例如：<br>定义两个学生对象<br>Student student1 = new Student();<br>Student student2 = new Student();</li>
+</ul>
+<p><strong>2. 少使用废话，废话都是冗余。要区分名称，要以读者能鉴别之处来区分。</strong></p>
+<ul>
+<li><p>例如：假设已有一个 Product 类，还有ProductInfo 类 和 ProductData 类，虽然名称不同，意思却无差别。 Info 和 Data 就i想 a、an、the 一样，都是意义含混的废话。</p>
+</li>
+<li><p>例如：如果你需要获取账户信息，你该调用那个方法呢 ？<br>getAccount();<br>getAccounts();<br>getAccountInfo();</p>
+</li>
+<li><p>例如：<br>moneyAmount 和 money 没区别，<br>customerInfo 与 customer 没区别，<br>accountData 和 account 没区别，<br>theMessage 和 message 没区别 。</p>
+</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="4-使用读的出来的名称"><a href="#4-使用读的出来的名称" class="headerlink" title="4. 使用读的出来的名称"></a>4. 使用读的出来的名称</h2><blockquote>
+<p>#####错误示例：<br><strong>1.  使用汉语拼音，只会让别人觉得你写的代码很 low.</strong></p>
+<p><strong>2. 使用罕见的英语词汇</strong></p>
+</blockquote>
+<hr>
+<h2 id="5-使用可搜索的名称"><a href="#5-使用可搜索的名称" class="headerlink" title="5. 使用可搜索的名称"></a>5. 使用可搜索的名称</h2><blockquote>
+<p>#####建议:<br><strong>1. 使用长名称，长名称胜于短名称。</strong></p>
+<ul>
+<li>例如： WORK_DAYS_PER_WEEK 比数字 5 好找得多。</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="6-避免使用编码"><a href="#6-避免使用编码" class="headerlink" title="6. 避免使用编码"></a>6. 避免使用编码</h2><blockquote>
+<p>编码已经太多，不需要自找麻烦。</p>
+</blockquote>
+<hr>
+<h2 id="7-避免使用前缀"><a href="#7-避免使用前缀" class="headerlink" title="7. 避免使用前缀"></a>7. 避免使用前缀</h2><blockquote>
+<p>不必使用 m_ 前缀来表名成员变量，很多时候阅读代码的人不会去看前缀，直接看后面有意义的名称，前缀反而成了废代码。</p>
+</blockquote>
+<hr>
+<h2 id="8-接口和实现"><a href="#8-接口和实现" class="headerlink" title="8. 接口和实现"></a>8. 接口和实现</h2><p>略</p>
+<hr>
+<h2 id="9-类名"><a href="#9-类名" class="headerlink" title="9. 类名"></a>9. 类名</h2><blockquote>
+<p>类名和对象名应该是名词或者名词短语，不应该是动词。</p>
+<ul>
+<li>正例：Customer</li>
+<li>反例：CustomerInfo、CustomerData、 Data .</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="10-方法名"><a href="#10-方法名" class="headerlink" title="10. 方法名"></a>10. 方法名</h2><blockquote>
+<p>方法名应该是动词或者动词短语，不应该是名词。</p>
+<ul>
+<li>例如：getName(); setName() 等。</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="11-避免思维映射"><a href="#11-避免思维映射" class="headerlink" title="11. 避免思维映射"></a>11. 避免思维映射</h2><blockquote>
+<ul>
+<li>例如：变量 i、j 通常用于 for 循环中，传统惯用这种单字母名词作为循环计数器，并不是一种好的选择。</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="12-避免使用双关语"><a href="#12-避免使用双关语" class="headerlink" title="12. 避免使用双关语"></a>12. 避免使用双关语</h2><blockquote>
+<ul>
+<li>例如：add方法用来添加一个对象，返回结果应该是布尔类型（添加成功或者失败） ，如果你需要添加一个对象并返回添加后产生的新值，建议使用append方法和insert方法。</li>
+</ul>
+</blockquote>
+]]></content>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Effective Java</title>
     <url>/2020/06/28/Effective-Java-%E6%80%BB%E7%BB%93/</url>
     <content><![CDATA[<h2 id="1-考虑使用静态工厂方法代替构造方法"><a href="#1-考虑使用静态工厂方法代替构造方法" class="headerlink" title="1. 考虑使用静态工厂方法代替构造方法"></a>1. 考虑使用静态工厂方法代替构造方法</h2><p>例如：</p>
@@ -209,333 +808,105 @@
       </tags>
   </entry>
   <entry>
-    <title>Lambda 表达式</title>
-    <url>/2020/06/13/Lambda-%E8%A1%A8%E8%BE%BE%E5%BC%8F/</url>
-    <content><![CDATA[<h2 id="1-引言"><a href="#1-引言" class="headerlink" title="1. 引言"></a>1. 引言</h2><blockquote>
-<p>我希望通过这一篇文章、可以让读者全面了解Lambda表达式、也许不够全面、我在尽力完善它、也希望你能留下宝贵意见、在下方留言。文章有点长、请耐心看完。</p>
+    <title>java.lang.Object 类详解</title>
+    <url>/2020/06/12/java-lang-Object-%E7%B1%BB%E8%AF%A6%E8%A7%A3/</url>
+    <content><![CDATA[<h2 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h2><blockquote>
+<p>Object 方法包括 5 个非 final 类型的方法，分别是：clone、hashCode、equals、toString、finalize 方法；包括 4 个 final 方法，分别是 getClass、wait、notify、notifyAll 方法。其中 clone 方法是 protected 方法，finalize 方法自 Java 9 之后被废弃。</p>
 </blockquote>
 <a id="more"></a>
 
-<h2 id="2-描述"><a href="#2-描述" class="headerlink" title="2. 描述"></a>2. 描述</h2><blockquote>
-<ul>
-<li>可以将 Lambda 表达式理解为简洁的表示可传递匿名函数的一种方式：它没有名称，但它有参数列表、函数主体、返回类型，可能还有一个可抛出的异常列表。</li>
-<li>Lambda 表达式是实现行为参数化的一种方式，这种方式比起使用匿名内部类的方式更加的简洁、易读。</li>
-</ul>
-</blockquote>
-<hr>
-<h2 id="3-组成"><a href="#3-组成" class="headerlink" title="3. 组成"></a>3. 组成</h2><blockquote>
-<ul>
-<li>参数</li>
-<li>箭头</li>
-<li>主体</li>
-</ul>
-</blockquote>
-<p><strong>例如</strong><br> <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">(Apple a1, Apple a2) -&gt; a1.getWeight().compareTo(a2.getWeight())</span><br></pre></td></tr></table></figure></p>
-<hr>
-<h2 id="4-Lambda-语法"><a href="#4-Lambda-语法" class="headerlink" title="4. Lambda 语法"></a>4. Lambda 语法</h2><blockquote>
-<ul>
-<li>(parameters) -&gt; expression  </li>
-<li>(parameters) -&gt; { statements; }  </li>
-</ul>
-</blockquote>
-<hr>
-<h2 id="5-有效的-Lambda-表达式"><a href="#5-有效的-Lambda-表达式" class="headerlink" title="5.有效的 Lambda 表达式"></a>5.有效的 Lambda 表达式</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;* 表示有一个 String 类型的入参，且返回一个 int 类型的结果。  *&#x2F;</span><br><span class="line">(String s) -&gt; s.length()</span><br><span class="line"></span><br><span class="line">&#x2F;* 表示有一个 Apple 类型的入参，且返回一个 boolean 类型的结果。 *&#x2F;</span><br><span class="line">(Apple a) -&gt; a.getWeight() &gt; 150</span><br><span class="line"></span><br><span class="line">&#x2F;* 表示有两个 int 类型的入参，且没有返回值（返回 void ）。 *&#x2F;</span><br><span class="line">(int x, int y) -&gt; &#123;</span><br><span class="line">    System.out.println(&quot;Result:&quot;);</span><br><span class="line">    System.out.println(x+y);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;* 表示没有入参，且返回一个 int 类型的结果。 *&#x2F;</span><br><span class="line">() -&gt; 1</span><br><span class="line"></span><br><span class="line">&#x2F;* 表示有两个 Apple 类型的入参，且返回一个 int 类型的结果，比较两个苹果的重量。 *&#x2F;</span><br><span class="line">(Apple a1, Apple a2) -&gt; a1.getWeight().compareTo(a2.getWeight())</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="6-使用-Lambda-表达式"><a href="#6-使用-Lambda-表达式" class="headerlink" title="6. 使用 Lambda 表达式"></a>6. 使用 Lambda 表达式</h2><h3 id="6-1-函数式接口"><a href="#6-1-函数式接口" class="headerlink" title="6.1 函数式接口"></a>6.1 函数式接口</h3><blockquote>
-<ul>
-<li><strong>定义：</strong>只定义了一个抽象方法的接口称为函数式接口。接口中可以包含多个 default 方法，只要接口只定义了一个抽象方法、那么该接口就是函数式接口，比如java.lang.Runnable 类和 java.util.Comparator 类。</li>
-<li><strong>作用：</strong>Lambda 表达式允许你直接以内联的形式为函数式接口的抽象方法提供实现，且将整个表达式作为函数式接口的实例（具体来说、Lambda表达式是函数式接口的一个实例）。</li>
-<li><strong>备注：</strong>可以使用 @FunctionalInterface 注解注明接口是函数式接口，提高代码的可读性。若接口包含多个抽象方法（非函数式接口），使用该注解将会编译报错。</li>
-</ul>
-</blockquote>
-<p><em>示例</em></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">    Runnable r1 &#x3D; () -&gt; System.out.println(&quot; 使用 Lambda 表达式。  &quot;);</span><br><span class="line"></span><br><span class="line">    Runnable r2 &#x3D; new Runnable() &#123;</span><br><span class="line">        @Override</span><br><span class="line">        public void run() &#123;</span><br><span class="line">            System.out.println(&quot; 使用匿名类。  &quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    process(r1);</span><br><span class="line">    process(r2);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static void process(Runnable r1) &#123;</span><br><span class="line">    if (Objects.nonNull(r1)) &#123;</span><br><span class="line">        r1.run();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="1-clone-方法"><a href="#1-clone-方法" class="headerlink" title="1. clone 方法"></a>1. clone 方法</h2><h3 id="1-1-源码"><a href="#1-1-源码" class="headerlink" title="1.1 源码"></a>1.1 源码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@HotSpotIntrinsicCandidate protected native Object clone() throws CloneNotSupportedException;</span><br></pre></td></tr></table></figure>
+
+<p>说明：调用该方法实现一个对象的浅复制，创建并且返回此对象的副本（“副本”的准确含义可能依赖于对象的类）。 Object.clone() 方法是一个 protected 方法，类只有实现 java.lang.Cloneable 接口，并重写 Object.clone() 方法才能使用该 clone 方法，否则抛出 CloneNotSupportedException 。</p>
+<h3 id="1-2-clone-与-copy-的区别"><a href="#1-2-clone-与-copy-的区别" class="headerlink" title="1.2 clone 与 copy 的区别"></a>1.2 clone 与 copy 的区别</h3><p>假设我们有一个 Person 对象，并假设 Person 类实现了Cloneable 接口并重写了 clone 方法。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Person a &#x3D; new Person();</span><br><span class="line">&#x2F;&#x2F;copy 的做法通常为:</span><br><span class="line">Person b &#x3D; a;</span><br><span class="line">&#x2F;&#x2F;clone 的做法通常为:</span><br><span class="line">Person c &#x3D; a.clone();</span><br></pre></td></tr></table></figure>
+
+<p>说明：<br>（1）copy 是将对象 a 的引用赋值给对象 b，赋值之后对象 a 和对象 b 都指向同一个引用 a。<br>（2）clone 是实现对象的浅拷贝，产生一个新的对象，对象 c 与 对象 a 不指向同一个引用。</p>
 <blockquote>
-<p><strong>结论：</strong> 函数式接口通过使用 Lambda 表达式的方式创建接口的一个实例，比通过匿名类的方式，代码更加的简洁大方。</p>
+<p>clone 在内存中实际操作是：将对象 a 的内存，拷贝一个副本，并重新分配一块内存区域用于保存副本。</p>
 </blockquote>
-<h3 id="6-2-常用函数式接口"><a href="#6-2-常用函数式接口" class="headerlink" title="6.2 常用函数式接口"></a>6.2 常用函数式接口</h3><blockquote>
-<p>Java API中已经有几个函数式接口，如Comparable、Runnable、Callable</p>
-</blockquote>
-<h5 id="6-2-1-Predicate"><a href="#6-2-1-Predicate" class="headerlink" title="6.2.1 Predicate"></a>6.2.1 Predicate</h5><p>   java.util.function.Predicate<T> 接口是一个函数式接口，只包含一个test()抽象方法，接受泛型 T 对象，返回一个 boolean 值。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 定义学生类</span><br><span class="line"> *</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2019&#x2F;8&#x2F;7</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class Student &#123;</span><br><span class="line"></span><br><span class="line">    private String id;</span><br><span class="line">    private String name;</span><br><span class="line">    private String sex;</span><br><span class="line">    private Integer age;</span><br><span class="line">    private Double weight;</span><br><span class="line">    private Long height;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;省略了 get&#x2F;set方法, 默认构造函数, 全构造函数</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * 主类</span><br><span class="line"> *</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2019-08-23 16:24</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class Main &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        &#x2F;* 通过Lambda表达式创建一个Predicate实例（test方法表达式为年龄大于10岁） *&#x2F;</span><br><span class="line">        Predicate&lt;Student&gt; agePredicate &#x3D; (Student student) -&gt; student.getAge() &gt; 10;</span><br><span class="line">        &#x2F;* 通过Lambda表达式创建一个Predicate实例（test方法表达式为身高高于165cm） *&#x2F;</span><br><span class="line">        Predicate&lt;Student&gt; heightPredicate &#x3D; (Student student) -&gt; student.getHeight() &gt; 165L;</span><br><span class="line"></span><br><span class="line">        &#x2F;* 创建一些数据 *&#x2F;</span><br><span class="line">        Student sungm &#x3D; new Student(&quot;1&quot;, &quot;sungm&quot;, &quot;1&quot;, 25, 69.1D, 178L);</span><br><span class="line">        Student sunzm &#x3D; new Student(&quot;2&quot;, &quot;sunzm&quot;, &quot;1&quot;, 22, 60.0D, 176L);</span><br><span class="line">        Student sunhw &#x3D; new Student(&quot;3&quot;, &quot;sunhw&quot;, &quot;1&quot;, 1 , 4.1D , 53L);</span><br><span class="line">        Student sunll &#x3D; new Student(&quot;4&quot;, &quot;sunll&quot;, &quot;2&quot;, 24, 55.2D, 168L);</span><br><span class="line">        List&lt;Student&gt; students &#x3D; Arrays.asList(sungm, sunzm, sunhw, sunll);</span><br><span class="line"></span><br><span class="line">        &#x2F;* 筛选出年龄大于10岁的学生 *&#x2F;</span><br><span class="line">        List&lt;Student&gt; ageFilterStudents &#x3D; students.stream().filter(agePredicate).collect(Collectors.toList());</span><br><span class="line"></span><br><span class="line">        &#x2F;* 筛选出年龄小于或等于10岁的学生 *&#x2F;</span><br><span class="line">        List&lt;Student&gt; ageNegateFilterStudents &#x3D; students.stream().filter(agePredicate.negate()).collect(Collectors.toList());</span><br><span class="line"></span><br><span class="line">        &#x2F;* 筛选出身高高于165cm的学生 *&#x2F;</span><br><span class="line">        List&lt;Student&gt; heightFilterStudents &#x3D; students.stream().filter(heightPredicate).collect(Collectors.toList());</span><br><span class="line"></span><br><span class="line">        &#x2F;* 筛选出 年龄大于10岁 且 身高高于165cm 的学生 *&#x2F;</span><br><span class="line">        List&lt;Student&gt; ageAndHeightFilterStudents &#x3D; students.stream().filter(agePredicate.and(heightPredicate))</span><br><span class="line">                .collect(Collectors.toList());</span><br><span class="line"></span><br><span class="line">        &#x2F;* 筛选出 年龄大于10岁 或 身高高于165cm 的学生 *&#x2F;</span><br><span class="line">        List&lt;Student&gt; ageOrHeightFilterStudents &#x3D; students.stream().filter(agePredicate.or(heightPredicate))</span><br><span class="line">                .collect(Collectors.toList());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p> <strong>注意：</strong> Stream.filter()方法接收一个Predicate<T>入参，可用于Java 8 的 Stream 中，其源码如下</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public interface Stream&lt;T&gt; extends BaseStream&lt;T, Stream&lt;T&gt;&gt; &#123;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * Returns a stream consisting of the elements of this stream that match</span><br><span class="line">     * the given predicate.</span><br><span class="line">     *</span><br><span class="line">     * &lt;p&gt;This is an &lt;a href&#x3D;&quot;package-summary.html#StreamOps&quot;&gt;intermediate</span><br><span class="line">     * operation&lt;&#x2F;a&gt;.</span><br><span class="line">     *</span><br><span class="line">     * @param predicate a &lt;a href&#x3D;&quot;package-summary.html#NonInterference&quot;&gt;non-interfering&lt;&#x2F;a&gt;,</span><br><span class="line">     *                  &lt;a href&#x3D;&quot;package-summary.html#Statelessness&quot;&gt;stateless&lt;&#x2F;a&gt;</span><br><span class="line">     *                  predicate to apply to each element to determine if it</span><br><span class="line">     *                  should be included</span><br><span class="line">     * @return the new stream</span><br><span class="line">     *&#x2F;</span><br><span class="line">    Stream&lt;T&gt; filter(Predicate&lt;? super T&gt; predicate);</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;其他方法省略</span><br><span class="line">    ... </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h5 id="6-2-2-Consumer"><a href="#6-2-2-Consumer" class="headerlink" title="6.2.2 Consumer"></a>6.2.2 Consumer</h5><p> java.util.function.Consumer<T> 接口是一个函数式接口，只包含一个accept()抽象方法，接受泛型 T 对象，没有返回值（void）。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    &#x2F;&#x2F;造一批假数据、用于测试</span><br><span class="line">    List&lt;Student&gt; students &#x3D; createStudents();</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;定义一个Consumer</span><br><span class="line">    Consumer&lt;Student&gt; studentConsumer &#x3D; (Student student) -&gt; student.setOverWeight(student.getWeight() &gt; 50);</span><br><span class="line">    for (Student student : students) &#123;</span><br><span class="line">        &#x2F;&#x2F;消费student</span><br><span class="line">        studentConsumer.accept(student);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h5 id="6-2-3-Function"><a href="#6-2-3-Function" class="headerlink" title="6.2.3 Function"></a>6.2.3 Function</h5><p>  java.util.function.Function&lt;T, R&gt;接口定义了一个叫作apply的方法，它接受一个<br>泛型T的对象，并返回一个泛型R的对象。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    &#x2F;&#x2F;造一批假数据、用于测试</span><br><span class="line">    List&lt;Student&gt; students &#x3D; Test1.createStudents();</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;定义一个function, 其接收一个student对象，返回student的名称</span><br><span class="line">    Function&lt;Student, String&gt; function &#x3D; Student::getName;</span><br><span class="line">    List&lt;String&gt; studentNames &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">    for (Student student : students) &#123;</span><br><span class="line">        studentNames.add(function.apply(student));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    System.out.println(studentNames);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>注意</strong></p>
-<blockquote>
-<p>任何函数式接口都不允许抛出受检异常（checked exception）。如果你需要 Lambda 表达式来抛出异常，有两种办法：定义一个自己的函数式接口，并声明受检异常，或者把Lambda 包在一个try/catch块中。</p>
-</blockquote>
-<hr>
-<h2 id="7-类型检查、类型推断及限制"><a href="#7-类型检查、类型推断及限制" class="headerlink" title="7. 类型检查、类型推断及限制"></a>7. 类型检查、类型推断及限制</h2><h3 id="7-1-类型检查"><a href="#7-1-类型检查" class="headerlink" title="7.1 类型检查"></a>7.1 类型检查</h3><blockquote>
-<p>Lambda 类型是从使用 Lambda 的上下文推断出来的，上下文中 Lambda 表达式需要的类型成为目标类型。</p>
-</blockquote>
-<p><div class="img-item" data-src="https://upload-images.jianshu.io/upload_images/11864885-fdfe543b21cdabb2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-sub-html=".caption"><img src="https://upload-images.jianshu.io/upload_images/11864885-fdfe543b21cdabb2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="类型检查示例图"><div class="img-caption d-block text-center"><span class="center-caption text-muted border-bottom">类型检查示例图</span></div></div></p>
-<h3 id="7-2-同样的-Lambda-不同的函数式接口"><a href="#7-2-同样的-Lambda-不同的函数式接口" class="headerlink" title="7.2 同样的 Lambda , 不同的函数式接口"></a>7.2 同样的 Lambda , 不同的函数式接口</h3><blockquote>
-<p>有了目标类型的概念，同一个 Lambda 表达式就可以与不同的函数式接口联系起来，只要他们的抽象方法能够兼容。</p>
-</blockquote>
-<p><strong>举例</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Callable&lt;Integer&gt; c &#x3D; () -&gt; 42;</span><br><span class="line">PrivilegedAction&lt;Integer&gt; p &#x3D; () -&gt; 42;</span><br></pre></td></tr></table></figure>
-<p><strong>特殊的void兼容规则</strong></p>
-<blockquote>
-<p>如果一个Lambda的主体是一个语句表达式， 它就和一个返回void的函数描述符兼容（当<br>然需要参数列表也兼容）</p>
-</blockquote>
-<p><strong>举例</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; Predicate返回了一个boolean</span><br><span class="line">Predicate&lt;String&gt; p &#x3D; s -&gt; list.add(s);</span><br><span class="line">&#x2F;&#x2F; Consumer返回了一个void</span><br><span class="line">Consumer&lt;String&gt; b &#x3D; s -&gt; list.add(s);</span><br></pre></td></tr></table></figure>
-
-<h3 id="7-3-类型推断"><a href="#7-3-类型推断" class="headerlink" title="7.3 类型推断"></a>7.3 类型推断</h3><blockquote>
-<p>你还可以进一步简化你的代码。Java编译器会从上下文（目标类型）推断出用什么函数式接口来配合 Lambda 表达式，这意味着它也可以推断出适合 Lambda 的签名，因为函数描述符可以通过目标类型来得到。这样做的好处在于，编译器可以了解 Lambda 表达式的参数类型，这样就可以在 Lambda 语法中省去标注参数类型。</p>
-</blockquote>
-<p><strong>举例</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 没有推断类型</span><br><span class="line">Comparator&lt;Apple&gt; c &#x3D; (Apple a1, Apple a2) -&gt; a1.getWeight().compareTo(a2.getWeight());</span><br><span class="line">&#x2F;&#x2F; 有推断类型</span><br><span class="line">Comparator&lt;Apple&gt; c &#x3D; (a1, a2) -&gt; a1.getWeight().compareTo(a2.getWeight());</span><br></pre></td></tr></table></figure>
-<p><strong>注意</strong></p>
-<blockquote>
-<p>有时候显式写出类型更易读，有时候去掉它们更易读。没有什么法则说哪种更好；对于如何让代码更易读，你必须做出自己的选择。</p>
-</blockquote>
-<h3 id="7-4-使用局部变量"><a href="#7-4-使用局部变量" class="headerlink" title="7.4 使用局部变量"></a>7.4 使用局部变量</h3><blockquote>
-<p>我们迄今为止所介绍的所有Lambda表达式都只用到了其主体里面的参数。但Lambda表达式也允许使用自由变量（不是参数，而是在外层作用域中定义的变量），就像匿名类一样。</p>
-</blockquote>
-<p><strong>举例</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int x &#x3D; 1;</span><br><span class="line">&#x2F;&#x2F; Lambda 表达式使用了自由变量 x</span><br><span class="line">IntFunction&lt;Integer&gt; function &#x3D; y -&gt; x + y;</span><br></pre></td></tr></table></figure>
-
-<p><strong>说明</strong></p>
-<blockquote>
-<p>Lambda 可以无限制的获取实例变量和静态变量，但局部变量必须显示声明为 final 类型、或者事实上是 final 类型。换句话说，Lambda表达式只能捕获指派给它们的局部变量一次。（注：捕获实例变量可以被看作捕获最终局部变量this。）</p>
-</blockquote>
-<p><strong>为什么局部变量有这些限制</strong></p>
-<blockquote>
-<ol>
-<li>实例变量保存在堆中，局部变量保存在栈中。如果 Lambda 可以直接访问局部变量，则使用 Lambda的线程，它可能会在分配该局部变量的线程收回该局部变量之后访问该局部变量。因此，Java在访问自由局部变量时，实际上是在访问它的副本，而不是访问原始变量。如果局部变量仅仅赋值一次那就没有什么区别了——因此就有了这个限制。</li>
-<li>这一限制不鼓励你使用改变外部变量的典型命令式编程模式</li>
-</ol>
-</blockquote>
-<h3 id="7-5-方法引用"><a href="#7-5-方法引用" class="headerlink" title="7.5 方法引用"></a>7.5 方法引用</h3><blockquote>
-<p>方法引用可以让你重复的使用现有的方法定义，并像 Lambda 一样传递他们。在一些情况下，比起使用Lambda表达式，它们似乎更易读，感觉也更自然。</p>
-</blockquote>
-<p><strong>举例</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;使用 Lambda 表达式</span><br><span class="line">inventory.sort((Apple a1, Apple a2) -&gt; a1.getWeight().compareTo(a2.getWeight()));</span><br><span class="line">&#x2F;&#x2F;使用方法引用</span><br><span class="line">inventory.sort(comparing(Apple::getWeight));</span><br></pre></td></tr></table></figure>
-
-<h4 id="7-5-1-普通方法引用"><a href="#7-5-1-普通方法引用" class="headerlink" title="7.5.1 普通方法引用"></a>7.5.1 普通方法引用</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;定义</span><br><span class="line">public class Apple &#123;</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F;省略其他属性...</span><br><span class="line">    private String weight;</span><br><span class="line"></span><br><span class="line">    public String getWeight() &#123;</span><br><span class="line">        return this.weight;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;普通方法引用</span><br><span class="line">inventory.sort(comparing(Apple::getWeight));</span><br></pre></td></tr></table></figure>
-
-<h4 id="7-5-1-构造方法引用"><a href="#7-5-1-构造方法引用" class="headerlink" title="7.5.1 构造方法引用"></a>7.5.1 构造方法引用</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;定义</span><br><span class="line">public class Apple &#123;</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F;省略其他属性...</span><br><span class="line">    &#x2F;&#x2F;定义默认构造函数</span><br><span class="line">    public Apple() &#123;</span><br><span class="line">        return this.weight;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;构造方法引用(下例引用的是默认构造函数)</span><br><span class="line">Supplier&lt;Apple&gt; supplier &#x3D; Apple::new;</span><br></pre></td></tr></table></figure>
-
-<h4 id="7-5-1-静态方法引用"><a href="#7-5-1-静态方法引用" class="headerlink" title="7.5.1 静态方法引用"></a>7.5.1 静态方法引用</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;定义</span><br><span class="line">public class Apple &#123;</span><br><span class="line"></span><br><span class="line">    private static final Apple INSTANCE &#x3D; new Apple(); </span><br><span class="line">    </span><br><span class="line">    private Apple() &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static Apple getInstance() &#123;</span><br><span class="line">        return INSTANCE;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;静态方法引用</span><br><span class="line">Apple::getInstance;</span><br></pre></td></tr></table></figure>]]></content>
-      <tags>
-        <tag>Java 8 新特性</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Check工具类</title>
-    <url>/2020/06/15/Check%E5%B7%A5%E5%85%B7%E7%B1%BB/</url>
-    <content><![CDATA[<blockquote>
-<p>直接上代码</p>
+<h3 id="1-3-浅拷贝和深拷贝"><a href="#1-3-浅拷贝和深拷贝" class="headerlink" title="1.3 浅拷贝和深拷贝"></a>1.3 浅拷贝和深拷贝</h3><blockquote>
+<p>前面我们提到，clone 在内存中的实际操作时将一个对象的内存拷贝出一个副本、并重新分配一个内存用于保存副本。由于原对象（被拷贝的对象）属性可能存在两种值传递类型，分别是值传递和引用传递，对副本的操作可能对原对象造成影响（改变副本的引用传递属性的值，由于引用传递导致原对象的响应值同样改变）。</p>
 </blockquote>
 <blockquote>
-<p>定义Check注解</p>
+<p>如果一个对象包含引用传递类型的属性，直接拷贝对象，不做特殊处理，这种拷贝称为浅拷贝。若一个对象不存在引用传递类型的数据，那也就不区别什么浅拷贝和深拷贝，可以称为浅拷贝也可以称为深拷贝。</p>
 </blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import java.lang.annotation.ElementType;</span><br><span class="line">import java.lang.annotation.Retention;</span><br><span class="line">import java.lang.annotation.RetentionPolicy;</span><br><span class="line">import java.lang.annotation.Target;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since  : 2020-06-15</span><br><span class="line"> *&#x2F;</span><br><span class="line">@Target(ElementType.FIELD)</span><br><span class="line">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="line">public @interface Check &#123;</span><br><span class="line"></span><br><span class="line">    boolean notNull() default false;</span><br><span class="line"></span><br><span class="line">    boolean notEmpty() default false;</span><br><span class="line"></span><br><span class="line">    boolean notBlank() default false;</span><br><span class="line"></span><br><span class="line">    String regex() default &quot;&quot;;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>示例：</p>
+<p>定义2个类：Person类 包含 Book属性</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Person implements Cloneable &#123;</span><br><span class="line"></span><br><span class="line">    private String name;</span><br><span class="line">    private Book book;</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F;省略 constructor 、 getter 、 setter 方法</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() throws CloneNotSupportedException &#123;</span><br><span class="line">        return super.clone();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;Person&#123;&quot; +</span><br><span class="line">                &quot;name&#x3D;&#39;&quot; + name + &#39;\&#39;&#39; +</span><br><span class="line">                &quot;, book&#x3D;&quot; + book +</span><br><span class="line">                &#39;&#125;&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Book &#123;</span><br><span class="line"></span><br><span class="line">    private String bookName;</span><br><span class="line">    private String author;</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F;省略 constructor 、 getter 、 setter 方法</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;Book&#123;&quot; +</span><br><span class="line">                &quot;bookName&#x3D;&#39;&quot; + bookName + &#39;\&#39;&#39; +</span><br><span class="line">                &quot;, author&#x3D;&#39;&quot; + author + &#39;\&#39;&#39; +</span><br><span class="line">                &#39;&#125;&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Main &#123;</span><br><span class="line">    &#x2F;&#x2F;主方法：</span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        Book effectiveJava &#x3D; new Book(&quot;Effective Java&quot;, &quot;Joshua Bloch&quot;);</span><br><span class="line">        Person sungm &#x3D; new Person(&quot;sungm&quot;, effectiveJava);</span><br><span class="line">        Person sunhw &#x3D; (Person) sungm.clone();</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;对象 sungm 的信息：&quot; + sungm);</span><br><span class="line">        System.out.println(&quot;对象 sunhw 的信息：&quot; + sunhw);</span><br><span class="line">        System.out.println(&quot;对象 sungm 与对象 sunhw 是否相等：&quot; + (sungm &#x3D;&#x3D; sunhw));</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;-----------------------------------------&quot;);</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;改变对象 sunhw 的 book 属性</span><br><span class="line">        sunhw.getBook().setBookName(&quot;Vue.js&quot;);</span><br><span class="line">        sunhw.getBook().setAuthor(&quot;尤雨溪&quot;);</span><br><span class="line">        System.out.println(&quot;对象 sunhw 的信息：&quot; + sunhw);</span><br><span class="line">        System.out.println(&quot;对象 sungm 的信息：&quot; + sungm);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;* 输出结果 *&#x2F;</span><br><span class="line">对象 sungm 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Effective Java&#39;, author&#x3D;&#39;Joshua Bloch&#39;&#125;&#125;</span><br><span class="line">对象 sunhw 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Effective Java&#39;, author&#x3D;&#39;Joshua Bloch&#39;&#125;&#125;</span><br><span class="line">对象 sungm 与对象 sunhw 是否相等：false</span><br><span class="line">-----------------------------------------</span><br><span class="line">对象 sunhw 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Vue.js&#39;, author&#x3D;&#39;尤雨溪&#39;&#125;&#125;</span><br><span class="line">对象 sungm 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Vue.js&#39;, author&#x3D;&#39;尤雨溪&#39;&#125;&#125;</span><br></pre></td></tr></table></figure>
 
 <blockquote>
-<p>校验工具类</p>
+<p>从输出结果可以看出：对象 sunhw 改变了的属性 book 的内容， 对对象 sungm 造成了影响。因为两个对象的 book 属性保存的是同一个引用，造成这种差异是由于对象进行了浅拷贝。</p>
 </blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import demo.annotations.Check;</span><br><span class="line"></span><br><span class="line">import java.lang.reflect.Field;</span><br><span class="line">import java.util.Objects;</span><br><span class="line">import java.util.regex.Pattern;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2020-06-15 16:01</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class CheckUtils &#123;</span><br><span class="line"></span><br><span class="line">    private static final String EMPTY &#x3D; &quot;&quot;;</span><br><span class="line"></span><br><span class="line">    public static &lt;T&gt; void check(T t) throws Exception &#123;</span><br><span class="line">        Class clazz &#x3D; t.getClass();</span><br><span class="line">        Field[] fields &#x3D; clazz.getDeclaredFields();</span><br><span class="line">        if (fields.length &#x3D;&#x3D; 0) &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        for (Field field : fields) &#123;</span><br><span class="line">            field.setAccessible(true);</span><br><span class="line">            check(field.get(t), field);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void check(Object value, Field field) throws Exception &#123;</span><br><span class="line">        Check check &#x3D; field.getAnnotation(Check.class);</span><br><span class="line">        if (Objects.isNull(check)) &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if (check.notNull() &amp;&amp; Objects.isNull(value)) &#123;</span><br><span class="line">            throw new Exception(&quot;Field (&quot; + field.getName() + &quot;) cannot be null.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        if (check.notEmpty() &amp;&amp; (Objects.isNull(value) || EMPTY.equals(value.toString()))) &#123;</span><br><span class="line">            throw new Exception(&quot;Field (&quot; + field.getName() + &quot;) cannot be empty.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        if (check.notBlank() &amp;&amp; (Objects.isNull(value) || EMPTY.equals(value.toString().trim()))) &#123;</span><br><span class="line">            throw new Exception(&quot;Field (&quot; + field.getName() + &quot;) cannot be blank.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        checkRegex(field, value, check.regex());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void checkRegex(Field field, Object value, String regex) throws Exception &#123;</span><br><span class="line">        if (EMPTY.equals(regex) || Objects.isNull(value)) &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if (!Pattern.matches(regex, value.toString())) &#123;</span><br><span class="line">            throw new Exception(&quot;Wrong data format : Field (&quot; + field.getName() + &quot;), value  is : &quot; + &quot; value&quot; + &quot;, regex is : &quot; + regex);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>进行深拷贝示例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Person implements Cloneable &#123;</span><br><span class="line"></span><br><span class="line">    private String name;</span><br><span class="line">    private Book book;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;省略 constructor 、 getter 、 setter 方法</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() throws CloneNotSupportedException &#123;</span><br><span class="line">        Person person &#x3D; (Person) super.clone();</span><br><span class="line">        person.book &#x3D; (Book) book.clone();</span><br><span class="line">        return person;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;Person&#123;&quot; +</span><br><span class="line">                &quot;name&#x3D;&#39;&quot; + name + &#39;\&#39;&#39; +</span><br><span class="line">                &quot;, book&#x3D;&quot; + book +</span><br><span class="line">                &#39;&#125;&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Book implements Cloneable&#123;</span><br><span class="line"></span><br><span class="line">    private String bookName;</span><br><span class="line">    private String author;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;省略 constructor 、 getter 、 setter 方法</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() throws CloneNotSupportedException &#123;</span><br><span class="line">        return super.clone();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;Book&#123;&quot; +</span><br><span class="line">                &quot;bookName&#x3D;&#39;&quot; + bookName + &#39;\&#39;&#39; +</span><br><span class="line">                &quot;, author&#x3D;&#39;&quot; + author + &#39;\&#39;&#39; +</span><br><span class="line">                &#39;&#125;&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Main &#123;</span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        Book effectiveJava &#x3D; new Book(&quot;Effective Java&quot;, &quot;Joshua Bloch&quot;);</span><br><span class="line">        Person sungm &#x3D; new Person(&quot;sungm&quot;, effectiveJava);</span><br><span class="line">        Person sunhw &#x3D; (Person) sungm.clone();</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;对象 sungm 的信息：&quot; + sungm);</span><br><span class="line">        System.out.println(&quot;对象 sunhw 的信息：&quot; + sunhw);</span><br><span class="line">        System.out.println(&quot;对象 sungm 与对象 sunhw 是否相等：&quot; + (sungm &#x3D;&#x3D; sunhw));</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;-----------------------------------------&quot;);</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;改变对象 sunhw 的 book 属性</span><br><span class="line">        sunhw.getBook().setBookName(&quot;Vue.js&quot;);</span><br><span class="line">        sunhw.getBook().setAuthor(&quot;尤雨溪&quot;);</span><br><span class="line">        System.out.println(&quot;对象 sunhw 的信息：&quot; + sunhw);</span><br><span class="line">        System.out.println(&quot;对象 sungm 的信息：&quot; + sungm);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;*运行结果*&#x2F;</span><br><span class="line">对象 sungm 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Effective Java&#39;, author&#x3D;&#39;Joshua Bloch&#39;&#125;&#125;</span><br><span class="line">对象 sunhw 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Effective Java&#39;, author&#x3D;&#39;Joshua Bloch&#39;&#125;&#125;</span><br><span class="line">对象 sungm 与对象 sunhw 是否相等：false </span><br><span class="line">-----------------------------------------</span><br><span class="line">对象 sunhw 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Vue.js&#39;, author&#x3D;&#39;尤雨溪&#39;&#125;&#125;</span><br><span class="line">对象 sungm 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Effective Java&#39;, author&#x3D;&#39;Joshua Bloch&#39;&#125;&#125;</span><br></pre></td></tr></table></figure>
 
 <blockquote>
-<p>DTO 数据传输层</p>
+<p>说明：进行深拷贝一般有2中方式<br>（1）将属性对象实现 java.lang.Cloneable 接口并重写 clone 方法，然后在原始类中修改 clone方法。<br>（2）实现 java.io.Serializable 接口，通过序列化和反序列号拷贝对象。</p>
 </blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class PersonDto &#123;</span><br><span class="line"></span><br><span class="line">    @Check(notBlank &#x3D; true)</span><br><span class="line">    private String name;</span><br><span class="line">    @Check(notNull &#x3D; true, regex &#x3D; &quot;\\d\\d&quot;)</span><br><span class="line">    private Integer age;</span><br><span class="line">    @Check(notBlank &#x3D; true, regex &#x3D; &quot;男|女&quot;)</span><br><span class="line">    private String sex;</span><br><span class="line">    private String idCard;</span><br><span class="line">    private String accessNumber;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;省略了getter、setter方法</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>程序入口</p>
+<h2 id="2-hashCode-方法"><a href="#2-hashCode-方法" class="headerlink" title="2. hashCode 方法"></a>2. hashCode 方法</h2><blockquote>
+<p>返回对象的 Hash 值 （也称散列码）。对象的散列码是为了更好的支持基于哈希机制的 Java 集合类，例如：HashMap、HashSet、HashTable。</p>
 </blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2020-06-15 17:50</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class Main &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        PersonDto personDto &#x3D; new PersonDto();</span><br><span class="line">        personDto.setIdCard(&quot;0001&quot;);</span><br><span class="line">        personDto.setName(&quot;孙广明&quot;);</span><br><span class="line">        personDto.setSex(&quot;男&quot;);</span><br><span class="line">        personDto.setAge(25);</span><br><span class="line">        CheckUtils.check(personDto);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
-      <tags>
-        <tag>Java</tag>
-        <tag>工具类</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Java NIO 概述</title>
-    <url>/2020/06/13/Java-NIO-%E6%A6%82%E8%BF%B0/</url>
-    <content><![CDATA[<h2 id="1-什么是NIO？"><a href="#1-什么是NIO？" class="headerlink" title="1.  什么是NIO？"></a>1.  什么是NIO？</h2><blockquote>
-<p>java.nio 全称 java non-blocking IO，是指 JDK1.4 及以上版本里提供的新 API（New IO） ，为所有的原始类型（ boolean 类型除外）提供<a href="https://baike.baidu.com/item/%E7%BC%93%E5%AD%98/100710" target="_blank" rel="noopener">缓存</a>支持的数据容器，使用它可以提供非阻塞式的高伸缩性网络。【百度百科】 </p>
-</blockquote>
-<a id="more"></a>
-
-<hr>
-<p>优点：NIO 比 AIO（异步I/O） 更加强大，处理数据更快。它可以大大的提高IO吞吐量，常用在高性能服务器上面。</p>
-<h2 id="2-NIO原理"><a href="#2-NIO原理" class="headerlink" title="2. NIO原理"></a>2. NIO原理</h2><blockquote>
-<p>使用较少的线程执行更多的任务。</p>
+<h3 id="2-1-通用约定"><a href="#2-1-通用约定" class="headerlink" title="2.1 通用约定"></a>2.1 通用约定</h3><blockquote>
+<p>（1）在 Java 程序执行期间，多次调用该方法应该返回相同的值，前提是未修改在 equals 方法中使用的信息。<br>（2）如果 2 个对象通过 equals 方法判定为 2 个对象相等、那么他们返回的 Hash 值也应该相等。<br>（3）对于 2 个对象来说，如果使用 equals 方法返回 false，那么这两个对象的 hashCode 值不要求一定不同（可以相同，可以不同），但是如果不同则可以提高应用的性能。<br>（4）对于 Object 类来说，不同 Object 对象的 hash 值是不同的、其 hash 值返回的是内存地址。</p>
 </blockquote>
 <blockquote>
-<p>如下图所示，使用较少的线程，通过 Selector 选择器来执行不同 Channel 通道中的任务，执行任务再结合 AIO（异步I/O）就能发挥服务器的最大性能，更大程度上提升服务器的运行效率。</p>
+<p><strong>说明：鉴于第 （2） 条约定，如果重写了 equals 方法，那就要求重写 hashCode 方法。</strong></p>
 </blockquote>
-<p><div class="img-item" data-src="https://upload-images.jianshu.io/upload_images/11864885-0a82f84999ea3e77.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-sub-html=".caption"><img src="https://upload-images.jianshu.io/upload_images/11864885-0a82f84999ea3e77.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="原理图"><div class="img-caption d-block text-center"><span class="center-caption text-muted border-bottom">原理图</span></div></div></p>
-<hr>
-<h2 id="3-与常规-I-O-的区别"><a href="#3-与常规-I-O-的区别" class="headerlink" title="3. 与常规 I/O 的区别"></a>3. 与常规 I/O 的区别</h2><blockquote>
-<p>常规 I/O （如 InputStream 和 OutputStream）存在很大的缺点，就是他们是阻塞的，而 NIO 解决的就是常规 I/O 执行效率低的问题，即采用非阻塞高性能运行的方式来避免以前以前“笨拙” I/O 带来的低效率问题。NIO在大文件操作上相比常规 I/O 更加优秀，对常规 I/O 使用的 byte[] 和 char[] 进行封装，采用 ByteBuffer 类来操作数据，再结合针对 File 或者 Socket 技术的 Channel，采用同步非阻塞技术实现高性能处理。</p>
+<h2 id="3-equals-方法"><a href="#3-equals-方法" class="headerlink" title="3. equals 方法"></a>3. equals 方法</h2><blockquote>
+<p>判断两个对象是否相等。仅当两个对象引用的是同一个内存地址，即同一个对象，该方法返回 true。若不满足指向同一个内存地址、即使两个对象的内容相同，也会返回 false。</p>
 </blockquote>
-<hr>
-<h2 id="4-缓冲区介绍"><a href="#4-缓冲区介绍" class="headerlink" title="4. 缓冲区介绍"></a>4. 缓冲区介绍</h2><blockquote>
-<p>在使用传统的I/O流API时，如 InputStream 和 OutputStream ，以及Reader和Writer联合使用时，常常把字节流中的数据放入byte[]字节数组中，或把字符流中的数据放入char[]字符数组中，也可以从 byte[] 或 char[] 数组中获取数据来实现功能上的需求，但由于在 Java 语言中对 array 数组自身进行操作的 API 非常少，常用的操作仅仅是 length 属性和下标[x]了，在 JDK 中也没有提供更加方便操作数组中数据的 API，如果对数组中的数据进行高级处理，需要程序员自己写代码进行实现，处理的方式是比较原始的，这个问题可以使用 NIO 技术中的缓冲区Buffer类来解决，它提供了很多工具方法，大大提高了程序开发的效率。</p>
+<p>源码：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public boolean equals(Object obj) &#123; return (this &#x3D;&#x3D; obj); &#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>规则：<br>（1）自反性：对于任意非空对象， x.equals(x) 应该返回 true<br>（2）对称性：对于任意非空对象，若 x.equals(y) 返回 true，则 y.equals(x) 也应该返回 true<br>（3）传递性：对于任意非空对象，若 x.equals(y) 返回 true、y.equals(z) 也返回 true ，则 x.equals(z) 也应该返回 true<br>（4）一致性：若 x.equals(y) 返回 true，那第二次、第三次调用也应该返回 true，前提是未修改两个对象。</p>
 </blockquote>
-<hr>
-<p>推荐书籍：</p>
-<ul>
-<li>[高洪岩]《Java多线程编程核心技术》</li>
-<li>[高洪岩]《Java并发编程：核心方法与框架》</li>
-<li>[高洪岩]《NIO与Socket编程技术指南》</li>
-</ul>
+<h2 id="4-toString-方法"><a href="#4-toString-方法" class="headerlink" title="4. toString 方法"></a>4. toString 方法</h2><blockquote>
+<p>返回对象的字符串表现形式（类全名及无符号十六进制的 Hash 值）。API 建议所有的子类都重写该方法。</p>
+</blockquote>
+<p>源码：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public String toString() &#123; return getClass().getName() + &quot;@&quot; + Integer.toHexString(hashCode()); &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="5-finalize-方法"><a href="#5-finalize-方法" class="headerlink" title="5. finalize 方法"></a>5. finalize 方法</h2><blockquote>
+<p>该方法自 Java 9 之后被废弃。</p>
+</blockquote>
+<p>源码：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Deprecated(since&#x3D;&quot;9&quot;) protected void finalize() throws Throwable &#123; &#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>说明：该方法并非一两句话能解释清楚，这里引入一篇博客、可供参考学习。<a href="https://www.jianshu.com/p/9d2788fffd5f" target="_blank" rel="noopener">https://www.jianshu.com/p/9d2788fffd5f</a></p>
+</blockquote>
+<h2 id="6-getClass-方法"><a href="#6-getClass-方法" class="headerlink" title="6. getClass 方法"></a>6. getClass 方法</h2><blockquote>
+<p>返回运行时该对象的 class 对象，返回的 class 对象是被表示对象的类的 static synchronized 方法锁定的对象。</p>
+</blockquote>
+<blockquote>
+<p>该方法一般常见于反射技术。</p>
+</blockquote>
+<h2 id="7-wait-方法"><a href="#7-wait-方法" class="headerlink" title="7. wait 方法"></a>7. wait 方法</h2><blockquote>
+<p>导致当前线程等待，可设置等待的毫秒数，知道其他线程调用 notify 方法或者调用该对象的 notifyAll 方法唤醒该线程。</p>
+</blockquote>
+<p>源码：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public final void wait() throws InterruptedException &#123;</span><br><span class="line">    wait(0L);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public final native void wait(long timeoutMillis) throws InterruptedException;</span><br></pre></td></tr></table></figure>
+<h2 id="8-notify-方法"><a href="#8-notify-方法" class="headerlink" title="8. notify 方法"></a>8. notify 方法</h2><blockquote>
+<p>唤醒正在此对象的监听器上等待的单个线程。如果该对象的监听器等待的线程存在多个、则唤醒其中一个线程，该线程的唤醒是随机的。</p>
+</blockquote>
+<p>源码：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@HotSpotIntrinsicCandidate public final native void notify();</span><br></pre></td></tr></table></figure>
+<h2 id="9-notifyAll-方法"><a href="#9-notifyAll-方法" class="headerlink" title="9. notifyAll 方法"></a>9. notifyAll 方法</h2><blockquote>
+<p>唤醒正在此对象的监听器上等待的所有线程。</p>
+</blockquote>
+<p>源码：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@HotSpotIntrinsicCandidate public final native void notifyAll();</span><br></pre></td></tr></table></figure>
 ]]></content>
       <tags>
         <tag>Java</tag>
-        <tag>Java NIO</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>函数式数据处理</title>
-    <url>/2020/07/01/%E5%87%BD%E6%95%B0%E5%BC%8F%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86/</url>
-    <content><![CDATA[<h2 id="1-Stream"><a href="#1-Stream" class="headerlink" title="1. Stream"></a>1. Stream</h2><p>概念：</p>
-<blockquote>
-<p>Stream：支持数据处理操作的源（集合、数组、输入/输出资源）生成的元素序列 。<br>备注： 流是Java 8 API的新成员，它允许你以声明性方式处理数据集合。</p>
-</blockquote>
-<p>定义：</p>
-<blockquote>
-<ol>
-<li>源： 流会使用一个提供数据的源，如集合、数组或输入/输出资源。 请注意，从有序集合生成流时会保留原有的顺序。由列表生成的流，其元素顺序与列表一致。</li>
-<li>元素序列： 就像集合一样，流也提供了一个接口，可以访问特定元素类型的一组有序值。因为集合是数据结构，所以它的主要目的是以特定的时间/空间复杂度存储和访问元素（如ArrayList 与 LinkedList）。但流的目的在于表达计算，比如你前面见到的filter、sorted和map。集合讲的是数据，流讲的是计算。</li>
-<li>数据处理操作: 流的数据处理功能支持类似于数据库的操作，以及函数式编程语言中的常用操作，如filter、map、reduce、find、match、sort等。流操作可以顺序执行，也可并行执行。</li>
-</ol>
-</blockquote>
-<p>特点：</p>
-<blockquote>
-<ol>
-<li>流水线： 很多流操作本身会返回一个流，这样多个操作就可以链接起来，形成一个大的流水线。这让我们下一章中的一些优化成为可能，如延迟和短路。流水线的操作可以看作对数据源进行数据库式查询。</li>
-<li>内部迭代——与使用迭代器显式迭代的集合不同，流的迭代操作是在背后进行的。</li>
-</ol>
-</blockquote>
-<p>流的特性：</p>
-<blockquote>
-<ol>
-<li>只能遍历一次。和迭代器类似，流只能遍历一次。遍历完之后，我们就说这个流已经被消费掉了。你可以从原始数据源那里再获得一个新的流来重新遍历一遍，就像迭代器一样（这里假设它是集合之类的可重复的源，如果是I/O通道就没戏了）。</li>
-</ol>
-</blockquote>
-<p>Stream API 带来的好处：</p>
-<blockquote>
-<ul>
-<li>声明性 ： 更简洁易读</li>
-<li>可复合 ： 更灵活</li>
-<li>可并行 ： 性能更好</li>
-</ul>
-</blockquote>
-<p>流与集合</p>
-<blockquote>
-<p>粗略地说，集合与流之间的差异就在于什么时候进行计算。集合是一个内存中的数据结构，集合中的每个元素都得先计算出来才能添加到集合中。相<br>比之下，流则是在概念上固定的数据结构（你不能添加或删除元素），其元素则是按需计算的。</p>
-</blockquote>
-<p>流与集合的差异：</p>
-<blockquote>
-<ol>
-<li>遍历数据的方式不同。使用Collection接口需要用户去做迭代（比如用for-each），这称为外部迭代。相反，Streams库使用内部迭代——它帮你把迭代做了，还把得到的流值存在了某个地方，你只要给出一个函数说要干什么就可以了。</li>
-<li>//TODO 待补充</li>
-</ol>
-</blockquote>
-<h2 id="2-使用-Stream"><a href="#2-使用-Stream" class="headerlink" title="2. 使用 Stream"></a>2. 使用 Stream</h2><h4 id="2-1-filter"><a href="#2-1-filter" class="headerlink" title="2.1 filter"></a>2.1 filter</h4><p>过滤流元素：该操作会接受一个 Predicate 函数式接口对象（一个返回boolean的函数）作为参数，并返回一个包括所有符合谓词的元素的流。</p>
-<h4 id="2-2-distinct"><a href="#2-2-distinct" class="headerlink" title="2.2 distinct"></a>2.2 distinct</h4><p>对流元素去重：根据流元素的hashCode和equals方法判断元素是否重复。</p>
-<h4 id="2-3-limit"><a href="#2-3-limit" class="headerlink" title="2.3 limit"></a>2.3 limit</h4><p>截断流：该操作会接受一个 int 类型的入参，返回一个不超过给定长度的流。（如果流是有序的，则最多返回前 n 个元素）。</p>
-<h4 id="2-4-skip"><a href="#2-4-skip" class="headerlink" title="2.4 skip"></a>2.4 skip</h4><p>跳过元素：该操作会接受一个 int 类型的入参，返回扔掉前 n 个元素的流。</p>
-<h4 id="2-5-map"><a href="#2-5-map" class="headerlink" title="2.5 map"></a>2.5 map</h4><p>映射元素： 它会接受一个函数作为参数。这个函数会被应用到每个元素上，并将其映射成一个新的元素。</p>
-<h4 id="2-6-flatMap"><a href="#2-6-flatMap" class="headerlink" title="2.6 flatMap"></a>2.6 flatMap</h4><p>扁平化流： 当流的元素可以转换成另外一个流时，扁平化流会得到一个流元素的流。</p>
- <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;List&lt;String&gt;&gt; listList &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">    List&lt;String&gt; a &#x3D; Arrays.asList(&quot;a&quot;, &quot;a1&quot;);</span><br><span class="line">    List&lt;String&gt; b &#x3D; Arrays.asList(&quot;b&quot;, &quot;b1&quot;);</span><br><span class="line">    List&lt;String&gt; c &#x3D; Arrays.asList(&quot;c&quot;, &quot;c1&quot;);</span><br><span class="line"></span><br><span class="line">    listList.add(a);</span><br><span class="line">    listList.add(b);</span><br><span class="line">    listList.add(c);</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;flatMap可以将 Stream&lt;List&lt;String&gt;&gt; 流转换成一个新的 Stream&lt;String&gt; 流。</span><br><span class="line">    List&lt;String&gt; list &#x3D; listList.stream().flatMap(List::stream).collect(Collectors.toList());</span><br><span class="line">    System.out.println(list.toString());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果：</span><br><span class="line">[a, a1, b, b1, c, c1]</span><br></pre></td></tr></table></figure>
-
-
-
-
-
-]]></content>
-      <tags>
-        <tag>Java 8 新特性</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>XML基础</title>
-    <url>/2020/06/16/XML%E5%9F%BA%E7%A1%80/</url>
-    <content><![CDATA[<h2 id="1-XML概述"><a href="#1-XML概述" class="headerlink" title="1. XML概述"></a>1. XML概述</h2><p>XML : 可拓展标记语言（Extensible Markup Language, XML）。 是一个非常有用的、用来描述结构化信息的技术。</p>
-<h3 id="1-1-XML文档头"><a href="#1-1-XML文档头" class="headerlink" title="1.1 XML文档头"></a>1.1 XML文档头</h3><p>XML 文档应当以一个文档头开始，严格来说，文档头是可选的，但是强烈建议使用文档头。文档类型定义的是确保文档正确的一个重要机制。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br></pre></td></tr></table></figure>
-
-<h3 id="1-2-XML元素"><a href="#1-2-XML元素" class="headerlink" title="1.2 XML元素"></a>1.2 XML元素</h3><p>XML 文档的正文包含根元素，根元素包含其他元素。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;config&gt;</span><br><span class="line">    &lt;title&gt;miracle&#39;s blog&lt;&#x2F;title&gt;</span><br><span class="line">    &lt;content&gt;XML基础与解析&lt;&#x2F;content&gt;</span><br><span class="line">&lt;&#x2F;config&gt;</span><br></pre></td></tr></table></figure>
-<p>注意：</p>
-<blockquote>
-<p>元素可以有子元素、文本或两者兼有。在设计XML文档时，对元素的设计的最好的方式是：要么全部使用元素，要么全部使用文本，这样做的目的是方便解析。</p>
-</blockquote>
-<p>我们应该避免下面这种设计:</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;!-- 不推荐：元素config既包含文本、又包含元素 --&gt;</span><br><span class="line">&lt;config&gt;</span><br><span class="line">    miracle&#39;s blog</span><br><span class="line">    &lt;content&gt;XML基础与解析&lt;&#x2F;content&gt;</span><br><span class="line">&lt;&#x2F;config&gt;</span><br></pre></td></tr></table></figure>
-
-<h3 id="1-3-XML属性"><a href="#1-3-XML属性" class="headerlink" title="1.3 XML属性"></a>1.3 XML属性</h3><p>XML 元素可以包含属性，例如：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;config version&#x3D;&quot;1.0&quot;&gt;&lt;&#x2F;config&gt;</span><br></pre></td></tr></table></figure>
-
-<p>问题：什么时候使用属性，什么时候使用元素？</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">文档一：</span><br><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;config version&#x3D;&quot;1.0&quot;&gt;&lt;&#x2F;config&gt;</span><br><span class="line"></span><br><span class="line">文档二：</span><br><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;config&gt;</span><br><span class="line">    &lt;version&gt;1.0&lt;&#x2F;version&gt;</span><br><span class="line">&lt;&#x2F;config&gt;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>从上面示例来看，文档一似乎比文档二要更简单一些。然而，属性的灵活性要比元素差很多，通常情况下属性只应该用来作为值的解释，而不是用来作为值。</p>
-</blockquote>
-<p>结论：</p>
-<blockquote>
-<p>优先使用元素，通常情况下属性只应该用来作为值的解释，而不是用来作为值。</p>
-</blockquote>
-<p>注意：</p>
-<blockquote>
-<p>在HTML中，所有的属性都不会展示在HTML中。</p>
-</blockquote>
-<hr>
-<h2 id="2-XML与属性文件（property-file）的区别"><a href="#2-XML与属性文件（property-file）的区别" class="headerlink" title="2. XML与属性文件（property file）的区别"></a>2. XML与属性文件（property file）的区别</h2><p>属性文件包含了各种键值对，例如：</p>
-<blockquote>
-<p>name=sungm</p>
-</blockquote>
-<p>区别：</p>
-<blockquote>
-<ol>
-<li>属性文件结构更加简洁，在要描述的信息更加复杂的场景下，属性文件不能更好的处理它，XML文件可以处理更加复杂的结构化信息。</li>
-<li>属性文件采用的是单一的平面结构，XML文件采用的是层次结构，也可以说是树型结构，更加清晰。</li>
-<li>属性文件中key是不能重复的，XML文件可以存在重复的元素。</li>
-</ol>
-</blockquote>
-<p>结论：</p>
-<blockquote>
-<p>在处理不复杂的结构化信息时优先考虑使用属性文件，在处理复杂的结构化信息时考虑使用XML文件</p>
-</blockquote>
-<hr>
-<h2 id="3-XML与HTML的区别"><a href="#3-XML与HTML的区别" class="headerlink" title="3. XML与HTML的区别"></a>3. XML与HTML的区别</h2><p>HTML : 超文本标记语言（Hyper Text Markup Language）</p>
-<p>区别：</p>
-<blockquote>
-<ol>
-<li>HTML对大小写不敏感；XML对大小写敏感</li>
-<li>在HTML中，如果从上下文中可以分清哪里是段落或者列表项的结尾，那么结束标签可以省略；XML不可省略结束标签</li>
-<li>在XML中，只有单个标签而没有对应的结束标签的元素必须以 / 结尾。</li>
-<li>在XML中，属性值必须用引号括起来；在HTML中，引号可有可无</li>
-<li>在HTML中，属性可以没有值；在XML中，属性必须都有属性值</li>
-</ol>
-</blockquote>
-<h2 id="4-良好的XML文档格式"><a href="#4-良好的XML文档格式" class="headerlink" title="4. 良好的XML文档格式"></a>4. 良好的XML文档格式</h2><blockquote>
-<ul>
-<li>XML文档必须有根元素，且只能有1个根元素</li>
-<li>XML文档必须有关闭标签</li>
-<li>XML文档对大小写敏感</li>
-<li>XML对大小写敏感</li>
-<li>XML元素必须被正确的嵌套</li>
-<li>XML属性必须加引号</li>
-</ul>
-</blockquote>
-]]></content>
-      <tags>
-        <tag>Java</tag>
-        <tag>XML</tag>
       </tags>
   </entry>
   <entry>
@@ -683,265 +1054,6 @@
       </tags>
   </entry>
   <entry>
-    <title>java.lang.Object 类详解</title>
-    <url>/2020/06/12/java-lang-Object-%E7%B1%BB%E8%AF%A6%E8%A7%A3/</url>
-    <content><![CDATA[<h2 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h2><blockquote>
-<p>Object 方法包括 5 个非 final 类型的方法，分别是：clone、hashCode、equals、toString、finalize 方法；包括 4 个 final 方法，分别是 getClass、wait、notify、notifyAll 方法。其中 clone 方法是 protected 方法，finalize 方法自 Java 9 之后被废弃。</p>
-</blockquote>
-<a id="more"></a>
-
-<h2 id="1-clone-方法"><a href="#1-clone-方法" class="headerlink" title="1. clone 方法"></a>1. clone 方法</h2><h3 id="1-1-源码"><a href="#1-1-源码" class="headerlink" title="1.1 源码"></a>1.1 源码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@HotSpotIntrinsicCandidate protected native Object clone() throws CloneNotSupportedException;</span><br></pre></td></tr></table></figure>
-
-<p>说明：调用该方法实现一个对象的浅复制，创建并且返回此对象的副本（“副本”的准确含义可能依赖于对象的类）。 Object.clone() 方法是一个 protected 方法，类只有实现 java.lang.Cloneable 接口，并重写 Object.clone() 方法才能使用该 clone 方法，否则抛出 CloneNotSupportedException 。</p>
-<h3 id="1-2-clone-与-copy-的区别"><a href="#1-2-clone-与-copy-的区别" class="headerlink" title="1.2 clone 与 copy 的区别"></a>1.2 clone 与 copy 的区别</h3><p>假设我们有一个 Person 对象，并假设 Person 类实现了Cloneable 接口并重写了 clone 方法。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Person a &#x3D; new Person();</span><br><span class="line">&#x2F;&#x2F;copy 的做法通常为:</span><br><span class="line">Person b &#x3D; a;</span><br><span class="line">&#x2F;&#x2F;clone 的做法通常为:</span><br><span class="line">Person c &#x3D; a.clone();</span><br></pre></td></tr></table></figure>
-
-<p>说明：<br>（1）copy 是将对象 a 的引用赋值给对象 b，赋值之后对象 a 和对象 b 都指向同一个引用 a。<br>（2）clone 是实现对象的浅拷贝，产生一个新的对象，对象 c 与 对象 a 不指向同一个引用。</p>
-<blockquote>
-<p>clone 在内存中实际操作是：将对象 a 的内存，拷贝一个副本，并重新分配一块内存区域用于保存副本。</p>
-</blockquote>
-<h3 id="1-3-浅拷贝和深拷贝"><a href="#1-3-浅拷贝和深拷贝" class="headerlink" title="1.3 浅拷贝和深拷贝"></a>1.3 浅拷贝和深拷贝</h3><blockquote>
-<p>前面我们提到，clone 在内存中的实际操作时将一个对象的内存拷贝出一个副本、并重新分配一个内存用于保存副本。由于原对象（被拷贝的对象）属性可能存在两种值传递类型，分别是值传递和引用传递，对副本的操作可能对原对象造成影响（改变副本的引用传递属性的值，由于引用传递导致原对象的响应值同样改变）。</p>
-</blockquote>
-<blockquote>
-<p>如果一个对象包含引用传递类型的属性，直接拷贝对象，不做特殊处理，这种拷贝称为浅拷贝。若一个对象不存在引用传递类型的数据，那也就不区别什么浅拷贝和深拷贝，可以称为浅拷贝也可以称为深拷贝。</p>
-</blockquote>
-<p>示例：</p>
-<p>定义2个类：Person类 包含 Book属性</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Person implements Cloneable &#123;</span><br><span class="line"></span><br><span class="line">    private String name;</span><br><span class="line">    private Book book;</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F;省略 constructor 、 getter 、 setter 方法</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() throws CloneNotSupportedException &#123;</span><br><span class="line">        return super.clone();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;Person&#123;&quot; +</span><br><span class="line">                &quot;name&#x3D;&#39;&quot; + name + &#39;\&#39;&#39; +</span><br><span class="line">                &quot;, book&#x3D;&quot; + book +</span><br><span class="line">                &#39;&#125;&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Book &#123;</span><br><span class="line"></span><br><span class="line">    private String bookName;</span><br><span class="line">    private String author;</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F;省略 constructor 、 getter 、 setter 方法</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;Book&#123;&quot; +</span><br><span class="line">                &quot;bookName&#x3D;&#39;&quot; + bookName + &#39;\&#39;&#39; +</span><br><span class="line">                &quot;, author&#x3D;&#39;&quot; + author + &#39;\&#39;&#39; +</span><br><span class="line">                &#39;&#125;&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Main &#123;</span><br><span class="line">    &#x2F;&#x2F;主方法：</span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        Book effectiveJava &#x3D; new Book(&quot;Effective Java&quot;, &quot;Joshua Bloch&quot;);</span><br><span class="line">        Person sungm &#x3D; new Person(&quot;sungm&quot;, effectiveJava);</span><br><span class="line">        Person sunhw &#x3D; (Person) sungm.clone();</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;对象 sungm 的信息：&quot; + sungm);</span><br><span class="line">        System.out.println(&quot;对象 sunhw 的信息：&quot; + sunhw);</span><br><span class="line">        System.out.println(&quot;对象 sungm 与对象 sunhw 是否相等：&quot; + (sungm &#x3D;&#x3D; sunhw));</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;-----------------------------------------&quot;);</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;改变对象 sunhw 的 book 属性</span><br><span class="line">        sunhw.getBook().setBookName(&quot;Vue.js&quot;);</span><br><span class="line">        sunhw.getBook().setAuthor(&quot;尤雨溪&quot;);</span><br><span class="line">        System.out.println(&quot;对象 sunhw 的信息：&quot; + sunhw);</span><br><span class="line">        System.out.println(&quot;对象 sungm 的信息：&quot; + sungm);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;* 输出结果 *&#x2F;</span><br><span class="line">对象 sungm 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Effective Java&#39;, author&#x3D;&#39;Joshua Bloch&#39;&#125;&#125;</span><br><span class="line">对象 sunhw 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Effective Java&#39;, author&#x3D;&#39;Joshua Bloch&#39;&#125;&#125;</span><br><span class="line">对象 sungm 与对象 sunhw 是否相等：false</span><br><span class="line">-----------------------------------------</span><br><span class="line">对象 sunhw 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Vue.js&#39;, author&#x3D;&#39;尤雨溪&#39;&#125;&#125;</span><br><span class="line">对象 sungm 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Vue.js&#39;, author&#x3D;&#39;尤雨溪&#39;&#125;&#125;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>从输出结果可以看出：对象 sunhw 改变了的属性 book 的内容， 对对象 sungm 造成了影响。因为两个对象的 book 属性保存的是同一个引用，造成这种差异是由于对象进行了浅拷贝。</p>
-</blockquote>
-<p>进行深拷贝示例：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Person implements Cloneable &#123;</span><br><span class="line"></span><br><span class="line">    private String name;</span><br><span class="line">    private Book book;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;省略 constructor 、 getter 、 setter 方法</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() throws CloneNotSupportedException &#123;</span><br><span class="line">        Person person &#x3D; (Person) super.clone();</span><br><span class="line">        person.book &#x3D; (Book) book.clone();</span><br><span class="line">        return person;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;Person&#123;&quot; +</span><br><span class="line">                &quot;name&#x3D;&#39;&quot; + name + &#39;\&#39;&#39; +</span><br><span class="line">                &quot;, book&#x3D;&quot; + book +</span><br><span class="line">                &#39;&#125;&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Book implements Cloneable&#123;</span><br><span class="line"></span><br><span class="line">    private String bookName;</span><br><span class="line">    private String author;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;省略 constructor 、 getter 、 setter 方法</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() throws CloneNotSupportedException &#123;</span><br><span class="line">        return super.clone();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;Book&#123;&quot; +</span><br><span class="line">                &quot;bookName&#x3D;&#39;&quot; + bookName + &#39;\&#39;&#39; +</span><br><span class="line">                &quot;, author&#x3D;&#39;&quot; + author + &#39;\&#39;&#39; +</span><br><span class="line">                &#39;&#125;&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Main &#123;</span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        Book effectiveJava &#x3D; new Book(&quot;Effective Java&quot;, &quot;Joshua Bloch&quot;);</span><br><span class="line">        Person sungm &#x3D; new Person(&quot;sungm&quot;, effectiveJava);</span><br><span class="line">        Person sunhw &#x3D; (Person) sungm.clone();</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;对象 sungm 的信息：&quot; + sungm);</span><br><span class="line">        System.out.println(&quot;对象 sunhw 的信息：&quot; + sunhw);</span><br><span class="line">        System.out.println(&quot;对象 sungm 与对象 sunhw 是否相等：&quot; + (sungm &#x3D;&#x3D; sunhw));</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;-----------------------------------------&quot;);</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;改变对象 sunhw 的 book 属性</span><br><span class="line">        sunhw.getBook().setBookName(&quot;Vue.js&quot;);</span><br><span class="line">        sunhw.getBook().setAuthor(&quot;尤雨溪&quot;);</span><br><span class="line">        System.out.println(&quot;对象 sunhw 的信息：&quot; + sunhw);</span><br><span class="line">        System.out.println(&quot;对象 sungm 的信息：&quot; + sungm);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;*运行结果*&#x2F;</span><br><span class="line">对象 sungm 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Effective Java&#39;, author&#x3D;&#39;Joshua Bloch&#39;&#125;&#125;</span><br><span class="line">对象 sunhw 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Effective Java&#39;, author&#x3D;&#39;Joshua Bloch&#39;&#125;&#125;</span><br><span class="line">对象 sungm 与对象 sunhw 是否相等：false </span><br><span class="line">-----------------------------------------</span><br><span class="line">对象 sunhw 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Vue.js&#39;, author&#x3D;&#39;尤雨溪&#39;&#125;&#125;</span><br><span class="line">对象 sungm 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Effective Java&#39;, author&#x3D;&#39;Joshua Bloch&#39;&#125;&#125;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>说明：进行深拷贝一般有2中方式<br>（1）将属性对象实现 java.lang.Cloneable 接口并重写 clone 方法，然后在原始类中修改 clone方法。<br>（2）实现 java.io.Serializable 接口，通过序列化和反序列号拷贝对象。</p>
-</blockquote>
-<h2 id="2-hashCode-方法"><a href="#2-hashCode-方法" class="headerlink" title="2. hashCode 方法"></a>2. hashCode 方法</h2><blockquote>
-<p>返回对象的 Hash 值 （也称散列码）。对象的散列码是为了更好的支持基于哈希机制的 Java 集合类，例如：HashMap、HashSet、HashTable。</p>
-</blockquote>
-<h3 id="2-1-通用约定"><a href="#2-1-通用约定" class="headerlink" title="2.1 通用约定"></a>2.1 通用约定</h3><blockquote>
-<p>（1）在 Java 程序执行期间，多次调用该方法应该返回相同的值，前提是未修改在 equals 方法中使用的信息。<br>（2）如果 2 个对象通过 equals 方法判定为 2 个对象相等、那么他们返回的 Hash 值也应该相等。<br>（3）对于 2 个对象来说，如果使用 equals 方法返回 false，那么这两个对象的 hashCode 值不要求一定不同（可以相同，可以不同），但是如果不同则可以提高应用的性能。<br>（4）对于 Object 类来说，不同 Object 对象的 hash 值是不同的、其 hash 值返回的是内存地址。</p>
-</blockquote>
-<blockquote>
-<p><strong>说明：鉴于第 （2） 条约定，如果重写了 equals 方法，那就要求重写 hashCode 方法。</strong></p>
-</blockquote>
-<h2 id="3-equals-方法"><a href="#3-equals-方法" class="headerlink" title="3. equals 方法"></a>3. equals 方法</h2><blockquote>
-<p>判断两个对象是否相等。仅当两个对象引用的是同一个内存地址，即同一个对象，该方法返回 true。若不满足指向同一个内存地址、即使两个对象的内容相同，也会返回 false。</p>
-</blockquote>
-<p>源码：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public boolean equals(Object obj) &#123; return (this &#x3D;&#x3D; obj); &#125;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>规则：<br>（1）自反性：对于任意非空对象， x.equals(x) 应该返回 true<br>（2）对称性：对于任意非空对象，若 x.equals(y) 返回 true，则 y.equals(x) 也应该返回 true<br>（3）传递性：对于任意非空对象，若 x.equals(y) 返回 true、y.equals(z) 也返回 true ，则 x.equals(z) 也应该返回 true<br>（4）一致性：若 x.equals(y) 返回 true，那第二次、第三次调用也应该返回 true，前提是未修改两个对象。</p>
-</blockquote>
-<h2 id="4-toString-方法"><a href="#4-toString-方法" class="headerlink" title="4. toString 方法"></a>4. toString 方法</h2><blockquote>
-<p>返回对象的字符串表现形式（类全名及无符号十六进制的 Hash 值）。API 建议所有的子类都重写该方法。</p>
-</blockquote>
-<p>源码：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public String toString() &#123; return getClass().getName() + &quot;@&quot; + Integer.toHexString(hashCode()); &#125;</span><br></pre></td></tr></table></figure>
-<h2 id="5-finalize-方法"><a href="#5-finalize-方法" class="headerlink" title="5. finalize 方法"></a>5. finalize 方法</h2><blockquote>
-<p>该方法自 Java 9 之后被废弃。</p>
-</blockquote>
-<p>源码：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Deprecated(since&#x3D;&quot;9&quot;) protected void finalize() throws Throwable &#123; &#125;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>说明：该方法并非一两句话能解释清楚，这里引入一篇博客、可供参考学习。<a href="https://www.jianshu.com/p/9d2788fffd5f" target="_blank" rel="noopener">https://www.jianshu.com/p/9d2788fffd5f</a></p>
-</blockquote>
-<h2 id="6-getClass-方法"><a href="#6-getClass-方法" class="headerlink" title="6. getClass 方法"></a>6. getClass 方法</h2><blockquote>
-<p>返回运行时该对象的 class 对象，返回的 class 对象是被表示对象的类的 static synchronized 方法锁定的对象。</p>
-</blockquote>
-<blockquote>
-<p>该方法一般常见于反射技术。</p>
-</blockquote>
-<h2 id="7-wait-方法"><a href="#7-wait-方法" class="headerlink" title="7. wait 方法"></a>7. wait 方法</h2><blockquote>
-<p>导致当前线程等待，可设置等待的毫秒数，知道其他线程调用 notify 方法或者调用该对象的 notifyAll 方法唤醒该线程。</p>
-</blockquote>
-<p>源码：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public final void wait() throws InterruptedException &#123;</span><br><span class="line">    wait(0L);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public final native void wait(long timeoutMillis) throws InterruptedException;</span><br></pre></td></tr></table></figure>
-<h2 id="8-notify-方法"><a href="#8-notify-方法" class="headerlink" title="8. notify 方法"></a>8. notify 方法</h2><blockquote>
-<p>唤醒正在此对象的监听器上等待的单个线程。如果该对象的监听器等待的线程存在多个、则唤醒其中一个线程，该线程的唤醒是随机的。</p>
-</blockquote>
-<p>源码：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@HotSpotIntrinsicCandidate public final native void notify();</span><br></pre></td></tr></table></figure>
-<h2 id="9-notifyAll-方法"><a href="#9-notifyAll-方法" class="headerlink" title="9. notifyAll 方法"></a>9. notifyAll 方法</h2><blockquote>
-<p>唤醒正在此对象的监听器上等待的所有线程。</p>
-</blockquote>
-<p>源码：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@HotSpotIntrinsicCandidate public final native void notifyAll();</span><br></pre></td></tr></table></figure>
-]]></content>
-      <tags>
-        <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>正确的避免NullPointException</title>
-    <url>/2020/06/13/%E6%AD%A3%E7%A1%AE%E7%9A%84%E9%81%BF%E5%85%8DNullPointException/</url>
-    <content><![CDATA[<h2 id="1-正确使用-String类的-equals-方法-和-Object类的-equals-方法"><a href="#1-正确使用-String类的-equals-方法-和-Object类的-equals-方法" class="headerlink" title="1. 正确使用 String类的 equals()方法 和 Object类的 equals() 方法"></a>1. 正确使用 String类的 equals()方法 和 Object类的 equals() 方法</h2><blockquote>
-<p>已知对象在前，未知对象在后。注意：已知对象不为 null</p>
-</blockquote>
-<a id="more"></a>
-
-<p>######正确示例</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    String name &#x3D; &quot;sungm&quot;; </span><br><span class="line">    &#x2F;&#x2F;name为已知对象且被赋予初始值不为空</span><br><span class="line">    if (name.equals(getOtherName())) &#123;</span><br><span class="line">        &#x2F;&#x2F;todo do something</span><br><span class="line">        System.out.println(&quot;todo do something&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static String getOtherName() &#123;</span><br><span class="line">    return &quot;sungm&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>######错误示例</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">    String name &#x3D; &quot;sungm&quot;;</span><br><span class="line">    &#x2F;&#x2F;getOtherName()方法返回值为 null。抛出NPE</span><br><span class="line">    if (getOtherName().equals(name)) &#123;</span><br><span class="line">        &#x2F;&#x2F;todo do something</span><br><span class="line">        System.out.println(&quot;todo do something&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static String getOtherName() &#123;</span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="2-未知对象转String使用String-valueOf-方法"><a href="#2-未知对象转String使用String-valueOf-方法" class="headerlink" title="2. 未知对象转String使用String.valueOf()方法"></a>2. 未知对象转String使用String.valueOf()方法</h2><blockquote>
-<p>空对象调用 toString() 方法会抛出NPE，使用 String.valueOf() 替代</p>
-</blockquote>
-<p>#####示例</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    &#x2F;&#x2F;抛NPE</span><br><span class="line">    System.out.println(getPrice().toString());</span><br><span class="line">    &#x2F;&#x2F;不抛NPE</span><br><span class="line">    System.out.println(String.valueOf(getPrice()));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static BigDecimal getPrice() &#123;</span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h5 id="String-valueOf-方法源码"><a href="#String-valueOf-方法源码" class="headerlink" title="String.valueOf() 方法源码"></a>String.valueOf() 方法源码</h5><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static String valueOf(Object obj) &#123;</span><br><span class="line">    return (obj &#x3D;&#x3D; null) ? &quot;null&quot; : obj.toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="3-使用第三方类库或者自己封装的工具类"><a href="#3-使用第三方类库或者自己封装的工具类" class="headerlink" title="3. 使用第三方类库或者自己封装的工具类"></a>3. 使用第三方类库或者自己封装的工具类</h2><blockquote>
-<p>例如 Apache 的 StringUtils 类</p>
-</blockquote>
-<p>#####Apache 的 StringUtils工具类部分源码</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">public static boolean isEmpty(String str) &#123;</span><br><span class="line">    return str &#x3D;&#x3D; null || str.length() &#x3D;&#x3D; 0;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static boolean isNotEmpty(String str) &#123;</span><br><span class="line">    return !isEmpty(str);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static boolean isBlank(String str) &#123;</span><br><span class="line">    int strLen;</span><br><span class="line">    if (str !&#x3D; null &amp;&amp; (strLen &#x3D; str.length()) !&#x3D; 0) &#123;</span><br><span class="line">        for(int i &#x3D; 0; i &lt; strLen; ++i) &#123;</span><br><span class="line">            if (!Character.isWhitespace(str.charAt(i))) &#123;</span><br><span class="line">                return false;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return true;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static boolean isNotBlank(String str) &#123;</span><br><span class="line">    return !isBlank(str);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>#####Apache 中 StringUtils 中 isEmpty() 方法 和 isBlank() 方法的区别：</p>
-<blockquote>
-<p>1: isEmpty() 方法：当Sting为null或者空（””）时返回true<br>2: isBlank() 方法 ：当Sting为null或者空（””）或者空字符串（”     “）时返回true</p>
-</blockquote>
-<p>#####示例</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">    String empty &#x3D; null;</span><br><span class="line">    System.out.println(StringUtils.isEmpty(empty));</span><br><span class="line"></span><br><span class="line">    empty &#x3D; &quot;&quot;;</span><br><span class="line">    System.out.println(StringUtils.isEmpty(empty));</span><br><span class="line"></span><br><span class="line">    empty &#x3D; &quot;      &quot;;</span><br><span class="line">    System.out.println(StringUtils.isBlank(empty));</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="4-避免自动拆箱可能抛出NPE"><a href="#4-避免自动拆箱可能抛出NPE" class="headerlink" title="4. 避免自动拆箱可能抛出NPE"></a>4. 避免自动拆箱可能抛出NPE</h2><blockquote>
-<p>自动拆箱可能抛出NPE</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;反例</span><br><span class="line">public int function() &#123;</span><br><span class="line">    return Integer对象;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="5-数据库查出的数据可能为null，做空判断"><a href="#5-数据库查出的数据可能为null，做空判断" class="headerlink" title="5. 数据库查出的数据可能为null，做空判断"></a>5. 数据库查出的数据可能为null，做空判断</h2><blockquote>
-<p>数据库非空字段可以加非空约束；对可能为空的字段做空判断、防止NPE。</p>
-</blockquote>
-<hr>
-<h2 id="6-级联调用容易抛出NPE，建议使用Java-8-的-Optional类"><a href="#6-级联调用容易抛出NPE，建议使用Java-8-的-Optional类" class="headerlink" title="6. 级联调用容易抛出NPE，建议使用Java 8 的 Optional类"></a>6. 级联调用容易抛出NPE，建议使用Java 8 的 Optional类</h2><blockquote>
-<p>例如 object.getMehtodA().getMethodB().getMethodC()；很容易抛出NPE</p>
-</blockquote>
-<hr>
-<h2 id="7-远程调用返回对象容易抛出NPE，建议做空判断"><a href="#7-远程调用返回对象容易抛出NPE，建议做空判断" class="headerlink" title="7. 远程调用返回对象容易抛出NPE，建议做空判断"></a>7. 远程调用返回对象容易抛出NPE，建议做空判断</h2><blockquote>
-<p>调用第三方接口等返回对象可能为空，建议对该对象操作之前做空判断。</p>
-</blockquote>
-<hr>
-<h2 id="8-取Session中-的值之前做空判断"><a href="#8-取Session中-的值之前做空判断" class="headerlink" title="8. 取Session中 的值之前做空判断"></a>8. 取Session中 的值之前做空判断</h2><blockquote>
-<p> 取Session的值之前对Session做空判断，对获取的Session值操作之前对Session值做空判断、避免NPE</p>
-</blockquote>
-<hr>
-<h2 id="9-对集合的操作之前做空判断"><a href="#9-对集合的操作之前做空判断" class="headerlink" title="9. 对集合的操作之前做空判断"></a>9. 对集合的操作之前做空判断</h2><blockquote>
-<p> 取集合中的值之前对集合做空判断，对获取的集合值操作之前对集合值做空判断、避免NPE</p>
-</blockquote>
-<hr>
-]]></content>
-      <tags>
-        <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>做有意义的命名</title>
-    <url>/2020/06/13/%E5%81%9A%E6%9C%89%E6%84%8F%E4%B9%89%E7%9A%84%E5%91%BD%E5%90%8D/</url>
-    <content><![CDATA[<blockquote>
-<p>软件中随处可见命名。我们给变量、函数、参数、类和封包命名。我们给源代码及源码所在的目录命名。我们给 jar 文件、 war 文件 和 ear 文件命名。有很多命名要做、不妨做好它。下面列出几条简单规则。</p>
-</blockquote>
-<a id="more"></a>
-
-<h2 id="1-名副其实"><a href="#1-名副其实" class="headerlink" title="1. 名副其实"></a>1. 名副其实</h2><blockquote>
-<p>变量、函数或类的名称应该已经答复了所有的大问题。它该告诉你，它为什么会存在，它做了什么事，应该怎么用。如果名称需要注释来补充，那就不算是名副其实。</p>
-</blockquote>
-<hr>
-<h2 id="2-避免误导"><a href="#2-避免误导" class="headerlink" title="2. 避免误导"></a>2. 避免误导</h2><blockquote>
-<ol>
-<li><strong>避免留下掩藏代码本意的错误线索。</strong><br>例如：使用某些专有名词作为变量名，使用缩写。</li>
-<li><strong>避免使用与本意相悖的词</strong><br>例如：<br>String[] accountList = new String[10];  accountList 实质是一个数组对象，命名后缀为<br>List产生误导作用。</li>
-<li><strong>避免使用外形相似的命名</strong><br>例如：两个变量</li>
-<li><strong>避免使用小写字母 l 与 大写字母 O 作为变量名，跟数组1 和数字 0 难以区分。</strong></li>
-</ol>
-</blockquote>
-<hr>
-<h2 id="3-做有意义的区分"><a href="#3-做有意义的区分" class="headerlink" title="3. 做有意义的区分"></a>3. 做有意义的区分</h2><blockquote>
-<p>如果只是为了满足编译器或解释器的需要而写代码，肯定会制造麻烦。</p>
-</blockquote>
-<blockquote>
-<p>#####错误示例：<br><strong>1. 添加数字系列，这样的名称纯属误导。</strong></p>
-<ul>
-<li>例如：<br>定义两个学生对象<br>Student student1 = new Student();<br>Student student2 = new Student();</li>
-</ul>
-<p><strong>2. 少使用废话，废话都是冗余。要区分名称，要以读者能鉴别之处来区分。</strong></p>
-<ul>
-<li><p>例如：假设已有一个 Product 类，还有ProductInfo 类 和 ProductData 类，虽然名称不同，意思却无差别。 Info 和 Data 就i想 a、an、the 一样，都是意义含混的废话。</p>
-</li>
-<li><p>例如：如果你需要获取账户信息，你该调用那个方法呢 ？<br>getAccount();<br>getAccounts();<br>getAccountInfo();</p>
-</li>
-<li><p>例如：<br>moneyAmount 和 money 没区别，<br>customerInfo 与 customer 没区别，<br>accountData 和 account 没区别，<br>theMessage 和 message 没区别 。</p>
-</li>
-</ul>
-</blockquote>
-<hr>
-<h2 id="4-使用读的出来的名称"><a href="#4-使用读的出来的名称" class="headerlink" title="4. 使用读的出来的名称"></a>4. 使用读的出来的名称</h2><blockquote>
-<p>#####错误示例：<br><strong>1.  使用汉语拼音，只会让别人觉得你写的代码很 low.</strong></p>
-<p><strong>2. 使用罕见的英语词汇</strong></p>
-</blockquote>
-<hr>
-<h2 id="5-使用可搜索的名称"><a href="#5-使用可搜索的名称" class="headerlink" title="5. 使用可搜索的名称"></a>5. 使用可搜索的名称</h2><blockquote>
-<p>#####建议:<br><strong>1. 使用长名称，长名称胜于短名称。</strong></p>
-<ul>
-<li>例如： WORK_DAYS_PER_WEEK 比数字 5 好找得多。</li>
-</ul>
-</blockquote>
-<hr>
-<h2 id="6-避免使用编码"><a href="#6-避免使用编码" class="headerlink" title="6. 避免使用编码"></a>6. 避免使用编码</h2><blockquote>
-<p>编码已经太多，不需要自找麻烦。</p>
-</blockquote>
-<hr>
-<h2 id="7-避免使用前缀"><a href="#7-避免使用前缀" class="headerlink" title="7. 避免使用前缀"></a>7. 避免使用前缀</h2><blockquote>
-<p>不必使用 m_ 前缀来表名成员变量，很多时候阅读代码的人不会去看前缀，直接看后面有意义的名称，前缀反而成了废代码。</p>
-</blockquote>
-<hr>
-<h2 id="8-接口和实现"><a href="#8-接口和实现" class="headerlink" title="8. 接口和实现"></a>8. 接口和实现</h2><p>略</p>
-<hr>
-<h2 id="9-类名"><a href="#9-类名" class="headerlink" title="9. 类名"></a>9. 类名</h2><blockquote>
-<p>类名和对象名应该是名词或者名词短语，不应该是动词。</p>
-<ul>
-<li>正例：Customer</li>
-<li>反例：CustomerInfo、CustomerData、 Data .</li>
-</ul>
-</blockquote>
-<hr>
-<h2 id="10-方法名"><a href="#10-方法名" class="headerlink" title="10. 方法名"></a>10. 方法名</h2><blockquote>
-<p>方法名应该是动词或者动词短语，不应该是名词。</p>
-<ul>
-<li>例如：getName(); setName() 等。</li>
-</ul>
-</blockquote>
-<hr>
-<h2 id="11-避免思维映射"><a href="#11-避免思维映射" class="headerlink" title="11. 避免思维映射"></a>11. 避免思维映射</h2><blockquote>
-<ul>
-<li>例如：变量 i、j 通常用于 for 循环中，传统惯用这种单字母名词作为循环计数器，并不是一种好的选择。</li>
-</ul>
-</blockquote>
-<hr>
-<h2 id="12-避免使用双关语"><a href="#12-避免使用双关语" class="headerlink" title="12. 避免使用双关语"></a>12. 避免使用双关语</h2><blockquote>
-<ul>
-<li>例如：add方法用来添加一个对象，返回结果应该是布尔类型（添加成功或者失败） ，如果你需要添加一个对象并返回添加后产生的新值，建议使用append方法和insert方法。</li>
-</ul>
-</blockquote>
-]]></content>
-      <tags>
-        <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>原始类型特化</title>
     <url>/2020/06/13/%E5%8E%9F%E5%A7%8B%E7%B1%BB%E5%9E%8B%E7%89%B9%E5%8C%96/</url>
     <content><![CDATA[<p><strong>引言</strong></p>
@@ -1007,6 +1119,70 @@
       <tags>
         <tag>Java</tag>
         <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>正确的避免NullPointException</title>
+    <url>/2020/06/13/%E6%AD%A3%E7%A1%AE%E7%9A%84%E9%81%BF%E5%85%8DNullPointException/</url>
+    <content><![CDATA[<h2 id="1-正确使用-String类的-equals-方法-和-Object类的-equals-方法"><a href="#1-正确使用-String类的-equals-方法-和-Object类的-equals-方法" class="headerlink" title="1. 正确使用 String类的 equals()方法 和 Object类的 equals() 方法"></a>1. 正确使用 String类的 equals()方法 和 Object类的 equals() 方法</h2><blockquote>
+<p>已知对象在前，未知对象在后。注意：已知对象不为 null</p>
+</blockquote>
+<a id="more"></a>
+
+<p>######正确示例</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    String name &#x3D; &quot;sungm&quot;; </span><br><span class="line">    &#x2F;&#x2F;name为已知对象且被赋予初始值不为空</span><br><span class="line">    if (name.equals(getOtherName())) &#123;</span><br><span class="line">        &#x2F;&#x2F;todo do something</span><br><span class="line">        System.out.println(&quot;todo do something&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static String getOtherName() &#123;</span><br><span class="line">    return &quot;sungm&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>######错误示例</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">    String name &#x3D; &quot;sungm&quot;;</span><br><span class="line">    &#x2F;&#x2F;getOtherName()方法返回值为 null。抛出NPE</span><br><span class="line">    if (getOtherName().equals(name)) &#123;</span><br><span class="line">        &#x2F;&#x2F;todo do something</span><br><span class="line">        System.out.println(&quot;todo do something&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static String getOtherName() &#123;</span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="2-未知对象转String使用String-valueOf-方法"><a href="#2-未知对象转String使用String-valueOf-方法" class="headerlink" title="2. 未知对象转String使用String.valueOf()方法"></a>2. 未知对象转String使用String.valueOf()方法</h2><blockquote>
+<p>空对象调用 toString() 方法会抛出NPE，使用 String.valueOf() 替代</p>
+</blockquote>
+<p>#####示例</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    &#x2F;&#x2F;抛NPE</span><br><span class="line">    System.out.println(getPrice().toString());</span><br><span class="line">    &#x2F;&#x2F;不抛NPE</span><br><span class="line">    System.out.println(String.valueOf(getPrice()));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static BigDecimal getPrice() &#123;</span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="String-valueOf-方法源码"><a href="#String-valueOf-方法源码" class="headerlink" title="String.valueOf() 方法源码"></a>String.valueOf() 方法源码</h5><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static String valueOf(Object obj) &#123;</span><br><span class="line">    return (obj &#x3D;&#x3D; null) ? &quot;null&quot; : obj.toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="3-使用第三方类库或者自己封装的工具类"><a href="#3-使用第三方类库或者自己封装的工具类" class="headerlink" title="3. 使用第三方类库或者自己封装的工具类"></a>3. 使用第三方类库或者自己封装的工具类</h2><blockquote>
+<p>例如 Apache 的 StringUtils 类</p>
+</blockquote>
+<p>#####Apache 的 StringUtils工具类部分源码</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">public static boolean isEmpty(String str) &#123;</span><br><span class="line">    return str &#x3D;&#x3D; null || str.length() &#x3D;&#x3D; 0;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static boolean isNotEmpty(String str) &#123;</span><br><span class="line">    return !isEmpty(str);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static boolean isBlank(String str) &#123;</span><br><span class="line">    int strLen;</span><br><span class="line">    if (str !&#x3D; null &amp;&amp; (strLen &#x3D; str.length()) !&#x3D; 0) &#123;</span><br><span class="line">        for(int i &#x3D; 0; i &lt; strLen; ++i) &#123;</span><br><span class="line">            if (!Character.isWhitespace(str.charAt(i))) &#123;</span><br><span class="line">                return false;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return true;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static boolean isNotBlank(String str) &#123;</span><br><span class="line">    return !isBlank(str);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>#####Apache 中 StringUtils 中 isEmpty() 方法 和 isBlank() 方法的区别：</p>
+<blockquote>
+<p>1: isEmpty() 方法：当Sting为null或者空（””）时返回true<br>2: isBlank() 方法 ：当Sting为null或者空（””）或者空字符串（”     “）时返回true</p>
+</blockquote>
+<p>#####示例</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">    String empty &#x3D; null;</span><br><span class="line">    System.out.println(StringUtils.isEmpty(empty));</span><br><span class="line"></span><br><span class="line">    empty &#x3D; &quot;&quot;;</span><br><span class="line">    System.out.println(StringUtils.isEmpty(empty));</span><br><span class="line"></span><br><span class="line">    empty &#x3D; &quot;      &quot;;</span><br><span class="line">    System.out.println(StringUtils.isBlank(empty));</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="4-避免自动拆箱可能抛出NPE"><a href="#4-避免自动拆箱可能抛出NPE" class="headerlink" title="4. 避免自动拆箱可能抛出NPE"></a>4. 避免自动拆箱可能抛出NPE</h2><blockquote>
+<p>自动拆箱可能抛出NPE</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;反例</span><br><span class="line">public int function() &#123;</span><br><span class="line">    return Integer对象;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="5-数据库查出的数据可能为null，做空判断"><a href="#5-数据库查出的数据可能为null，做空判断" class="headerlink" title="5. 数据库查出的数据可能为null，做空判断"></a>5. 数据库查出的数据可能为null，做空判断</h2><blockquote>
+<p>数据库非空字段可以加非空约束；对可能为空的字段做空判断、防止NPE。</p>
+</blockquote>
+<hr>
+<h2 id="6-级联调用容易抛出NPE，建议使用Java-8-的-Optional类"><a href="#6-级联调用容易抛出NPE，建议使用Java-8-的-Optional类" class="headerlink" title="6. 级联调用容易抛出NPE，建议使用Java 8 的 Optional类"></a>6. 级联调用容易抛出NPE，建议使用Java 8 的 Optional类</h2><blockquote>
+<p>例如 object.getMehtodA().getMethodB().getMethodC()；很容易抛出NPE</p>
+</blockquote>
+<hr>
+<h2 id="7-远程调用返回对象容易抛出NPE，建议做空判断"><a href="#7-远程调用返回对象容易抛出NPE，建议做空判断" class="headerlink" title="7. 远程调用返回对象容易抛出NPE，建议做空判断"></a>7. 远程调用返回对象容易抛出NPE，建议做空判断</h2><blockquote>
+<p>调用第三方接口等返回对象可能为空，建议对该对象操作之前做空判断。</p>
+</blockquote>
+<hr>
+<h2 id="8-取Session中-的值之前做空判断"><a href="#8-取Session中-的值之前做空判断" class="headerlink" title="8. 取Session中 的值之前做空判断"></a>8. 取Session中 的值之前做空判断</h2><blockquote>
+<p> 取Session的值之前对Session做空判断，对获取的Session值操作之前对Session值做空判断、避免NPE</p>
+</blockquote>
+<hr>
+<h2 id="9-对集合的操作之前做空判断"><a href="#9-对集合的操作之前做空判断" class="headerlink" title="9. 对集合的操作之前做空判断"></a>9. 对集合的操作之前做空判断</h2><blockquote>
+<p> 取集合中的值之前对集合做空判断，对获取的集合值操作之前对集合值做空判断、避免NPE</p>
+</blockquote>
+<hr>
+]]></content>
+      <tags>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -1122,27 +1298,6 @@
       </tags>
   </entry>
   <entry>
-    <title>验证XML</title>
-    <url>/2020/06/18/%E9%AA%8C%E8%AF%81XML/</url>
-    <content><![CDATA[<h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h2><blockquote>
-<ul>
-<li>如果我们解析XML之后，获取到XML的内容，再校验XML内容或格式是否符合设计规范，这个工作是很繁琐的。</li>
-<li>幸好，XML解析器的一个很大的好处就是它能够自动校验某个文档是否具有正确的结构，这样解析工作就变的简单的多。</li>
-<li>通过定义一个 <a href="https://www.w3school.com.cn/dtd/dtd_intro.asp" target="_blank" rel="noopener">DTD</a> 或者 <a href="https://www.w3school.com.cn/schema/schema_intro.asp" target="_blank" rel="noopener">XML Schema</a>， DTD 或者 Schema 包含了用于解释文档如何构成的规则，这些规则指定了每个元素的合法子元素和属性。</li>
-</ul>
-</blockquote>
-<hr>
-<h2 id="2-定义DTD校验规则"><a href="#2-定义DTD校验规则" class="headerlink" title="2. 定义DTD校验规则"></a>2. 定义DTD校验规则</h2><p><strong>XML文档</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot; ?&gt;</span><br><span class="line">&lt;!-- 定义DTD校验规则 --&gt;</span><br><span class="line">&lt;!DOCTYPE class [</span><br><span class="line">    &lt;!-- 定义class至少包含一个student --&gt;</span><br><span class="line">    &lt;!ELEMENT class (student+)&gt;</span><br><span class="line">    &lt;!-- 定义student只包含name,age,sex,className属性 --&gt;</span><br><span class="line">    &lt;!ELEMENT student (name, age, sex, className)&gt;</span><br><span class="line">        &lt;!-- 定义id属性, 属性默认值为0 --&gt;</span><br><span class="line">        &lt;!ATTLIST student id CDATA &quot;0&quot;&gt;</span><br><span class="line">    &lt;!ELEMENT name (#PCDATA)&gt;</span><br><span class="line">    &lt;!ELEMENT age (#PCDATA)&gt;</span><br><span class="line">    &lt;!ELEMENT sex (#PCDATA)&gt;</span><br><span class="line">    &lt;!ELEMENT className (#PCDATA)&gt;</span><br><span class="line">]&gt;</span><br><span class="line">&lt;class&gt;</span><br><span class="line">    &lt;student id&#x3D;&quot;1&quot;&gt;</span><br><span class="line">        &lt;name&gt;sungm&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age&gt;25&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className&gt;Class One&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">    &lt;student id&#x3D;&quot;2&quot;&gt;</span><br><span class="line">        &lt;name&gt;sunhw&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age&gt;1&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className&gt;Class Two&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">&lt;&#x2F;class&gt;</span><br></pre></td></tr></table></figure>
-
-
-]]></content>
-      <tags>
-        <tag>Java</tag>
-        <tag>XML</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>通用Builder</title>
     <url>/2020/06/15/%E9%80%9A%E7%94%A8Builder/</url>
     <content><![CDATA[<blockquote>
@@ -1171,6 +1326,27 @@
         <tag>Java</tag>
         <tag>工具类</tag>
         <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>验证XML</title>
+    <url>/2020/06/18/%E9%AA%8C%E8%AF%81XML/</url>
+    <content><![CDATA[<h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h2><blockquote>
+<ul>
+<li>如果我们解析XML之后，获取到XML的内容，再校验XML内容或格式是否符合设计规范，这个工作是很繁琐的。</li>
+<li>幸好，XML解析器的一个很大的好处就是它能够自动校验某个文档是否具有正确的结构，这样解析工作就变的简单的多。</li>
+<li>通过定义一个 <a href="https://www.w3school.com.cn/dtd/dtd_intro.asp" target="_blank" rel="noopener">DTD</a> 或者 <a href="https://www.w3school.com.cn/schema/schema_intro.asp" target="_blank" rel="noopener">XML Schema</a>， DTD 或者 Schema 包含了用于解释文档如何构成的规则，这些规则指定了每个元素的合法子元素和属性。</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="2-定义DTD校验规则"><a href="#2-定义DTD校验规则" class="headerlink" title="2. 定义DTD校验规则"></a>2. 定义DTD校验规则</h2><p><strong>XML文档</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot; ?&gt;</span><br><span class="line">&lt;!-- 定义DTD校验规则 --&gt;</span><br><span class="line">&lt;!DOCTYPE class [</span><br><span class="line">    &lt;!-- 定义class至少包含一个student --&gt;</span><br><span class="line">    &lt;!ELEMENT class (student+)&gt;</span><br><span class="line">    &lt;!-- 定义student只包含name,age,sex,className属性 --&gt;</span><br><span class="line">    &lt;!ELEMENT student (name, age, sex, className)&gt;</span><br><span class="line">        &lt;!-- 定义id属性, 属性默认值为0 --&gt;</span><br><span class="line">        &lt;!ATTLIST student id CDATA &quot;0&quot;&gt;</span><br><span class="line">    &lt;!ELEMENT name (#PCDATA)&gt;</span><br><span class="line">    &lt;!ELEMENT age (#PCDATA)&gt;</span><br><span class="line">    &lt;!ELEMENT sex (#PCDATA)&gt;</span><br><span class="line">    &lt;!ELEMENT className (#PCDATA)&gt;</span><br><span class="line">]&gt;</span><br><span class="line">&lt;class&gt;</span><br><span class="line">    &lt;student id&#x3D;&quot;1&quot;&gt;</span><br><span class="line">        &lt;name&gt;sungm&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age&gt;25&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className&gt;Class One&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">    &lt;student id&#x3D;&quot;2&quot;&gt;</span><br><span class="line">        &lt;name&gt;sunhw&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age&gt;1&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className&gt;Class Two&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">&lt;&#x2F;class&gt;</span><br></pre></td></tr></table></figure>
+
+
+]]></content>
+      <tags>
+        <tag>Java</tag>
+        <tag>XML</tag>
       </tags>
   </entry>
 </search>
