@@ -30,7 +30,7 @@ Lambda表达式博客链接
 
 <!--Open Graph Title-->
 
-    <meta property="og:title" content="Stream"/>
+    <meta property="og:title" content="函数式数据处理"/>
 
 
 <!--Open Graph Description-->
@@ -73,7 +73,7 @@ Lambda表达式博客链接
 
 <!-- Title -->
 
-<title>Stream - Miracle&#39;s Blog</title>
+<title>函数式数据处理 - Miracle&#39;s Blog</title>
 
 <!-- Bootstrap Core CSS -->
 <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
@@ -141,7 +141,7 @@ Lambda表达式博客链接
         <div class="row">
             <div class="col-lg-12 col-md-12 text-center">
                 <div class="post-heading text-white">
-                    <h1>Stream</h1>
+                    <h1>函数式数据处理</h1>
                     
                 </div>
             </div>
@@ -221,7 +221,7 @@ Lambda表达式博客链接
 <li>//TODO 待补充</li>
 </ol>
 </blockquote>
-<h4 id="API"><a href="#API" class="headerlink" title="API"></a>API</h4><div class="table-responsive">
+<h2 id="2-使用-Stream"><a href="#2-使用-Stream" class="headerlink" title="2. 使用 Stream"></a>2. 使用 Stream</h2><h4 id="API"><a href="#API" class="headerlink" title="API"></a>API</h4><div class="table-responsive">
 <table class="table table-bordered table-striped">
 <thead>
 <tr>
@@ -345,7 +345,7 @@ Lambda表达式博客链接
 <td align="left"></td>
 </tr>
 </tbody></table>
-<h2 id="2-使用-Stream"><a href="#2-使用-Stream" class="headerlink" title="2. 使用 Stream"></a>2. 使用 Stream</h2><h4 id="2-1-filter"><a href="#2-1-filter" class="headerlink" title="2.1 filter"></a>2.1 filter</h4><p>过滤流元素：该操作会接受一个 Predicate 函数式接口对象（一个返回boolean的函数）作为参数，并返回一个包括所有符合谓词的元素的流。</p>
+<h4 id="2-1-filter"><a href="#2-1-filter" class="headerlink" title="2.1 filter"></a>2.1 filter</h4><p>过滤流元素：该操作会接受一个 Predicate 函数式接口对象（一个返回boolean的函数）作为参数，并返回一个包括所有符合谓词的元素的流。</p>
  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    &#x2F;&#x2F;过滤出元素小于5的集合</span><br><span class="line">    List&lt;Integer&gt; result &#x3D; numbers.stream().filter(number -&gt; number &lt; 5).collect(Collectors.toList());</span><br><span class="line">    System.out.println(result.toString());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">[1, 2, 3, 4]</span><br></pre></td></tr></table></figure>
 
 <h4 id="2-2-distinct"><a href="#2-2-distinct" class="headerlink" title="2.2 distinct"></a>2.2 distinct</h4><p>对流元素去重：根据流元素的hashCode和equals方法判断元素是否重复。</p>
@@ -405,7 +405,72 @@ Lambda表达式博客链接
 </ul>
 </blockquote>
 <hr>
+<h2 id="3-数值流"><a href="#3-数值流" class="headerlink" title="3. 数值流"></a>3. 数值流</h2><p>我们在计算流中元素总和时，通常情况下会这样做：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int sum &#x3D; Stream.of(1, 2, 3, 4, 5, 6, 7, 8).reduce(0, Integer::sum);</span><br></pre></td></tr></table></figure>
+<p>这段代码问题是它暗藏拆箱成本。每个Integer都必须拆成一个原始类型再进行求和。</p>
+<h4 id="3-1-原始类型特化"><a href="#3-1-原始类型特化" class="headerlink" title="3.1 原始类型特化"></a>3.1 原始类型特化</h4><p>说明：</p>
+<blockquote>
+<p>Java 8 引入了三个原始类型特化流接口来解决上面这个暗藏拆箱成本的问题：IntStream、DoubleStream和LongStream，分别将流中的元素特化为int、long和double，从而避免了暗含的拆箱成本。每个接口都带来了进行常用数值归约的新方法，比如对数值流求和的sum，找到最大元素的max。此外还有在必要时再把它们转换回对象流的方法。要记住的是，这些特化的原因并不在于流的复杂性，而是装箱造成的复杂性——即类似int和Integer之间的效率差异。</p>
+</blockquote>
+<p><strong>映射到数值流</strong></p>
+<blockquote>
+<ul>
+<li>mapToInt：    映射成IntStream</li>
+<li>mapToLong：   映射成LongStream</li>
+<li>mapToDouble： 映射成DoubleStream</li>
+</ul>
+</blockquote>
+<p>举例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    &#x2F;&#x2F;映射到数值流</span><br><span class="line">    System.out.println(Stream.of(1, 2, 3, 4, 5, 6, 7, 8).mapToInt(n -&gt; n).sum());</span><br><span class="line">    System.out.println(Stream.of(1, 2, 3, 4, 5, 6, 7, 8).mapToLong(n -&gt; n).sum());</span><br><span class="line">    System.out.println(Stream.of(1, 2, 3, 4, 5, 6, 7, 8).mapToDouble(n -&gt; n).sum());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<p><strong>转换回对象流</strong></p>
+<p>通过boxed()方法，转换回对象流，例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    &#x2F;&#x2F;通过boxed()方法，转换回对象流</span><br><span class="line">    System.out.println(Stream.of(1, 2, 3, 4, 5, 6, 7, 8).mapToInt(n -&gt; n).boxed().reduce(0, Integer::sum));</span><br><span class="line">    System.out.println(Stream.of(1, 2, 3, 4, 5, 6, 7, 8).mapToLong(n -&gt; n).boxed().reduce(0L, Long::sum));</span><br><span class="line">    System.out.println(Stream.of(1, 2, 3, 4, 5, 6, 7, 8).mapToDouble(n -&gt; n).boxed().reduce(0D, Double::sum));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>默认值</strong></p>
+<p>对于三种原始流特化，也分别有一个Optional原始类型特化版本：OptionalInt、OptionalDouble和OptionalLong。</p>
+<p><strong>数值范围</strong></p>
+<p>通过使用range() 和 rangeClosed() 方法生成数值范围。</p>
+<blockquote>
+<ul>
+<li>range(int startInclusive, int endExclusive) 方法： 生成 [startInclusive, endExclusive) 范围内数值流（左闭右开）。</li>
+<li>rangeClosed(int startInclusive, int endInclusive) 方法： 生成 [startInclusive, endInclusive] 范围内数值流（左闭右闭）。</li>
+</ul>
+</blockquote>
+<p>举例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    System.out.println(IntStream.range(1, 100).count());</span><br><span class="line">    System.out.println(IntStream.rangeClosed(1, 100).count());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">99</span><br><span class="line">100</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-构建流"><a href="#4-构建流" class="headerlink" title="4. 构建流"></a>4. 构建流</h2><p>这里主要介绍由集合、数值、数组、文件来创建流；最后介绍下由生成函数来创建无限流。</p>
+<h4 id="4-1-由集合生成流"><a href="#4-1-由集合生成流" class="headerlink" title="4.1 由集合生成流"></a>4.1 由集合生成流</h4><p>Java 8 的 Collection 新增了 stream() 的 Api，集合对象通过调用 stream() 方法生成流。</p>
+<p>举例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; list &#x3D; Arrays.asList(&quot;sungm&quot;, &quot;other&quot;);</span><br><span class="line">list.stream();</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-2-由数值生成流"><a href="#4-2-由数值生成流" class="headerlink" title="4.2 由数值生成流"></a>4.2 由数值生成流</h4><p>通过 Stream.of() 方法生成流</p>
+<p>举例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">    Stream&lt;String&gt; stream &#x3D; Stream.of(&quot;sungm&quot;, &quot;other&quot;);</span><br><span class="line">&#96;&#96;&#96;  </span><br><span class="line"></span><br><span class="line">#### 4.3 由数组生成流</span><br><span class="line"></span><br><span class="line">通过 Arrays.stream() 方法生成流</span><br><span class="line">举例：</span><br></pre></td></tr></table></figure>
+<pre><code>int[] numbers = {1, 2, 3};
+Arrays.stream(numbers);</code></pre><pre><code>
+#### 4.4 由文件生成流
+
+java nio
+&gt; Java中用于处理文件等I/O操作的NIO API（非阻塞 I/O）已更新，以便利用Stream API。java.nio.file.Files中的很多静态方法都会返回一个流。例如：Files.lines()方法
+
+#### 4.5 函数生成流：创建无限流
+
+Stream.iterate()方法和Stream.generate()方法：
+&gt; Stream API提供了两个静态方法来从函数生成流：Stream.iterate和Stream.generate。这两个操作可以创建所谓的无限流
+
+举例：</code></pre><p>//我们通过使用limit()方法来截断流<br>Stream.iterate(0, n -&gt; n + 2).limit(10).forEach(System.out::println);</p>
+<pre><code></code></pre><p>Stream.generate(Math::random).limit(5).forEach(System.out::println);</p>
+<pre><code>
+备注：
+&gt; 无限流是没有固定大小的流
+
+
+
+
+
+</code></pre>
             </div>
 
             <!-- Post information -->

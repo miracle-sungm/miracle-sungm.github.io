@@ -159,6 +159,37 @@
       </tags>
   </entry>
   <entry>
+    <title>Check工具类</title>
+    <url>/2020/06/15/Check%E5%B7%A5%E5%85%B7%E7%B1%BB/</url>
+    <content><![CDATA[<blockquote>
+<p>直接上代码</p>
+</blockquote>
+<blockquote>
+<p>定义Check注解</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import java.lang.annotation.ElementType;</span><br><span class="line">import java.lang.annotation.Retention;</span><br><span class="line">import java.lang.annotation.RetentionPolicy;</span><br><span class="line">import java.lang.annotation.Target;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since  : 2020-06-15</span><br><span class="line"> *&#x2F;</span><br><span class="line">@Target(ElementType.FIELD)</span><br><span class="line">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="line">public @interface Check &#123;</span><br><span class="line"></span><br><span class="line">    boolean notNull() default false;</span><br><span class="line"></span><br><span class="line">    boolean notEmpty() default false;</span><br><span class="line"></span><br><span class="line">    boolean notBlank() default false;</span><br><span class="line"></span><br><span class="line">    String regex() default &quot;&quot;;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>校验工具类</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import demo.annotations.Check;</span><br><span class="line"></span><br><span class="line">import java.lang.reflect.Field;</span><br><span class="line">import java.util.Objects;</span><br><span class="line">import java.util.regex.Pattern;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2020-06-15 16:01</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class CheckUtils &#123;</span><br><span class="line"></span><br><span class="line">    private static final String EMPTY &#x3D; &quot;&quot;;</span><br><span class="line"></span><br><span class="line">    public static &lt;T&gt; void check(T t) throws Exception &#123;</span><br><span class="line">        Class clazz &#x3D; t.getClass();</span><br><span class="line">        Field[] fields &#x3D; clazz.getDeclaredFields();</span><br><span class="line">        if (fields.length &#x3D;&#x3D; 0) &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        for (Field field : fields) &#123;</span><br><span class="line">            field.setAccessible(true);</span><br><span class="line">            check(field.get(t), field);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void check(Object value, Field field) throws Exception &#123;</span><br><span class="line">        Check check &#x3D; field.getAnnotation(Check.class);</span><br><span class="line">        if (Objects.isNull(check)) &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if (check.notNull() &amp;&amp; Objects.isNull(value)) &#123;</span><br><span class="line">            throw new Exception(&quot;Field (&quot; + field.getName() + &quot;) cannot be null.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        if (check.notEmpty() &amp;&amp; (Objects.isNull(value) || EMPTY.equals(value.toString()))) &#123;</span><br><span class="line">            throw new Exception(&quot;Field (&quot; + field.getName() + &quot;) cannot be empty.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        if (check.notBlank() &amp;&amp; (Objects.isNull(value) || EMPTY.equals(value.toString().trim()))) &#123;</span><br><span class="line">            throw new Exception(&quot;Field (&quot; + field.getName() + &quot;) cannot be blank.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        checkRegex(field, value, check.regex());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void checkRegex(Field field, Object value, String regex) throws Exception &#123;</span><br><span class="line">        if (EMPTY.equals(regex) || Objects.isNull(value)) &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if (!Pattern.matches(regex, value.toString())) &#123;</span><br><span class="line">            throw new Exception(&quot;Wrong data format : Field (&quot; + field.getName() + &quot;), value  is : &quot; + &quot; value&quot; + &quot;, regex is : &quot; + regex);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p>DTO 数据传输层</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class PersonDto &#123;</span><br><span class="line"></span><br><span class="line">    @Check(notBlank &#x3D; true)</span><br><span class="line">    private String name;</span><br><span class="line">    @Check(notNull &#x3D; true, regex &#x3D; &quot;\\d\\d&quot;)</span><br><span class="line">    private Integer age;</span><br><span class="line">    @Check(notBlank &#x3D; true, regex &#x3D; &quot;男|女&quot;)</span><br><span class="line">    private String sex;</span><br><span class="line">    private String idCard;</span><br><span class="line">    private String accessNumber;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;省略了getter、setter方法</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>程序入口</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2020-06-15 17:50</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class Main &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        PersonDto personDto &#x3D; new PersonDto();</span><br><span class="line">        personDto.setIdCard(&quot;0001&quot;);</span><br><span class="line">        personDto.setName(&quot;孙广明&quot;);</span><br><span class="line">        personDto.setSex(&quot;男&quot;);</span><br><span class="line">        personDto.setAge(25);</span><br><span class="line">        CheckUtils.check(personDto);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+      <tags>
+        <tag>Java</tag>
+        <tag>工具类</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>XML基础</title>
     <url>/2020/06/16/XML%E5%9F%BA%E7%A1%80/</url>
     <content><![CDATA[<h2 id="1-XML概述"><a href="#1-XML概述" class="headerlink" title="1. XML概述"></a>1. XML概述</h2><p>XML : 可拓展标记语言（Extensible Markup Language, XML）。 是一个非常有用的、用来描述结构化信息的技术。</p>
@@ -233,277 +264,6 @@
       <tags>
         <tag>Java</tag>
         <tag>XML</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Check工具类</title>
-    <url>/2020/06/15/Check%E5%B7%A5%E5%85%B7%E7%B1%BB/</url>
-    <content><![CDATA[<blockquote>
-<p>直接上代码</p>
-</blockquote>
-<blockquote>
-<p>定义Check注解</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import java.lang.annotation.ElementType;</span><br><span class="line">import java.lang.annotation.Retention;</span><br><span class="line">import java.lang.annotation.RetentionPolicy;</span><br><span class="line">import java.lang.annotation.Target;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since  : 2020-06-15</span><br><span class="line"> *&#x2F;</span><br><span class="line">@Target(ElementType.FIELD)</span><br><span class="line">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="line">public @interface Check &#123;</span><br><span class="line"></span><br><span class="line">    boolean notNull() default false;</span><br><span class="line"></span><br><span class="line">    boolean notEmpty() default false;</span><br><span class="line"></span><br><span class="line">    boolean notBlank() default false;</span><br><span class="line"></span><br><span class="line">    String regex() default &quot;&quot;;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>校验工具类</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import demo.annotations.Check;</span><br><span class="line"></span><br><span class="line">import java.lang.reflect.Field;</span><br><span class="line">import java.util.Objects;</span><br><span class="line">import java.util.regex.Pattern;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2020-06-15 16:01</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class CheckUtils &#123;</span><br><span class="line"></span><br><span class="line">    private static final String EMPTY &#x3D; &quot;&quot;;</span><br><span class="line"></span><br><span class="line">    public static &lt;T&gt; void check(T t) throws Exception &#123;</span><br><span class="line">        Class clazz &#x3D; t.getClass();</span><br><span class="line">        Field[] fields &#x3D; clazz.getDeclaredFields();</span><br><span class="line">        if (fields.length &#x3D;&#x3D; 0) &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        for (Field field : fields) &#123;</span><br><span class="line">            field.setAccessible(true);</span><br><span class="line">            check(field.get(t), field);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void check(Object value, Field field) throws Exception &#123;</span><br><span class="line">        Check check &#x3D; field.getAnnotation(Check.class);</span><br><span class="line">        if (Objects.isNull(check)) &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if (check.notNull() &amp;&amp; Objects.isNull(value)) &#123;</span><br><span class="line">            throw new Exception(&quot;Field (&quot; + field.getName() + &quot;) cannot be null.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        if (check.notEmpty() &amp;&amp; (Objects.isNull(value) || EMPTY.equals(value.toString()))) &#123;</span><br><span class="line">            throw new Exception(&quot;Field (&quot; + field.getName() + &quot;) cannot be empty.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        if (check.notBlank() &amp;&amp; (Objects.isNull(value) || EMPTY.equals(value.toString().trim()))) &#123;</span><br><span class="line">            throw new Exception(&quot;Field (&quot; + field.getName() + &quot;) cannot be blank.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        checkRegex(field, value, check.regex());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void checkRegex(Field field, Object value, String regex) throws Exception &#123;</span><br><span class="line">        if (EMPTY.equals(regex) || Objects.isNull(value)) &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if (!Pattern.matches(regex, value.toString())) &#123;</span><br><span class="line">            throw new Exception(&quot;Wrong data format : Field (&quot; + field.getName() + &quot;), value  is : &quot; + &quot; value&quot; + &quot;, regex is : &quot; + regex);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-<blockquote>
-<p>DTO 数据传输层</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class PersonDto &#123;</span><br><span class="line"></span><br><span class="line">    @Check(notBlank &#x3D; true)</span><br><span class="line">    private String name;</span><br><span class="line">    @Check(notNull &#x3D; true, regex &#x3D; &quot;\\d\\d&quot;)</span><br><span class="line">    private Integer age;</span><br><span class="line">    @Check(notBlank &#x3D; true, regex &#x3D; &quot;男|女&quot;)</span><br><span class="line">    private String sex;</span><br><span class="line">    private String idCard;</span><br><span class="line">    private String accessNumber;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;省略了getter、setter方法</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>程序入口</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2020-06-15 17:50</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class Main &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        PersonDto personDto &#x3D; new PersonDto();</span><br><span class="line">        personDto.setIdCard(&quot;0001&quot;);</span><br><span class="line">        personDto.setName(&quot;孙广明&quot;);</span><br><span class="line">        personDto.setSex(&quot;男&quot;);</span><br><span class="line">        personDto.setAge(25);</span><br><span class="line">        CheckUtils.check(personDto);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
-      <tags>
-        <tag>Java</tag>
-        <tag>工具类</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Stream</title>
-    <url>/2020/07/01/%E5%87%BD%E6%95%B0%E5%BC%8F%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86/</url>
-    <content><![CDATA[<h2 id="1-Stream"><a href="#1-Stream" class="headerlink" title="1. Stream"></a>1. Stream</h2><p>概念：</p>
-<blockquote>
-<ul>
-<li>Stream：支持数据处理操作的源（集合、数组、输入/输出资源）生成的元素序列 。</li>
-<li>备注： 流是Java 8 API的新成员，它允许你以声明性方式处理数据集合。</li>
-<li><a href="https://miracle-sungm.github.io/2020/06/13/Lambda-%E8%A1%A8%E8%BE%BE%E5%BC%8F/" target="_blank" rel="noopener">Lambda表达式博客链接</a>   </li>
-</ul>
-</blockquote>
-<p>定义：</p>
-<blockquote>
-<ol>
-<li>源： 流会使用一个提供数据的源，如集合、数组或输入/输出资源。 请注意，从有序集合生成流时会保留原有的顺序。由列表生成的流，其元素顺序与列表一致。</li>
-<li>元素序列： 就像集合一样，流也提供了一个接口，可以访问特定元素类型的一组有序值。因为集合是数据结构，所以它的主要目的是以特定的时间/空间复杂度存储和访问元素（如ArrayList 与 LinkedList）。但流的目的在于表达计算，比如你前面见到的filter、sorted和map。集合讲的是数据，流讲的是计算。</li>
-<li>数据处理操作: 流的数据处理功能支持类似于数据库的操作，以及函数式编程语言中的常用操作，如filter、map、reduce、find、match、sort等。流操作可以顺序执行，也可并行执行。</li>
-</ol>
-</blockquote>
-<p>特点：</p>
-<blockquote>
-<ol>
-<li>流水线： 很多流操作本身会返回一个流，这样多个操作就可以链接起来，形成一个大的流水线。</li>
-<li>内部迭代： 与使用迭代器显式迭代的集合不同，流的迭代操作是在背后进行的。</li>
-</ol>
-</blockquote>
-<p>流的特性：</p>
-<blockquote>
-<ol>
-<li>只能遍历一次。和迭代器类似，流只能遍历一次。遍历完之后，我们就说这个流已经被消费掉了。你可以从原始数据源那里再获得一个新的流来重新遍历一遍，就像迭代器一样（这里假设它是集合之类的可重复的源，如果是I/O通道就没戏了）。</li>
-</ol>
-</blockquote>
-<p>Stream API 带来的好处：</p>
-<blockquote>
-<ul>
-<li>声明性 ： 更简洁易读</li>
-<li>可复合 ： 更灵活</li>
-<li>可并行 ： 性能更好</li>
-</ul>
-</blockquote>
-<p>流与集合</p>
-<blockquote>
-<p>粗略地说，集合与流之间的差异就在于什么时候进行计算。集合是一个内存中的数据结构，集合中的每个元素都得先计算出来才能添加到集合中。相比之下，流则是在概念上固定的数据结构（你不能添加或删除元素），其元素则是按需计算的。</p>
-</blockquote>
-<p>流与集合的差异：</p>
-<blockquote>
-<ol>
-<li>遍历数据的方式不同。使用Collection接口需要用户去做迭代（比如用for-each），这称为外部迭代。相反，Streams库使用内部迭代——它帮你把迭代做了，还把得到的流值存在了某个地方，你只要给出一个函数说要干什么就可以了。</li>
-<li>//TODO 待补充</li>
-</ol>
-</blockquote>
-<h4 id="API"><a href="#API" class="headerlink" title="API"></a>API</h4><div class="table-responsive">
-<table class="table table-bordered table-striped">
-<thead>
-<tr>
-<th align="left">操作</th>
-<th align="left">类型</th>
-<th align="left">返回类型</th>
-<th align="left">函数式接口</th>
-<th align="left">函数描述符</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">filter</td>
-<td align="left">中间</td>
-<td align="left">Stream<T></td>
-<td align="left">Predicate<T></td>
-<td align="left">T -&gt; boolean</td>
-</tr>
-<tr>
-<td align="left">distinct</td>
-<td align="left">中间(有状态 &amp; 无界)</td>
-<td align="left">Stream<T></td>
-<td align="left"></td>
-<td align="left"></td>
-</tr>
-<tr>
-<td align="left">skip</td>
-<td align="left">中间(有状态 &amp; 有界)</td>
-<td align="left">Stream<T> long</td>
-<td align="left"></td>
-<td align="left"></td>
-</tr>
-<tr>
-<td align="left">limit</td>
-<td align="left">中间(有状态 &amp; 有界)</td>
-<td align="left">Stream<T> long</td>
-<td align="left"></td>
-<td align="left"></td>
-</tr>
-<tr>
-<td align="left">map</td>
-<td align="left">中间</td>
-<td align="left">Stream<R></td>
-<td align="left">Function&lt;T, R&gt;</td>
-<td align="left">T -&gt; R</td>
-</tr>
-<tr>
-<td align="left">flatMap</td>
-<td align="left">中间</td>
-<td align="left">Stream<R></td>
-<td align="left">Function&lt;T, Stream<R>&gt;</td>
-<td align="left">T -&gt; Stream<R></td>
-</tr>
-<tr>
-<td align="left">sorted</td>
-<td align="left">中间(有状态 &amp; 无界)</td>
-<td align="left">Stream<T></td>
-<td align="left">Comparator<T></td>
-<td align="left">(T, T) -&gt; int</td>
-</tr>
-<tr>
-<td align="left">anyMatch</td>
-<td align="left">终端</td>
-<td align="left">boolean</td>
-<td align="left">Predicate<T></td>
-<td align="left">T -&gt; boolean</td>
-</tr>
-<tr>
-<td align="left">noneMatch</td>
-<td align="left">终端</td>
-<td align="left">boolean</td>
-<td align="left">Predicate<T></td>
-<td align="left">T -&gt; boolean</td>
-</tr>
-<tr>
-<td align="left">allMatch</td>
-<td align="left">终端</td>
-<td align="left">boolean</td>
-<td align="left">Predicate<T></td>
-<td align="left">T -&gt; boolean</td>
-</tr>
-<tr>
-<td align="left">findAny</td>
-<td align="left">终端</td>
-<td align="left">Optional<T></td>
-<td align="left"></td>
-<td align="left"></td>
-</tr>
-<tr>
-<td align="left">findFirst</td>
-<td align="left">终端</td>
-<td align="left">Optional<T></td>
-<td align="left"></td>
-<td align="left"></td>
-</tr>
-<tr>
-<td align="left">forEach</td>
-<td align="left">终端</td>
-<td align="left">void</td>
-<td align="left">Consumer<T></td>
-<td align="left">T -&gt; void</td>
-</tr>
-<tr>
-<td align="left">collect</td>
-<td align="left">终端</td>
-<td align="left">R</td>
-<td align="left">Collector&lt;T, A, R&gt;</td>
-<td align="left"></td>
-</tr>
-<tr>
-<td align="left">reduce</td>
-<td align="left">终端(有状态 &amp; 有界)</td>
-<td align="left">Optional<T></td>
-<td align="left">BinaryOperator<T></td>
-<td align="left">(T, T) -&gt; T</td>
-</tr>
-<tr>
-<td align="left">count</td>
-<td align="left">终端</td>
-<td align="left">long</td>
-<td align="left"></td>
-<td align="left"></td>
-</tr>
-</tbody></table>
-<h2 id="2-使用-Stream"><a href="#2-使用-Stream" class="headerlink" title="2. 使用 Stream"></a>2. 使用 Stream</h2><h4 id="2-1-filter"><a href="#2-1-filter" class="headerlink" title="2.1 filter"></a>2.1 filter</h4><p>过滤流元素：该操作会接受一个 Predicate 函数式接口对象（一个返回boolean的函数）作为参数，并返回一个包括所有符合谓词的元素的流。</p>
- <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    &#x2F;&#x2F;过滤出元素小于5的集合</span><br><span class="line">    List&lt;Integer&gt; result &#x3D; numbers.stream().filter(number -&gt; number &lt; 5).collect(Collectors.toList());</span><br><span class="line">    System.out.println(result.toString());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">[1, 2, 3, 4]</span><br></pre></td></tr></table></figure>
-
-<h4 id="2-2-distinct"><a href="#2-2-distinct" class="headerlink" title="2.2 distinct"></a>2.2 distinct</h4><p>对流元素去重：根据流元素的hashCode和equals方法判断元素是否重复。</p>
- <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 1, 1, 2, 2, 2, 3, 3);</span><br><span class="line">    &#x2F;&#x2F;去重数据</span><br><span class="line">    List&lt;Integer&gt; result &#x3D; numbers.stream().distinct().collect(Collectors.toList());</span><br><span class="line">    System.out.println(result.toString());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">[1, 2, 3]</span><br></pre></td></tr></table></figure>
-
-<h4 id="2-3-limit"><a href="#2-3-limit" class="headerlink" title="2.3 limit"></a>2.3 limit</h4><p>截断流：该操作会接受一个 int 类型的入参，返回一个不超过给定长度的流。（如果流是有序的，则最多返回前 n 个元素）。</p>
- <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    &#x2F;&#x2F;截断前2个元素</span><br><span class="line">    List&lt;Integer&gt; result &#x3D; numbers.stream().limit(2).collect(Collectors.toList());</span><br><span class="line">    System.out.println(result.toString());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">[1, 2]</span><br></pre></td></tr></table></figure>
-
-<h4 id="2-4-skip"><a href="#2-4-skip" class="headerlink" title="2.4 skip"></a>2.4 skip</h4><p>跳过元素：该操作会接受一个 int 类型的入参，返回扔掉前 n 个元素的流。</p>
- <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    &#x2F;&#x2F;跳过前2个元素，返回剩余元素的集合</span><br><span class="line">    List&lt;Integer&gt; result &#x3D; numbers.stream().skip(2).collect(Collectors.toList());</span><br><span class="line">    System.out.println(result.toString());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">[3, 4, 5, 6, 7, 8]</span><br></pre></td></tr></table></figure>
-
-<h4 id="2-5-map"><a href="#2-5-map" class="headerlink" title="2.5 map"></a>2.5 map</h4><p>映射元素： 它会接受一个函数作为参数。这个函数会被应用到每个元素上，并将其映射成一个新的元素。</p>
- <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    &#x2F;&#x2F;将int元素映射成String元素</span><br><span class="line">    List&lt;String&gt; result &#x3D; numbers.stream().map(Object::toString).collect(Collectors.toList());</span><br><span class="line">    System.out.println(result.toString());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">[1, 2, 3, 4, 5, 6, 7, 8]</span><br></pre></td></tr></table></figure>
-
-<h4 id="2-6-flatMap"><a href="#2-6-flatMap" class="headerlink" title="2.6 flatMap"></a>2.6 flatMap</h4><p>扁平化流： 当流的元素可以转换成另外一个流时，扁平化流会得到一个流元素的流。</p>
- <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;String&gt; a &#x3D; Arrays.asList(&quot;a&quot;, &quot;a1&quot;);</span><br><span class="line">    List&lt;String&gt; b &#x3D; Arrays.asList(&quot;b&quot;, &quot;b1&quot;);</span><br><span class="line">    List&lt;String&gt; c &#x3D; Arrays.asList(&quot;c&quot;, &quot;c1&quot;);</span><br><span class="line"></span><br><span class="line">    List&lt;List&lt;String&gt;&gt; listList &#x3D; Arrays.asList(a, b, c);</span><br><span class="line">    &#x2F;&#x2F;扁平化流：将 Stream&lt;List&lt;String&gt;&gt; 流转换成一个新的 Stream&lt;String&gt; 流。</span><br><span class="line">    List&lt;String&gt; list &#x3D; listList.stream().flatMap(List::stream).collect(Collectors.toList());</span><br><span class="line">    System.out.println(list.toString());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果：</span><br><span class="line">[a, a1, b, b1, c, c1]</span><br></pre></td></tr></table></figure>
-
-<h4 id="2-7-anyMatch"><a href="#2-7-anyMatch" class="headerlink" title="2.7 anyMatch"></a>2.7 anyMatch</h4><p>判断流中是否存在元素与谓词（Predicate）匹配：接受一个 Predicate 对象，返回流元素是否存在与谓词匹配。（注意：该方法执行时，若找到一个相匹配的元素，则终止操作，并返回true）</p>
- <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    if (numbers.stream().anyMatch(number -&gt; number &#x3D;&#x3D; 2)) &#123;</span><br><span class="line">        System.out.println(&quot;成功匹配到数字2&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果：</span><br><span class="line">成功匹配到数字2</span><br></pre></td></tr></table></figure>
-
-<h4 id="2-8-allMatch"><a href="#2-8-allMatch" class="headerlink" title="2.8 allMatch"></a>2.8 allMatch</h4><p>判断流中所有元素是否都与谓词（Predicate）匹配：接受一个 Predicate 对象，返回流元素是否都与谓词匹配。 （注意：该方法执行时，若找到一个不匹配的元素，则终止操作，并返回false）</p>
- <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;String&gt; list &#x3D; Arrays.asList(&quot;1,&quot;, &quot;2,&quot;, &quot;3,&quot;, &quot;4,&quot;, &quot;5,&quot;);</span><br><span class="line">    &#x2F;&#x2F;判断元素是否都以&#39;,&#39;结尾</span><br><span class="line">    if (list.stream().allMatch(s -&gt; s.endsWith(&quot;,&quot;))) &#123;</span><br><span class="line">        System.out.println(&quot;所有元素均以&#39;,&#39;结尾&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果：</span><br><span class="line">所有元素均以&#39;,&#39;结尾</span><br></pre></td></tr></table></figure>
-
-<h4 id="2-9-nonMatch"><a href="#2-9-nonMatch" class="headerlink" title="2.9 nonMatch"></a>2.9 nonMatch</h4><p>与allMatch相反，nonMatch是判断流中所有元素是否都不与谓词（Predicate）匹配：接受一个 Predicate 对象，返回流元素是否都不与谓词匹配。 （注意：该方法执行时，若找到一个相匹配的元素，则终止操作，并返回false）</p>
- <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;String&gt; list &#x3D; Arrays.asList(&quot;1,&quot;, &quot;2,&quot;, &quot;3,&quot;, &quot;4,&quot;, &quot;5,&quot;);</span><br><span class="line">    &#x2F;&#x2F;判断元素是否都以&#39; &#39;结尾</span><br><span class="line">    if (list.stream().noneMatch(s -&gt; s.endsWith(&quot; &quot;))) &#123;</span><br><span class="line">        System.out.println(&quot;所有元素都不以&#39; &#39;结尾&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果：</span><br><span class="line">所有元素都不以&#39; &#39;结尾</span><br></pre></td></tr></table></figure>
-
-<h4 id="2-10-findFirst"><a href="#2-10-findFirst" class="headerlink" title="2.10 findFirst"></a>2.10 findFirst</h4><p>找到流中第一个元素，返回一个 Optional 对象。一般情况下配合filter使用，筛选流中元素后得到流中第一个元素。（注意：该方法执行时，找到第一个元素之后，则终止操作，并返回包含第一个元素的Optional对象）</p>
- <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    &#x2F;&#x2F;找到第一个小于5的元素</span><br><span class="line">    Optional&lt;Integer&gt; number &#x3D; numbers.stream().filter(n -&gt; n &lt; 5).findFirst();</span><br><span class="line">    System.out.println(number.orElse(null));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果：</span><br><span class="line">1</span><br></pre></td></tr></table></figure>
-
-<h4 id="2-11-findAny"><a href="#2-11-findAny" class="headerlink" title="2.11 findAny"></a>2.11 findAny</h4><p>找到流中任何一个元素，返回一个 Optional 对象。一般情况下配合filter使用，筛选流中元素后得到流中任何一个元素。（注意：该方法执行时，找到任何一个元素之后，则终止操作，并返回包含匹配的元素的Optional对象。该方法在并行情况下效率更佳）</p>
- <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    &#x2F;&#x2F;找到任何一个小于5的元素</span><br><span class="line">    Optional&lt;Integer&gt; number &#x3D; numbers.stream().filter(n -&gt; n &lt; 5).findAny();</span><br><span class="line">    System.out.println(number.orElse(null));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果：</span><br><span class="line">1</span><br></pre></td></tr></table></figure>
-
-<p><strong>何时使用 findFirst 和 findAny</strong></p>
-<blockquote>
-<p>你可能会想，为什么会同时有findFirst和findAny呢？答案是并行。找到第一个元素在并行上限制更多。如果你不关心返回的元素是哪个，请使用findAny，因为它在使用并行流时限制较少。</p>
-</blockquote>
-<h4 id="2-12-reduce"><a href="#2-12-reduce" class="headerlink" title="2.12 reduce"></a>2.12 reduce</h4><p>规约：包含2个方法</p>
-<p><strong>第一个方法</strong></p>
-<p>该方法接受一个与流元素类型相同的泛型对象 T 和一个 BinaryOperator(该类继承了BiFunction)对象；返回一个与流元素类型相同的规约后的对象。<br> <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;Stream 源码</span><br><span class="line">T reduce(T identity, BinaryOperator&lt;T&gt; accumulator);</span><br></pre></td></tr></table></figure></p>
-<p>举例：对集合内元素求和<br> <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    int number &#x3D; numbers.stream().reduce(0, Integer::sum);</span><br><span class="line">    System.out.println(number);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">36</span><br></pre></td></tr></table></figure><br>举例：对集合内元素求积<br> <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    int number &#x3D; numbers.stream().reduce(1, (a, b) -&gt; a * b);</span><br><span class="line">    System.out.println(number);</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">40320</span><br></pre></td></tr></table></figure></p>
-<p><strong>第二个方法</strong></p>
-<p>该方法接受一个 BinaryOperator<T> 对象；返回 Optional<T> 对象。<br> <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;Stream 源码</span><br><span class="line">Optional&lt;T&gt; reduce(BinaryOperator&lt;T&gt; accumulator);</span><br></pre></td></tr></table></figure></p>
-<p>举例：对集合内元素求和<br> <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    Optional&lt;Integer&gt; numberOptional &#x3D; numbers.stream().reduce(Integer::sum);</span><br><span class="line">    System.out.println(numberOptional.orElse(0));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">36</span><br></pre></td></tr></table></figure><br>举例：对集合内元素求积<br> <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    Optional&lt;Integer&gt; numberOptional &#x3D; numbers.stream().reduce((a, b) -&gt; a * b);</span><br><span class="line">    System.out.println(numberOptional.orElse(0));</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">40320</span><br></pre></td></tr></table></figure><br>举例：对集合内元素最大值(若需要并行执行，可使用并行流parallelStream())<br> <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    Optional&lt;Integer&gt; numberOptional &#x3D; numbers.stream().reduce(Integer:max);</span><br><span class="line">    System.out.println(numberOptional.orElse(0));</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">8</span><br></pre></td></tr></table></figure><br>举例：对集合内元素最小值(若需要并行执行，可使用并行流parallelStream())<br> <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    Optional&lt;Integer&gt; numberOptional &#x3D; numbers.stream().reduce(Integer:min);</span><br><span class="line">    System.out.println(numberOptional.orElse(0));</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">1</span><br></pre></td></tr></table></figure></p>
-<p><strong>2个方法的区别</strong></p>
-<blockquote>
-<p>第一个方法接受了一个对象，执行规约方法时会将入参与流中的元素规约到一起。<br>第二个方法只对流中的元素进行规约，因为源可能是空的，所以返回一个Optional对象。</p>
-</blockquote>
-<h4 id="2-13-count"><a href="#2-13-count" class="headerlink" title="2.13 count"></a>2.13 count</h4><p>对流中元素进行计数，返回一个long类型的对象。</p>
-<p>举例：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    long count &#x3D; numbers.stream().count();</span><br><span class="line">    System.out.println(count));</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">8</span><br></pre></td></tr></table></figure>
-
-
-<h4 id="2-14-注意："><a href="#2-14-注意：" class="headerlink" title="2.14 注意："></a>2.14 注意：</h4><blockquote>
-<ul>
-<li>filter、sorted、map和collect等操作是与具体线程模型无关的高层次构件，所以它们的内部实现可以是单线程的，也可能透明地充分利用你的多核架构！在实践中，这意味着你用不着为了让某些数据处理任务并行而去操心线程和锁了，Stream API都替你做好了！</li>
-<li>对于流而言，某些操作（例如allMatch、anyMatch、noneMatch、findFirst和findAny）不用处理整个流就能得到结果。只要找到一个元素，就可以有结果了。同样，limit也是一个短路操作：它只需要创建一个给定大小的流，而用不着处理流中所有的元素。在碰到无限大小的流的时候，这种操作就有用了：它们可以把无限流变成有限流</li>
-</ul>
-</blockquote>
-<hr>
-]]></content>
-      <tags>
-        <tag>Java 8 新特性</tag>
       </tags>
   </entry>
   <entry>
@@ -808,105 +568,308 @@
       </tags>
   </entry>
   <entry>
-    <title>java.lang.Object 类详解</title>
-    <url>/2020/06/12/java-lang-Object-%E7%B1%BB%E8%AF%A6%E8%A7%A3/</url>
-    <content><![CDATA[<h2 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h2><blockquote>
-<p>Object 方法包括 5 个非 final 类型的方法，分别是：clone、hashCode、equals、toString、finalize 方法；包括 4 个 final 方法，分别是 getClass、wait、notify、notifyAll 方法。其中 clone 方法是 protected 方法，finalize 方法自 Java 9 之后被废弃。</p>
-</blockquote>
-<a id="more"></a>
-
-<h2 id="1-clone-方法"><a href="#1-clone-方法" class="headerlink" title="1. clone 方法"></a>1. clone 方法</h2><h3 id="1-1-源码"><a href="#1-1-源码" class="headerlink" title="1.1 源码"></a>1.1 源码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@HotSpotIntrinsicCandidate protected native Object clone() throws CloneNotSupportedException;</span><br></pre></td></tr></table></figure>
-
-<p>说明：调用该方法实现一个对象的浅复制，创建并且返回此对象的副本（“副本”的准确含义可能依赖于对象的类）。 Object.clone() 方法是一个 protected 方法，类只有实现 java.lang.Cloneable 接口，并重写 Object.clone() 方法才能使用该 clone 方法，否则抛出 CloneNotSupportedException 。</p>
-<h3 id="1-2-clone-与-copy-的区别"><a href="#1-2-clone-与-copy-的区别" class="headerlink" title="1.2 clone 与 copy 的区别"></a>1.2 clone 与 copy 的区别</h3><p>假设我们有一个 Person 对象，并假设 Person 类实现了Cloneable 接口并重写了 clone 方法。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Person a &#x3D; new Person();</span><br><span class="line">&#x2F;&#x2F;copy 的做法通常为:</span><br><span class="line">Person b &#x3D; a;</span><br><span class="line">&#x2F;&#x2F;clone 的做法通常为:</span><br><span class="line">Person c &#x3D; a.clone();</span><br></pre></td></tr></table></figure>
-
-<p>说明：<br>（1）copy 是将对象 a 的引用赋值给对象 b，赋值之后对象 a 和对象 b 都指向同一个引用 a。<br>（2）clone 是实现对象的浅拷贝，产生一个新的对象，对象 c 与 对象 a 不指向同一个引用。</p>
+    <title>函数式数据处理</title>
+    <url>/2020/07/01/%E5%87%BD%E6%95%B0%E5%BC%8F%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86/</url>
+    <content><![CDATA[<h2 id="1-Stream"><a href="#1-Stream" class="headerlink" title="1. Stream"></a>1. Stream</h2><p>概念：</p>
 <blockquote>
-<p>clone 在内存中实际操作是：将对象 a 的内存，拷贝一个副本，并重新分配一块内存区域用于保存副本。</p>
+<ul>
+<li>Stream：支持数据处理操作的源（集合、数组、输入/输出资源）生成的元素序列 。</li>
+<li>备注： 流是Java 8 API的新成员，它允许你以声明性方式处理数据集合。</li>
+<li><a href="https://miracle-sungm.github.io/2020/06/13/Lambda-%E8%A1%A8%E8%BE%BE%E5%BC%8F/" target="_blank" rel="noopener">Lambda表达式博客链接</a>   </li>
+</ul>
 </blockquote>
-<h3 id="1-3-浅拷贝和深拷贝"><a href="#1-3-浅拷贝和深拷贝" class="headerlink" title="1.3 浅拷贝和深拷贝"></a>1.3 浅拷贝和深拷贝</h3><blockquote>
-<p>前面我们提到，clone 在内存中的实际操作时将一个对象的内存拷贝出一个副本、并重新分配一个内存用于保存副本。由于原对象（被拷贝的对象）属性可能存在两种值传递类型，分别是值传递和引用传递，对副本的操作可能对原对象造成影响（改变副本的引用传递属性的值，由于引用传递导致原对象的响应值同样改变）。</p>
-</blockquote>
+<p>定义：</p>
 <blockquote>
-<p>如果一个对象包含引用传递类型的属性，直接拷贝对象，不做特殊处理，这种拷贝称为浅拷贝。若一个对象不存在引用传递类型的数据，那也就不区别什么浅拷贝和深拷贝，可以称为浅拷贝也可以称为深拷贝。</p>
+<ol>
+<li>源： 流会使用一个提供数据的源，如集合、数组或输入/输出资源。 请注意，从有序集合生成流时会保留原有的顺序。由列表生成的流，其元素顺序与列表一致。</li>
+<li>元素序列： 就像集合一样，流也提供了一个接口，可以访问特定元素类型的一组有序值。因为集合是数据结构，所以它的主要目的是以特定的时间/空间复杂度存储和访问元素（如ArrayList 与 LinkedList）。但流的目的在于表达计算，比如你前面见到的filter、sorted和map。集合讲的是数据，流讲的是计算。</li>
+<li>数据处理操作: 流的数据处理功能支持类似于数据库的操作，以及函数式编程语言中的常用操作，如filter、map、reduce、find、match、sort等。流操作可以顺序执行，也可并行执行。</li>
+</ol>
 </blockquote>
-<p>示例：</p>
-<p>定义2个类：Person类 包含 Book属性</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Person implements Cloneable &#123;</span><br><span class="line"></span><br><span class="line">    private String name;</span><br><span class="line">    private Book book;</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F;省略 constructor 、 getter 、 setter 方法</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() throws CloneNotSupportedException &#123;</span><br><span class="line">        return super.clone();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;Person&#123;&quot; +</span><br><span class="line">                &quot;name&#x3D;&#39;&quot; + name + &#39;\&#39;&#39; +</span><br><span class="line">                &quot;, book&#x3D;&quot; + book +</span><br><span class="line">                &#39;&#125;&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>特点：</p>
+<blockquote>
+<ol>
+<li>流水线： 很多流操作本身会返回一个流，这样多个操作就可以链接起来，形成一个大的流水线。</li>
+<li>内部迭代： 与使用迭代器显式迭代的集合不同，流的迭代操作是在背后进行的。</li>
+</ol>
+</blockquote>
+<p>流的特性：</p>
+<blockquote>
+<ol>
+<li>只能遍历一次。和迭代器类似，流只能遍历一次。遍历完之后，我们就说这个流已经被消费掉了。你可以从原始数据源那里再获得一个新的流来重新遍历一遍，就像迭代器一样（这里假设它是集合之类的可重复的源，如果是I/O通道就没戏了）。</li>
+</ol>
+</blockquote>
+<p>Stream API 带来的好处：</p>
+<blockquote>
+<ul>
+<li>声明性 ： 更简洁易读</li>
+<li>可复合 ： 更灵活</li>
+<li>可并行 ： 性能更好</li>
+</ul>
+</blockquote>
+<p>流与集合</p>
+<blockquote>
+<p>粗略地说，集合与流之间的差异就在于什么时候进行计算。集合是一个内存中的数据结构，集合中的每个元素都得先计算出来才能添加到集合中。相比之下，流则是在概念上固定的数据结构（你不能添加或删除元素），其元素则是按需计算的。</p>
+</blockquote>
+<p>流与集合的差异：</p>
+<blockquote>
+<ol>
+<li>遍历数据的方式不同。使用Collection接口需要用户去做迭代（比如用for-each），这称为外部迭代。相反，Streams库使用内部迭代——它帮你把迭代做了，还把得到的流值存在了某个地方，你只要给出一个函数说要干什么就可以了。</li>
+<li>//TODO 待补充</li>
+</ol>
+</blockquote>
+<h2 id="2-使用-Stream"><a href="#2-使用-Stream" class="headerlink" title="2. 使用 Stream"></a>2. 使用 Stream</h2><h4 id="API"><a href="#API" class="headerlink" title="API"></a>API</h4><div class="table-responsive">
+<table class="table table-bordered table-striped">
+<thead>
+<tr>
+<th align="left">操作</th>
+<th align="left">类型</th>
+<th align="left">返回类型</th>
+<th align="left">函数式接口</th>
+<th align="left">函数描述符</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">filter</td>
+<td align="left">中间</td>
+<td align="left">Stream<T></td>
+<td align="left">Predicate<T></td>
+<td align="left">T -&gt; boolean</td>
+</tr>
+<tr>
+<td align="left">distinct</td>
+<td align="left">中间(有状态 &amp; 无界)</td>
+<td align="left">Stream<T></td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">skip</td>
+<td align="left">中间(有状态 &amp; 有界)</td>
+<td align="left">Stream<T> long</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">limit</td>
+<td align="left">中间(有状态 &amp; 有界)</td>
+<td align="left">Stream<T> long</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">map</td>
+<td align="left">中间</td>
+<td align="left">Stream<R></td>
+<td align="left">Function&lt;T, R&gt;</td>
+<td align="left">T -&gt; R</td>
+</tr>
+<tr>
+<td align="left">flatMap</td>
+<td align="left">中间</td>
+<td align="left">Stream<R></td>
+<td align="left">Function&lt;T, Stream<R>&gt;</td>
+<td align="left">T -&gt; Stream<R></td>
+</tr>
+<tr>
+<td align="left">sorted</td>
+<td align="left">中间(有状态 &amp; 无界)</td>
+<td align="left">Stream<T></td>
+<td align="left">Comparator<T></td>
+<td align="left">(T, T) -&gt; int</td>
+</tr>
+<tr>
+<td align="left">anyMatch</td>
+<td align="left">终端</td>
+<td align="left">boolean</td>
+<td align="left">Predicate<T></td>
+<td align="left">T -&gt; boolean</td>
+</tr>
+<tr>
+<td align="left">noneMatch</td>
+<td align="left">终端</td>
+<td align="left">boolean</td>
+<td align="left">Predicate<T></td>
+<td align="left">T -&gt; boolean</td>
+</tr>
+<tr>
+<td align="left">allMatch</td>
+<td align="left">终端</td>
+<td align="left">boolean</td>
+<td align="left">Predicate<T></td>
+<td align="left">T -&gt; boolean</td>
+</tr>
+<tr>
+<td align="left">findAny</td>
+<td align="left">终端</td>
+<td align="left">Optional<T></td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">findFirst</td>
+<td align="left">终端</td>
+<td align="left">Optional<T></td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">forEach</td>
+<td align="left">终端</td>
+<td align="left">void</td>
+<td align="left">Consumer<T></td>
+<td align="left">T -&gt; void</td>
+</tr>
+<tr>
+<td align="left">collect</td>
+<td align="left">终端</td>
+<td align="left">R</td>
+<td align="left">Collector&lt;T, A, R&gt;</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">reduce</td>
+<td align="left">终端(有状态 &amp; 有界)</td>
+<td align="left">Optional<T></td>
+<td align="left">BinaryOperator<T></td>
+<td align="left">(T, T) -&gt; T</td>
+</tr>
+<tr>
+<td align="left">count</td>
+<td align="left">终端</td>
+<td align="left">long</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+<h4 id="2-1-filter"><a href="#2-1-filter" class="headerlink" title="2.1 filter"></a>2.1 filter</h4><p>过滤流元素：该操作会接受一个 Predicate 函数式接口对象（一个返回boolean的函数）作为参数，并返回一个包括所有符合谓词的元素的流。</p>
+ <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    &#x2F;&#x2F;过滤出元素小于5的集合</span><br><span class="line">    List&lt;Integer&gt; result &#x3D; numbers.stream().filter(number -&gt; number &lt; 5).collect(Collectors.toList());</span><br><span class="line">    System.out.println(result.toString());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">[1, 2, 3, 4]</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Book &#123;</span><br><span class="line"></span><br><span class="line">    private String bookName;</span><br><span class="line">    private String author;</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F;省略 constructor 、 getter 、 setter 方法</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;Book&#123;&quot; +</span><br><span class="line">                &quot;bookName&#x3D;&#39;&quot; + bookName + &#39;\&#39;&#39; +</span><br><span class="line">                &quot;, author&#x3D;&#39;&quot; + author + &#39;\&#39;&#39; +</span><br><span class="line">                &#39;&#125;&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="2-2-distinct"><a href="#2-2-distinct" class="headerlink" title="2.2 distinct"></a>2.2 distinct</h4><p>对流元素去重：根据流元素的hashCode和equals方法判断元素是否重复。</p>
+ <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 1, 1, 2, 2, 2, 3, 3);</span><br><span class="line">    &#x2F;&#x2F;去重数据</span><br><span class="line">    List&lt;Integer&gt; result &#x3D; numbers.stream().distinct().collect(Collectors.toList());</span><br><span class="line">    System.out.println(result.toString());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">[1, 2, 3]</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Main &#123;</span><br><span class="line">    &#x2F;&#x2F;主方法：</span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        Book effectiveJava &#x3D; new Book(&quot;Effective Java&quot;, &quot;Joshua Bloch&quot;);</span><br><span class="line">        Person sungm &#x3D; new Person(&quot;sungm&quot;, effectiveJava);</span><br><span class="line">        Person sunhw &#x3D; (Person) sungm.clone();</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;对象 sungm 的信息：&quot; + sungm);</span><br><span class="line">        System.out.println(&quot;对象 sunhw 的信息：&quot; + sunhw);</span><br><span class="line">        System.out.println(&quot;对象 sungm 与对象 sunhw 是否相等：&quot; + (sungm &#x3D;&#x3D; sunhw));</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;-----------------------------------------&quot;);</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;改变对象 sunhw 的 book 属性</span><br><span class="line">        sunhw.getBook().setBookName(&quot;Vue.js&quot;);</span><br><span class="line">        sunhw.getBook().setAuthor(&quot;尤雨溪&quot;);</span><br><span class="line">        System.out.println(&quot;对象 sunhw 的信息：&quot; + sunhw);</span><br><span class="line">        System.out.println(&quot;对象 sungm 的信息：&quot; + sungm);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;* 输出结果 *&#x2F;</span><br><span class="line">对象 sungm 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Effective Java&#39;, author&#x3D;&#39;Joshua Bloch&#39;&#125;&#125;</span><br><span class="line">对象 sunhw 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Effective Java&#39;, author&#x3D;&#39;Joshua Bloch&#39;&#125;&#125;</span><br><span class="line">对象 sungm 与对象 sunhw 是否相等：false</span><br><span class="line">-----------------------------------------</span><br><span class="line">对象 sunhw 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Vue.js&#39;, author&#x3D;&#39;尤雨溪&#39;&#125;&#125;</span><br><span class="line">对象 sungm 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Vue.js&#39;, author&#x3D;&#39;尤雨溪&#39;&#125;&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="2-3-limit"><a href="#2-3-limit" class="headerlink" title="2.3 limit"></a>2.3 limit</h4><p>截断流：该操作会接受一个 int 类型的入参，返回一个不超过给定长度的流。（如果流是有序的，则最多返回前 n 个元素）。</p>
+ <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    &#x2F;&#x2F;截断前2个元素</span><br><span class="line">    List&lt;Integer&gt; result &#x3D; numbers.stream().limit(2).collect(Collectors.toList());</span><br><span class="line">    System.out.println(result.toString());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">[1, 2]</span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>从输出结果可以看出：对象 sunhw 改变了的属性 book 的内容， 对对象 sungm 造成了影响。因为两个对象的 book 属性保存的是同一个引用，造成这种差异是由于对象进行了浅拷贝。</p>
-</blockquote>
-<p>进行深拷贝示例：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Person implements Cloneable &#123;</span><br><span class="line"></span><br><span class="line">    private String name;</span><br><span class="line">    private Book book;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;省略 constructor 、 getter 、 setter 方法</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() throws CloneNotSupportedException &#123;</span><br><span class="line">        Person person &#x3D; (Person) super.clone();</span><br><span class="line">        person.book &#x3D; (Book) book.clone();</span><br><span class="line">        return person;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;Person&#123;&quot; +</span><br><span class="line">                &quot;name&#x3D;&#39;&quot; + name + &#39;\&#39;&#39; +</span><br><span class="line">                &quot;, book&#x3D;&quot; + book +</span><br><span class="line">                &#39;&#125;&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="2-4-skip"><a href="#2-4-skip" class="headerlink" title="2.4 skip"></a>2.4 skip</h4><p>跳过元素：该操作会接受一个 int 类型的入参，返回扔掉前 n 个元素的流。</p>
+ <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    &#x2F;&#x2F;跳过前2个元素，返回剩余元素的集合</span><br><span class="line">    List&lt;Integer&gt; result &#x3D; numbers.stream().skip(2).collect(Collectors.toList());</span><br><span class="line">    System.out.println(result.toString());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">[3, 4, 5, 6, 7, 8]</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Book implements Cloneable&#123;</span><br><span class="line"></span><br><span class="line">    private String bookName;</span><br><span class="line">    private String author;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;省略 constructor 、 getter 、 setter 方法</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() throws CloneNotSupportedException &#123;</span><br><span class="line">        return super.clone();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;Book&#123;&quot; +</span><br><span class="line">                &quot;bookName&#x3D;&#39;&quot; + bookName + &#39;\&#39;&#39; +</span><br><span class="line">                &quot;, author&#x3D;&#39;&quot; + author + &#39;\&#39;&#39; +</span><br><span class="line">                &#39;&#125;&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Main &#123;</span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        Book effectiveJava &#x3D; new Book(&quot;Effective Java&quot;, &quot;Joshua Bloch&quot;);</span><br><span class="line">        Person sungm &#x3D; new Person(&quot;sungm&quot;, effectiveJava);</span><br><span class="line">        Person sunhw &#x3D; (Person) sungm.clone();</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;对象 sungm 的信息：&quot; + sungm);</span><br><span class="line">        System.out.println(&quot;对象 sunhw 的信息：&quot; + sunhw);</span><br><span class="line">        System.out.println(&quot;对象 sungm 与对象 sunhw 是否相等：&quot; + (sungm &#x3D;&#x3D; sunhw));</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;-----------------------------------------&quot;);</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;改变对象 sunhw 的 book 属性</span><br><span class="line">        sunhw.getBook().setBookName(&quot;Vue.js&quot;);</span><br><span class="line">        sunhw.getBook().setAuthor(&quot;尤雨溪&quot;);</span><br><span class="line">        System.out.println(&quot;对象 sunhw 的信息：&quot; + sunhw);</span><br><span class="line">        System.out.println(&quot;对象 sungm 的信息：&quot; + sungm);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;*运行结果*&#x2F;</span><br><span class="line">对象 sungm 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Effective Java&#39;, author&#x3D;&#39;Joshua Bloch&#39;&#125;&#125;</span><br><span class="line">对象 sunhw 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Effective Java&#39;, author&#x3D;&#39;Joshua Bloch&#39;&#125;&#125;</span><br><span class="line">对象 sungm 与对象 sunhw 是否相等：false </span><br><span class="line">-----------------------------------------</span><br><span class="line">对象 sunhw 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Vue.js&#39;, author&#x3D;&#39;尤雨溪&#39;&#125;&#125;</span><br><span class="line">对象 sungm 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Effective Java&#39;, author&#x3D;&#39;Joshua Bloch&#39;&#125;&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="2-5-map"><a href="#2-5-map" class="headerlink" title="2.5 map"></a>2.5 map</h4><p>映射元素： 它会接受一个函数作为参数。这个函数会被应用到每个元素上，并将其映射成一个新的元素。</p>
+ <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    &#x2F;&#x2F;将int元素映射成String元素</span><br><span class="line">    List&lt;String&gt; result &#x3D; numbers.stream().map(Object::toString).collect(Collectors.toList());</span><br><span class="line">    System.out.println(result.toString());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">[1, 2, 3, 4, 5, 6, 7, 8]</span><br></pre></td></tr></table></figure>
 
+<h4 id="2-6-flatMap"><a href="#2-6-flatMap" class="headerlink" title="2.6 flatMap"></a>2.6 flatMap</h4><p>扁平化流： 当流的元素可以转换成另外一个流时，扁平化流会得到一个流元素的流。</p>
+ <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;String&gt; a &#x3D; Arrays.asList(&quot;a&quot;, &quot;a1&quot;);</span><br><span class="line">    List&lt;String&gt; b &#x3D; Arrays.asList(&quot;b&quot;, &quot;b1&quot;);</span><br><span class="line">    List&lt;String&gt; c &#x3D; Arrays.asList(&quot;c&quot;, &quot;c1&quot;);</span><br><span class="line"></span><br><span class="line">    List&lt;List&lt;String&gt;&gt; listList &#x3D; Arrays.asList(a, b, c);</span><br><span class="line">    &#x2F;&#x2F;扁平化流：将 Stream&lt;List&lt;String&gt;&gt; 流转换成一个新的 Stream&lt;String&gt; 流。</span><br><span class="line">    List&lt;String&gt; list &#x3D; listList.stream().flatMap(List::stream).collect(Collectors.toList());</span><br><span class="line">    System.out.println(list.toString());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果：</span><br><span class="line">[a, a1, b, b1, c, c1]</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-7-anyMatch"><a href="#2-7-anyMatch" class="headerlink" title="2.7 anyMatch"></a>2.7 anyMatch</h4><p>判断流中是否存在元素与谓词（Predicate）匹配：接受一个 Predicate 对象，返回流元素是否存在与谓词匹配。（注意：该方法执行时，若找到一个相匹配的元素，则终止操作，并返回true）</p>
+ <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    if (numbers.stream().anyMatch(number -&gt; number &#x3D;&#x3D; 2)) &#123;</span><br><span class="line">        System.out.println(&quot;成功匹配到数字2&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果：</span><br><span class="line">成功匹配到数字2</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-8-allMatch"><a href="#2-8-allMatch" class="headerlink" title="2.8 allMatch"></a>2.8 allMatch</h4><p>判断流中所有元素是否都与谓词（Predicate）匹配：接受一个 Predicate 对象，返回流元素是否都与谓词匹配。 （注意：该方法执行时，若找到一个不匹配的元素，则终止操作，并返回false）</p>
+ <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;String&gt; list &#x3D; Arrays.asList(&quot;1,&quot;, &quot;2,&quot;, &quot;3,&quot;, &quot;4,&quot;, &quot;5,&quot;);</span><br><span class="line">    &#x2F;&#x2F;判断元素是否都以&#39;,&#39;结尾</span><br><span class="line">    if (list.stream().allMatch(s -&gt; s.endsWith(&quot;,&quot;))) &#123;</span><br><span class="line">        System.out.println(&quot;所有元素均以&#39;,&#39;结尾&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果：</span><br><span class="line">所有元素均以&#39;,&#39;结尾</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-9-nonMatch"><a href="#2-9-nonMatch" class="headerlink" title="2.9 nonMatch"></a>2.9 nonMatch</h4><p>与allMatch相反，nonMatch是判断流中所有元素是否都不与谓词（Predicate）匹配：接受一个 Predicate 对象，返回流元素是否都不与谓词匹配。 （注意：该方法执行时，若找到一个相匹配的元素，则终止操作，并返回false）</p>
+ <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;String&gt; list &#x3D; Arrays.asList(&quot;1,&quot;, &quot;2,&quot;, &quot;3,&quot;, &quot;4,&quot;, &quot;5,&quot;);</span><br><span class="line">    &#x2F;&#x2F;判断元素是否都以&#39; &#39;结尾</span><br><span class="line">    if (list.stream().noneMatch(s -&gt; s.endsWith(&quot; &quot;))) &#123;</span><br><span class="line">        System.out.println(&quot;所有元素都不以&#39; &#39;结尾&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果：</span><br><span class="line">所有元素都不以&#39; &#39;结尾</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-10-findFirst"><a href="#2-10-findFirst" class="headerlink" title="2.10 findFirst"></a>2.10 findFirst</h4><p>找到流中第一个元素，返回一个 Optional 对象。一般情况下配合filter使用，筛选流中元素后得到流中第一个元素。（注意：该方法执行时，找到第一个元素之后，则终止操作，并返回包含第一个元素的Optional对象）</p>
+ <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    &#x2F;&#x2F;找到第一个小于5的元素</span><br><span class="line">    Optional&lt;Integer&gt; number &#x3D; numbers.stream().filter(n -&gt; n &lt; 5).findFirst();</span><br><span class="line">    System.out.println(number.orElse(null));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果：</span><br><span class="line">1</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-11-findAny"><a href="#2-11-findAny" class="headerlink" title="2.11 findAny"></a>2.11 findAny</h4><p>找到流中任何一个元素，返回一个 Optional 对象。一般情况下配合filter使用，筛选流中元素后得到流中任何一个元素。（注意：该方法执行时，找到任何一个元素之后，则终止操作，并返回包含匹配的元素的Optional对象。该方法在并行情况下效率更佳）</p>
+ <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;举例</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    &#x2F;&#x2F;找到任何一个小于5的元素</span><br><span class="line">    Optional&lt;Integer&gt; number &#x3D; numbers.stream().filter(n -&gt; n &lt; 5).findAny();</span><br><span class="line">    System.out.println(number.orElse(null));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果：</span><br><span class="line">1</span><br></pre></td></tr></table></figure>
+
+<p><strong>何时使用 findFirst 和 findAny</strong></p>
 <blockquote>
-<p>说明：进行深拷贝一般有2中方式<br>（1）将属性对象实现 java.lang.Cloneable 接口并重写 clone 方法，然后在原始类中修改 clone方法。<br>（2）实现 java.io.Serializable 接口，通过序列化和反序列号拷贝对象。</p>
+<p>你可能会想，为什么会同时有findFirst和findAny呢？答案是并行。找到第一个元素在并行上限制更多。如果你不关心返回的元素是哪个，请使用findAny，因为它在使用并行流时限制较少。</p>
 </blockquote>
-<h2 id="2-hashCode-方法"><a href="#2-hashCode-方法" class="headerlink" title="2. hashCode 方法"></a>2. hashCode 方法</h2><blockquote>
-<p>返回对象的 Hash 值 （也称散列码）。对象的散列码是为了更好的支持基于哈希机制的 Java 集合类，例如：HashMap、HashSet、HashTable。</p>
-</blockquote>
-<h3 id="2-1-通用约定"><a href="#2-1-通用约定" class="headerlink" title="2.1 通用约定"></a>2.1 通用约定</h3><blockquote>
-<p>（1）在 Java 程序执行期间，多次调用该方法应该返回相同的值，前提是未修改在 equals 方法中使用的信息。<br>（2）如果 2 个对象通过 equals 方法判定为 2 个对象相等、那么他们返回的 Hash 值也应该相等。<br>（3）对于 2 个对象来说，如果使用 equals 方法返回 false，那么这两个对象的 hashCode 值不要求一定不同（可以相同，可以不同），但是如果不同则可以提高应用的性能。<br>（4）对于 Object 类来说，不同 Object 对象的 hash 值是不同的、其 hash 值返回的是内存地址。</p>
-</blockquote>
+<h4 id="2-12-reduce"><a href="#2-12-reduce" class="headerlink" title="2.12 reduce"></a>2.12 reduce</h4><p>规约：包含2个方法</p>
+<p><strong>第一个方法</strong></p>
+<p>该方法接受一个与流元素类型相同的泛型对象 T 和一个 BinaryOperator(该类继承了BiFunction)对象；返回一个与流元素类型相同的规约后的对象。<br> <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;Stream 源码</span><br><span class="line">T reduce(T identity, BinaryOperator&lt;T&gt; accumulator);</span><br></pre></td></tr></table></figure></p>
+<p>举例：对集合内元素求和<br> <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    int number &#x3D; numbers.stream().reduce(0, Integer::sum);</span><br><span class="line">    System.out.println(number);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">36</span><br></pre></td></tr></table></figure><br>举例：对集合内元素求积<br> <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    int number &#x3D; numbers.stream().reduce(1, (a, b) -&gt; a * b);</span><br><span class="line">    System.out.println(number);</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">40320</span><br></pre></td></tr></table></figure></p>
+<p><strong>第二个方法</strong></p>
+<p>该方法接受一个 BinaryOperator<T> 对象；返回 Optional<T> 对象。<br> <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;Stream 源码</span><br><span class="line">Optional&lt;T&gt; reduce(BinaryOperator&lt;T&gt; accumulator);</span><br></pre></td></tr></table></figure></p>
+<p>举例：对集合内元素求和<br> <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    Optional&lt;Integer&gt; numberOptional &#x3D; numbers.stream().reduce(Integer::sum);</span><br><span class="line">    System.out.println(numberOptional.orElse(0));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">36</span><br></pre></td></tr></table></figure><br>举例：对集合内元素求积<br> <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    Optional&lt;Integer&gt; numberOptional &#x3D; numbers.stream().reduce((a, b) -&gt; a * b);</span><br><span class="line">    System.out.println(numberOptional.orElse(0));</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">40320</span><br></pre></td></tr></table></figure><br>举例：对集合内元素最大值(若需要并行执行，可使用并行流parallelStream())<br> <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    Optional&lt;Integer&gt; numberOptional &#x3D; numbers.stream().reduce(Integer:max);</span><br><span class="line">    System.out.println(numberOptional.orElse(0));</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">8</span><br></pre></td></tr></table></figure><br>举例：对集合内元素最小值(若需要并行执行，可使用并行流parallelStream())<br> <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    Optional&lt;Integer&gt; numberOptional &#x3D; numbers.stream().reduce(Integer:min);</span><br><span class="line">    System.out.println(numberOptional.orElse(0));</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">1</span><br></pre></td></tr></table></figure></p>
+<p><strong>2个方法的区别</strong></p>
 <blockquote>
-<p><strong>说明：鉴于第 （2） 条约定，如果重写了 equals 方法，那就要求重写 hashCode 方法。</strong></p>
+<p>第一个方法接受了一个对象，执行规约方法时会将入参与流中的元素规约到一起。<br>第二个方法只对流中的元素进行规约，因为源可能是空的，所以返回一个Optional对象。</p>
 </blockquote>
-<h2 id="3-equals-方法"><a href="#3-equals-方法" class="headerlink" title="3. equals 方法"></a>3. equals 方法</h2><blockquote>
-<p>判断两个对象是否相等。仅当两个对象引用的是同一个内存地址，即同一个对象，该方法返回 true。若不满足指向同一个内存地址、即使两个对象的内容相同，也会返回 false。</p>
+<h4 id="2-13-count"><a href="#2-13-count" class="headerlink" title="2.13 count"></a>2.13 count</h4><p>对流中元素进行计数，返回一个long类型的对象。</p>
+<p>举例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    long count &#x3D; numbers.stream().count();</span><br><span class="line">    System.out.println(count));</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">8</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="2-14-注意："><a href="#2-14-注意：" class="headerlink" title="2.14 注意："></a>2.14 注意：</h4><blockquote>
+<ul>
+<li>filter、sorted、map和collect等操作是与具体线程模型无关的高层次构件，所以它们的内部实现可以是单线程的，也可能透明地充分利用你的多核架构！在实践中，这意味着你用不着为了让某些数据处理任务并行而去操心线程和锁了，Stream API都替你做好了！</li>
+<li>对于流而言，某些操作（例如allMatch、anyMatch、noneMatch、findFirst和findAny）不用处理整个流就能得到结果。只要找到一个元素，就可以有结果了。同样，limit也是一个短路操作：它只需要创建一个给定大小的流，而用不着处理流中所有的元素。在碰到无限大小的流的时候，这种操作就有用了：它们可以把无限流变成有限流</li>
+</ul>
 </blockquote>
-<p>源码：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public boolean equals(Object obj) &#123; return (this &#x3D;&#x3D; obj); &#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="3-数值流"><a href="#3-数值流" class="headerlink" title="3. 数值流"></a>3. 数值流</h2><p>我们在计算流中元素总和时，通常情况下会这样做：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int sum &#x3D; Stream.of(1, 2, 3, 4, 5, 6, 7, 8).reduce(0, Integer::sum);</span><br></pre></td></tr></table></figure>
+<p>这段代码问题是它暗藏拆箱成本。每个Integer都必须拆成一个原始类型再进行求和。</p>
+<h4 id="3-1-原始类型特化"><a href="#3-1-原始类型特化" class="headerlink" title="3.1 原始类型特化"></a>3.1 原始类型特化</h4><p>说明：</p>
 <blockquote>
-<p>规则：<br>（1）自反性：对于任意非空对象， x.equals(x) 应该返回 true<br>（2）对称性：对于任意非空对象，若 x.equals(y) 返回 true，则 y.equals(x) 也应该返回 true<br>（3）传递性：对于任意非空对象，若 x.equals(y) 返回 true、y.equals(z) 也返回 true ，则 x.equals(z) 也应该返回 true<br>（4）一致性：若 x.equals(y) 返回 true，那第二次、第三次调用也应该返回 true，前提是未修改两个对象。</p>
+<p>Java 8 引入了三个原始类型特化流接口来解决上面这个暗藏拆箱成本的问题：IntStream、DoubleStream和LongStream，分别将流中的元素特化为int、long和double，从而避免了暗含的拆箱成本。每个接口都带来了进行常用数值归约的新方法，比如对数值流求和的sum，找到最大元素的max。此外还有在必要时再把它们转换回对象流的方法。要记住的是，这些特化的原因并不在于流的复杂性，而是装箱造成的复杂性——即类似int和Integer之间的效率差异。</p>
 </blockquote>
-<h2 id="4-toString-方法"><a href="#4-toString-方法" class="headerlink" title="4. toString 方法"></a>4. toString 方法</h2><blockquote>
-<p>返回对象的字符串表现形式（类全名及无符号十六进制的 Hash 值）。API 建议所有的子类都重写该方法。</p>
-</blockquote>
-<p>源码：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public String toString() &#123; return getClass().getName() + &quot;@&quot; + Integer.toHexString(hashCode()); &#125;</span><br></pre></td></tr></table></figure>
-<h2 id="5-finalize-方法"><a href="#5-finalize-方法" class="headerlink" title="5. finalize 方法"></a>5. finalize 方法</h2><blockquote>
-<p>该方法自 Java 9 之后被废弃。</p>
-</blockquote>
-<p>源码：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Deprecated(since&#x3D;&quot;9&quot;) protected void finalize() throws Throwable &#123; &#125;</span><br></pre></td></tr></table></figure>
+<p><strong>映射到数值流</strong></p>
 <blockquote>
-<p>说明：该方法并非一两句话能解释清楚，这里引入一篇博客、可供参考学习。<a href="https://www.jianshu.com/p/9d2788fffd5f" target="_blank" rel="noopener">https://www.jianshu.com/p/9d2788fffd5f</a></p>
+<ul>
+<li>mapToInt：    映射成IntStream</li>
+<li>mapToLong：   映射成LongStream</li>
+<li>mapToDouble： 映射成DoubleStream</li>
+</ul>
 </blockquote>
-<h2 id="6-getClass-方法"><a href="#6-getClass-方法" class="headerlink" title="6. getClass 方法"></a>6. getClass 方法</h2><blockquote>
-<p>返回运行时该对象的 class 对象，返回的 class 对象是被表示对象的类的 static synchronized 方法锁定的对象。</p>
-</blockquote>
+<p>举例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    &#x2F;&#x2F;映射到数值流</span><br><span class="line">    System.out.println(Stream.of(1, 2, 3, 4, 5, 6, 7, 8).mapToInt(n -&gt; n).sum());</span><br><span class="line">    System.out.println(Stream.of(1, 2, 3, 4, 5, 6, 7, 8).mapToLong(n -&gt; n).sum());</span><br><span class="line">    System.out.println(Stream.of(1, 2, 3, 4, 5, 6, 7, 8).mapToDouble(n -&gt; n).sum());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>转换回对象流</strong></p>
+<p>通过boxed()方法，转换回对象流，例如：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    &#x2F;&#x2F;通过boxed()方法，转换回对象流</span><br><span class="line">    System.out.println(Stream.of(1, 2, 3, 4, 5, 6, 7, 8).mapToInt(n -&gt; n).boxed().reduce(0, Integer::sum));</span><br><span class="line">    System.out.println(Stream.of(1, 2, 3, 4, 5, 6, 7, 8).mapToLong(n -&gt; n).boxed().reduce(0L, Long::sum));</span><br><span class="line">    System.out.println(Stream.of(1, 2, 3, 4, 5, 6, 7, 8).mapToDouble(n -&gt; n).boxed().reduce(0D, Double::sum));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>默认值</strong></p>
+<p>对于三种原始流特化，也分别有一个Optional原始类型特化版本：OptionalInt、OptionalDouble和OptionalLong。</p>
+<p><strong>数值范围</strong></p>
+<p>通过使用range() 和 rangeClosed() 方法生成数值范围。</p>
 <blockquote>
-<p>该方法一般常见于反射技术。</p>
+<ul>
+<li>range(int startInclusive, int endExclusive) 方法： 生成 [startInclusive, endExclusive) 范围内数值流（左闭右开）。</li>
+<li>rangeClosed(int startInclusive, int endInclusive) 方法： 生成 [startInclusive, endInclusive] 范围内数值流（左闭右闭）。</li>
+</ul>
 </blockquote>
-<h2 id="7-wait-方法"><a href="#7-wait-方法" class="headerlink" title="7. wait 方法"></a>7. wait 方法</h2><blockquote>
-<p>导致当前线程等待，可设置等待的毫秒数，知道其他线程调用 notify 方法或者调用该对象的 notifyAll 方法唤醒该线程。</p>
-</blockquote>
-<p>源码：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public final void wait() throws InterruptedException &#123;</span><br><span class="line">    wait(0L);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public final native void wait(long timeoutMillis) throws InterruptedException;</span><br></pre></td></tr></table></figure>
-<h2 id="8-notify-方法"><a href="#8-notify-方法" class="headerlink" title="8. notify 方法"></a>8. notify 方法</h2><blockquote>
-<p>唤醒正在此对象的监听器上等待的单个线程。如果该对象的监听器等待的线程存在多个、则唤醒其中一个线程，该线程的唤醒是随机的。</p>
-</blockquote>
-<p>源码：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@HotSpotIntrinsicCandidate public final native void notify();</span><br></pre></td></tr></table></figure>
-<h2 id="9-notifyAll-方法"><a href="#9-notifyAll-方法" class="headerlink" title="9. notifyAll 方法"></a>9. notifyAll 方法</h2><blockquote>
-<p>唤醒正在此对象的监听器上等待的所有线程。</p>
-</blockquote>
-<p>源码：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@HotSpotIntrinsicCandidate public final native void notifyAll();</span><br></pre></td></tr></table></figure>
-]]></content>
+<p>举例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    System.out.println(IntStream.range(1, 100).count());</span><br><span class="line">    System.out.println(IntStream.rangeClosed(1, 100).count());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">99</span><br><span class="line">100</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-构建流"><a href="#4-构建流" class="headerlink" title="4. 构建流"></a>4. 构建流</h2><p>这里主要介绍由集合、数值、数组、文件来创建流；最后介绍下由生成函数来创建无限流。</p>
+<h4 id="4-1-由集合生成流"><a href="#4-1-由集合生成流" class="headerlink" title="4.1 由集合生成流"></a>4.1 由集合生成流</h4><p>Java 8 的 Collection 新增了 stream() 的 Api，集合对象通过调用 stream() 方法生成流。</p>
+<p>举例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">List&lt;String&gt; list &#x3D; Arrays.asList(&quot;sungm&quot;, &quot;other&quot;);</span><br><span class="line">list.stream();</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-2-由数值生成流"><a href="#4-2-由数值生成流" class="headerlink" title="4.2 由数值生成流"></a>4.2 由数值生成流</h4><p>通过 Stream.of() 方法生成流</p>
+<p>举例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">    Stream&lt;String&gt; stream &#x3D; Stream.of(&quot;sungm&quot;, &quot;other&quot;);</span><br><span class="line">&#96;&#96;&#96;  </span><br><span class="line"></span><br><span class="line">#### 4.3 由数组生成流</span><br><span class="line"></span><br><span class="line">通过 Arrays.stream() 方法生成流</span><br><span class="line">举例：</span><br></pre></td></tr></table></figure>
+<pre><code>int[] numbers = {1, 2, 3};
+Arrays.stream(numbers);</code></pre><pre><code>
+#### 4.4 由文件生成流
+
+java nio
+&gt; Java中用于处理文件等I/O操作的NIO API（非阻塞 I/O）已更新，以便利用Stream API。java.nio.file.Files中的很多静态方法都会返回一个流。例如：Files.lines()方法
+
+#### 4.5 函数生成流：创建无限流
+
+Stream.iterate()方法和Stream.generate()方法：
+&gt; Stream API提供了两个静态方法来从函数生成流：Stream.iterate和Stream.generate。这两个操作可以创建所谓的无限流
+
+举例：</code></pre><p>//我们通过使用limit()方法来截断流<br>Stream.iterate(0, n -&gt; n + 2).limit(10).forEach(System.out::println);</p>
+<pre><code></code></pre><p>Stream.generate(Math::random).limit(5).forEach(System.out::println);</p>
+<pre><code>
+备注：
+&gt; 无限流是没有固定大小的流
+
+
+
+
+
+</code></pre>]]></content>
       <tags>
-        <tag>Java</tag>
+        <tag>Java 8 新特性</tag>
       </tags>
   </entry>
   <entry>
@@ -1054,6 +1017,172 @@
       </tags>
   </entry>
   <entry>
+    <title>正确的避免NullPointException</title>
+    <url>/2020/06/13/%E6%AD%A3%E7%A1%AE%E7%9A%84%E9%81%BF%E5%85%8DNullPointException/</url>
+    <content><![CDATA[<h2 id="1-正确使用-String类的-equals-方法-和-Object类的-equals-方法"><a href="#1-正确使用-String类的-equals-方法-和-Object类的-equals-方法" class="headerlink" title="1. 正确使用 String类的 equals()方法 和 Object类的 equals() 方法"></a>1. 正确使用 String类的 equals()方法 和 Object类的 equals() 方法</h2><blockquote>
+<p>已知对象在前，未知对象在后。注意：已知对象不为 null</p>
+</blockquote>
+<a id="more"></a>
+
+<p>######正确示例</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    String name &#x3D; &quot;sungm&quot;; </span><br><span class="line">    &#x2F;&#x2F;name为已知对象且被赋予初始值不为空</span><br><span class="line">    if (name.equals(getOtherName())) &#123;</span><br><span class="line">        &#x2F;&#x2F;todo do something</span><br><span class="line">        System.out.println(&quot;todo do something&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static String getOtherName() &#123;</span><br><span class="line">    return &quot;sungm&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>######错误示例</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">    String name &#x3D; &quot;sungm&quot;;</span><br><span class="line">    &#x2F;&#x2F;getOtherName()方法返回值为 null。抛出NPE</span><br><span class="line">    if (getOtherName().equals(name)) &#123;</span><br><span class="line">        &#x2F;&#x2F;todo do something</span><br><span class="line">        System.out.println(&quot;todo do something&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static String getOtherName() &#123;</span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="2-未知对象转String使用String-valueOf-方法"><a href="#2-未知对象转String使用String-valueOf-方法" class="headerlink" title="2. 未知对象转String使用String.valueOf()方法"></a>2. 未知对象转String使用String.valueOf()方法</h2><blockquote>
+<p>空对象调用 toString() 方法会抛出NPE，使用 String.valueOf() 替代</p>
+</blockquote>
+<p>#####示例</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    &#x2F;&#x2F;抛NPE</span><br><span class="line">    System.out.println(getPrice().toString());</span><br><span class="line">    &#x2F;&#x2F;不抛NPE</span><br><span class="line">    System.out.println(String.valueOf(getPrice()));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static BigDecimal getPrice() &#123;</span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="String-valueOf-方法源码"><a href="#String-valueOf-方法源码" class="headerlink" title="String.valueOf() 方法源码"></a>String.valueOf() 方法源码</h5><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static String valueOf(Object obj) &#123;</span><br><span class="line">    return (obj &#x3D;&#x3D; null) ? &quot;null&quot; : obj.toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="3-使用第三方类库或者自己封装的工具类"><a href="#3-使用第三方类库或者自己封装的工具类" class="headerlink" title="3. 使用第三方类库或者自己封装的工具类"></a>3. 使用第三方类库或者自己封装的工具类</h2><blockquote>
+<p>例如 Apache 的 StringUtils 类</p>
+</blockquote>
+<p>#####Apache 的 StringUtils工具类部分源码</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">public static boolean isEmpty(String str) &#123;</span><br><span class="line">    return str &#x3D;&#x3D; null || str.length() &#x3D;&#x3D; 0;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static boolean isNotEmpty(String str) &#123;</span><br><span class="line">    return !isEmpty(str);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static boolean isBlank(String str) &#123;</span><br><span class="line">    int strLen;</span><br><span class="line">    if (str !&#x3D; null &amp;&amp; (strLen &#x3D; str.length()) !&#x3D; 0) &#123;</span><br><span class="line">        for(int i &#x3D; 0; i &lt; strLen; ++i) &#123;</span><br><span class="line">            if (!Character.isWhitespace(str.charAt(i))) &#123;</span><br><span class="line">                return false;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return true;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static boolean isNotBlank(String str) &#123;</span><br><span class="line">    return !isBlank(str);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>#####Apache 中 StringUtils 中 isEmpty() 方法 和 isBlank() 方法的区别：</p>
+<blockquote>
+<p>1: isEmpty() 方法：当Sting为null或者空（””）时返回true<br>2: isBlank() 方法 ：当Sting为null或者空（””）或者空字符串（”     “）时返回true</p>
+</blockquote>
+<p>#####示例</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">    String empty &#x3D; null;</span><br><span class="line">    System.out.println(StringUtils.isEmpty(empty));</span><br><span class="line"></span><br><span class="line">    empty &#x3D; &quot;&quot;;</span><br><span class="line">    System.out.println(StringUtils.isEmpty(empty));</span><br><span class="line"></span><br><span class="line">    empty &#x3D; &quot;      &quot;;</span><br><span class="line">    System.out.println(StringUtils.isBlank(empty));</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="4-避免自动拆箱可能抛出NPE"><a href="#4-避免自动拆箱可能抛出NPE" class="headerlink" title="4. 避免自动拆箱可能抛出NPE"></a>4. 避免自动拆箱可能抛出NPE</h2><blockquote>
+<p>自动拆箱可能抛出NPE</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;反例</span><br><span class="line">public int function() &#123;</span><br><span class="line">    return Integer对象;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="5-数据库查出的数据可能为null，做空判断"><a href="#5-数据库查出的数据可能为null，做空判断" class="headerlink" title="5. 数据库查出的数据可能为null，做空判断"></a>5. 数据库查出的数据可能为null，做空判断</h2><blockquote>
+<p>数据库非空字段可以加非空约束；对可能为空的字段做空判断、防止NPE。</p>
+</blockquote>
+<hr>
+<h2 id="6-级联调用容易抛出NPE，建议使用Java-8-的-Optional类"><a href="#6-级联调用容易抛出NPE，建议使用Java-8-的-Optional类" class="headerlink" title="6. 级联调用容易抛出NPE，建议使用Java 8 的 Optional类"></a>6. 级联调用容易抛出NPE，建议使用Java 8 的 Optional类</h2><blockquote>
+<p>例如 object.getMehtodA().getMethodB().getMethodC()；很容易抛出NPE</p>
+</blockquote>
+<hr>
+<h2 id="7-远程调用返回对象容易抛出NPE，建议做空判断"><a href="#7-远程调用返回对象容易抛出NPE，建议做空判断" class="headerlink" title="7. 远程调用返回对象容易抛出NPE，建议做空判断"></a>7. 远程调用返回对象容易抛出NPE，建议做空判断</h2><blockquote>
+<p>调用第三方接口等返回对象可能为空，建议对该对象操作之前做空判断。</p>
+</blockquote>
+<hr>
+<h2 id="8-取Session中-的值之前做空判断"><a href="#8-取Session中-的值之前做空判断" class="headerlink" title="8. 取Session中 的值之前做空判断"></a>8. 取Session中 的值之前做空判断</h2><blockquote>
+<p> 取Session的值之前对Session做空判断，对获取的Session值操作之前对Session值做空判断、避免NPE</p>
+</blockquote>
+<hr>
+<h2 id="9-对集合的操作之前做空判断"><a href="#9-对集合的操作之前做空判断" class="headerlink" title="9. 对集合的操作之前做空判断"></a>9. 对集合的操作之前做空判断</h2><blockquote>
+<p> 取集合中的值之前对集合做空判断，对获取的集合值操作之前对集合值做空判断、避免NPE</p>
+</blockquote>
+<hr>
+]]></content>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>java.lang.Object 类详解</title>
+    <url>/2020/06/12/java-lang-Object-%E7%B1%BB%E8%AF%A6%E8%A7%A3/</url>
+    <content><![CDATA[<h2 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h2><blockquote>
+<p>Object 方法包括 5 个非 final 类型的方法，分别是：clone、hashCode、equals、toString、finalize 方法；包括 4 个 final 方法，分别是 getClass、wait、notify、notifyAll 方法。其中 clone 方法是 protected 方法，finalize 方法自 Java 9 之后被废弃。</p>
+</blockquote>
+<a id="more"></a>
+
+<h2 id="1-clone-方法"><a href="#1-clone-方法" class="headerlink" title="1. clone 方法"></a>1. clone 方法</h2><h3 id="1-1-源码"><a href="#1-1-源码" class="headerlink" title="1.1 源码"></a>1.1 源码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@HotSpotIntrinsicCandidate protected native Object clone() throws CloneNotSupportedException;</span><br></pre></td></tr></table></figure>
+
+<p>说明：调用该方法实现一个对象的浅复制，创建并且返回此对象的副本（“副本”的准确含义可能依赖于对象的类）。 Object.clone() 方法是一个 protected 方法，类只有实现 java.lang.Cloneable 接口，并重写 Object.clone() 方法才能使用该 clone 方法，否则抛出 CloneNotSupportedException 。</p>
+<h3 id="1-2-clone-与-copy-的区别"><a href="#1-2-clone-与-copy-的区别" class="headerlink" title="1.2 clone 与 copy 的区别"></a>1.2 clone 与 copy 的区别</h3><p>假设我们有一个 Person 对象，并假设 Person 类实现了Cloneable 接口并重写了 clone 方法。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Person a &#x3D; new Person();</span><br><span class="line">&#x2F;&#x2F;copy 的做法通常为:</span><br><span class="line">Person b &#x3D; a;</span><br><span class="line">&#x2F;&#x2F;clone 的做法通常为:</span><br><span class="line">Person c &#x3D; a.clone();</span><br></pre></td></tr></table></figure>
+
+<p>说明：<br>（1）copy 是将对象 a 的引用赋值给对象 b，赋值之后对象 a 和对象 b 都指向同一个引用 a。<br>（2）clone 是实现对象的浅拷贝，产生一个新的对象，对象 c 与 对象 a 不指向同一个引用。</p>
+<blockquote>
+<p>clone 在内存中实际操作是：将对象 a 的内存，拷贝一个副本，并重新分配一块内存区域用于保存副本。</p>
+</blockquote>
+<h3 id="1-3-浅拷贝和深拷贝"><a href="#1-3-浅拷贝和深拷贝" class="headerlink" title="1.3 浅拷贝和深拷贝"></a>1.3 浅拷贝和深拷贝</h3><blockquote>
+<p>前面我们提到，clone 在内存中的实际操作时将一个对象的内存拷贝出一个副本、并重新分配一个内存用于保存副本。由于原对象（被拷贝的对象）属性可能存在两种值传递类型，分别是值传递和引用传递，对副本的操作可能对原对象造成影响（改变副本的引用传递属性的值，由于引用传递导致原对象的响应值同样改变）。</p>
+</blockquote>
+<blockquote>
+<p>如果一个对象包含引用传递类型的属性，直接拷贝对象，不做特殊处理，这种拷贝称为浅拷贝。若一个对象不存在引用传递类型的数据，那也就不区别什么浅拷贝和深拷贝，可以称为浅拷贝也可以称为深拷贝。</p>
+</blockquote>
+<p>示例：</p>
+<p>定义2个类：Person类 包含 Book属性</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Person implements Cloneable &#123;</span><br><span class="line"></span><br><span class="line">    private String name;</span><br><span class="line">    private Book book;</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F;省略 constructor 、 getter 、 setter 方法</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() throws CloneNotSupportedException &#123;</span><br><span class="line">        return super.clone();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;Person&#123;&quot; +</span><br><span class="line">                &quot;name&#x3D;&#39;&quot; + name + &#39;\&#39;&#39; +</span><br><span class="line">                &quot;, book&#x3D;&quot; + book +</span><br><span class="line">                &#39;&#125;&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Book &#123;</span><br><span class="line"></span><br><span class="line">    private String bookName;</span><br><span class="line">    private String author;</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F;省略 constructor 、 getter 、 setter 方法</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;Book&#123;&quot; +</span><br><span class="line">                &quot;bookName&#x3D;&#39;&quot; + bookName + &#39;\&#39;&#39; +</span><br><span class="line">                &quot;, author&#x3D;&#39;&quot; + author + &#39;\&#39;&#39; +</span><br><span class="line">                &#39;&#125;&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Main &#123;</span><br><span class="line">    &#x2F;&#x2F;主方法：</span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        Book effectiveJava &#x3D; new Book(&quot;Effective Java&quot;, &quot;Joshua Bloch&quot;);</span><br><span class="line">        Person sungm &#x3D; new Person(&quot;sungm&quot;, effectiveJava);</span><br><span class="line">        Person sunhw &#x3D; (Person) sungm.clone();</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;对象 sungm 的信息：&quot; + sungm);</span><br><span class="line">        System.out.println(&quot;对象 sunhw 的信息：&quot; + sunhw);</span><br><span class="line">        System.out.println(&quot;对象 sungm 与对象 sunhw 是否相等：&quot; + (sungm &#x3D;&#x3D; sunhw));</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;-----------------------------------------&quot;);</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;改变对象 sunhw 的 book 属性</span><br><span class="line">        sunhw.getBook().setBookName(&quot;Vue.js&quot;);</span><br><span class="line">        sunhw.getBook().setAuthor(&quot;尤雨溪&quot;);</span><br><span class="line">        System.out.println(&quot;对象 sunhw 的信息：&quot; + sunhw);</span><br><span class="line">        System.out.println(&quot;对象 sungm 的信息：&quot; + sungm);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;* 输出结果 *&#x2F;</span><br><span class="line">对象 sungm 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Effective Java&#39;, author&#x3D;&#39;Joshua Bloch&#39;&#125;&#125;</span><br><span class="line">对象 sunhw 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Effective Java&#39;, author&#x3D;&#39;Joshua Bloch&#39;&#125;&#125;</span><br><span class="line">对象 sungm 与对象 sunhw 是否相等：false</span><br><span class="line">-----------------------------------------</span><br><span class="line">对象 sunhw 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Vue.js&#39;, author&#x3D;&#39;尤雨溪&#39;&#125;&#125;</span><br><span class="line">对象 sungm 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Vue.js&#39;, author&#x3D;&#39;尤雨溪&#39;&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>从输出结果可以看出：对象 sunhw 改变了的属性 book 的内容， 对对象 sungm 造成了影响。因为两个对象的 book 属性保存的是同一个引用，造成这种差异是由于对象进行了浅拷贝。</p>
+</blockquote>
+<p>进行深拷贝示例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Person implements Cloneable &#123;</span><br><span class="line"></span><br><span class="line">    private String name;</span><br><span class="line">    private Book book;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;省略 constructor 、 getter 、 setter 方法</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() throws CloneNotSupportedException &#123;</span><br><span class="line">        Person person &#x3D; (Person) super.clone();</span><br><span class="line">        person.book &#x3D; (Book) book.clone();</span><br><span class="line">        return person;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;Person&#123;&quot; +</span><br><span class="line">                &quot;name&#x3D;&#39;&quot; + name + &#39;\&#39;&#39; +</span><br><span class="line">                &quot;, book&#x3D;&quot; + book +</span><br><span class="line">                &#39;&#125;&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Book implements Cloneable&#123;</span><br><span class="line"></span><br><span class="line">    private String bookName;</span><br><span class="line">    private String author;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;省略 constructor 、 getter 、 setter 方法</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() throws CloneNotSupportedException &#123;</span><br><span class="line">        return super.clone();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;Book&#123;&quot; +</span><br><span class="line">                &quot;bookName&#x3D;&#39;&quot; + bookName + &#39;\&#39;&#39; +</span><br><span class="line">                &quot;, author&#x3D;&#39;&quot; + author + &#39;\&#39;&#39; +</span><br><span class="line">                &#39;&#125;&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Main &#123;</span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        Book effectiveJava &#x3D; new Book(&quot;Effective Java&quot;, &quot;Joshua Bloch&quot;);</span><br><span class="line">        Person sungm &#x3D; new Person(&quot;sungm&quot;, effectiveJava);</span><br><span class="line">        Person sunhw &#x3D; (Person) sungm.clone();</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;对象 sungm 的信息：&quot; + sungm);</span><br><span class="line">        System.out.println(&quot;对象 sunhw 的信息：&quot; + sunhw);</span><br><span class="line">        System.out.println(&quot;对象 sungm 与对象 sunhw 是否相等：&quot; + (sungm &#x3D;&#x3D; sunhw));</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;-----------------------------------------&quot;);</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;改变对象 sunhw 的 book 属性</span><br><span class="line">        sunhw.getBook().setBookName(&quot;Vue.js&quot;);</span><br><span class="line">        sunhw.getBook().setAuthor(&quot;尤雨溪&quot;);</span><br><span class="line">        System.out.println(&quot;对象 sunhw 的信息：&quot; + sunhw);</span><br><span class="line">        System.out.println(&quot;对象 sungm 的信息：&quot; + sungm);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;*运行结果*&#x2F;</span><br><span class="line">对象 sungm 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Effective Java&#39;, author&#x3D;&#39;Joshua Bloch&#39;&#125;&#125;</span><br><span class="line">对象 sunhw 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Effective Java&#39;, author&#x3D;&#39;Joshua Bloch&#39;&#125;&#125;</span><br><span class="line">对象 sungm 与对象 sunhw 是否相等：false </span><br><span class="line">-----------------------------------------</span><br><span class="line">对象 sunhw 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Vue.js&#39;, author&#x3D;&#39;尤雨溪&#39;&#125;&#125;</span><br><span class="line">对象 sungm 的信息：Person&#123;name&#x3D;&#39;sungm&#39;, book&#x3D;Book&#123;bookName&#x3D;&#39;Effective Java&#39;, author&#x3D;&#39;Joshua Bloch&#39;&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>说明：进行深拷贝一般有2中方式<br>（1）将属性对象实现 java.lang.Cloneable 接口并重写 clone 方法，然后在原始类中修改 clone方法。<br>（2）实现 java.io.Serializable 接口，通过序列化和反序列号拷贝对象。</p>
+</blockquote>
+<h2 id="2-hashCode-方法"><a href="#2-hashCode-方法" class="headerlink" title="2. hashCode 方法"></a>2. hashCode 方法</h2><blockquote>
+<p>返回对象的 Hash 值 （也称散列码）。对象的散列码是为了更好的支持基于哈希机制的 Java 集合类，例如：HashMap、HashSet、HashTable。</p>
+</blockquote>
+<h3 id="2-1-通用约定"><a href="#2-1-通用约定" class="headerlink" title="2.1 通用约定"></a>2.1 通用约定</h3><blockquote>
+<p>（1）在 Java 程序执行期间，多次调用该方法应该返回相同的值，前提是未修改在 equals 方法中使用的信息。<br>（2）如果 2 个对象通过 equals 方法判定为 2 个对象相等、那么他们返回的 Hash 值也应该相等。<br>（3）对于 2 个对象来说，如果使用 equals 方法返回 false，那么这两个对象的 hashCode 值不要求一定不同（可以相同，可以不同），但是如果不同则可以提高应用的性能。<br>（4）对于 Object 类来说，不同 Object 对象的 hash 值是不同的、其 hash 值返回的是内存地址。</p>
+</blockquote>
+<blockquote>
+<p><strong>说明：鉴于第 （2） 条约定，如果重写了 equals 方法，那就要求重写 hashCode 方法。</strong></p>
+</blockquote>
+<h2 id="3-equals-方法"><a href="#3-equals-方法" class="headerlink" title="3. equals 方法"></a>3. equals 方法</h2><blockquote>
+<p>判断两个对象是否相等。仅当两个对象引用的是同一个内存地址，即同一个对象，该方法返回 true。若不满足指向同一个内存地址、即使两个对象的内容相同，也会返回 false。</p>
+</blockquote>
+<p>源码：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public boolean equals(Object obj) &#123; return (this &#x3D;&#x3D; obj); &#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>规则：<br>（1）自反性：对于任意非空对象， x.equals(x) 应该返回 true<br>（2）对称性：对于任意非空对象，若 x.equals(y) 返回 true，则 y.equals(x) 也应该返回 true<br>（3）传递性：对于任意非空对象，若 x.equals(y) 返回 true、y.equals(z) 也返回 true ，则 x.equals(z) 也应该返回 true<br>（4）一致性：若 x.equals(y) 返回 true，那第二次、第三次调用也应该返回 true，前提是未修改两个对象。</p>
+</blockquote>
+<h2 id="4-toString-方法"><a href="#4-toString-方法" class="headerlink" title="4. toString 方法"></a>4. toString 方法</h2><blockquote>
+<p>返回对象的字符串表现形式（类全名及无符号十六进制的 Hash 值）。API 建议所有的子类都重写该方法。</p>
+</blockquote>
+<p>源码：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public String toString() &#123; return getClass().getName() + &quot;@&quot; + Integer.toHexString(hashCode()); &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="5-finalize-方法"><a href="#5-finalize-方法" class="headerlink" title="5. finalize 方法"></a>5. finalize 方法</h2><blockquote>
+<p>该方法自 Java 9 之后被废弃。</p>
+</blockquote>
+<p>源码：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Deprecated(since&#x3D;&quot;9&quot;) protected void finalize() throws Throwable &#123; &#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>说明：该方法并非一两句话能解释清楚，这里引入一篇博客、可供参考学习。<a href="https://www.jianshu.com/p/9d2788fffd5f" target="_blank" rel="noopener">https://www.jianshu.com/p/9d2788fffd5f</a></p>
+</blockquote>
+<h2 id="6-getClass-方法"><a href="#6-getClass-方法" class="headerlink" title="6. getClass 方法"></a>6. getClass 方法</h2><blockquote>
+<p>返回运行时该对象的 class 对象，返回的 class 对象是被表示对象的类的 static synchronized 方法锁定的对象。</p>
+</blockquote>
+<blockquote>
+<p>该方法一般常见于反射技术。</p>
+</blockquote>
+<h2 id="7-wait-方法"><a href="#7-wait-方法" class="headerlink" title="7. wait 方法"></a>7. wait 方法</h2><blockquote>
+<p>导致当前线程等待，可设置等待的毫秒数，知道其他线程调用 notify 方法或者调用该对象的 notifyAll 方法唤醒该线程。</p>
+</blockquote>
+<p>源码：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public final void wait() throws InterruptedException &#123;</span><br><span class="line">    wait(0L);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public final native void wait(long timeoutMillis) throws InterruptedException;</span><br></pre></td></tr></table></figure>
+<h2 id="8-notify-方法"><a href="#8-notify-方法" class="headerlink" title="8. notify 方法"></a>8. notify 方法</h2><blockquote>
+<p>唤醒正在此对象的监听器上等待的单个线程。如果该对象的监听器等待的线程存在多个、则唤醒其中一个线程，该线程的唤醒是随机的。</p>
+</blockquote>
+<p>源码：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@HotSpotIntrinsicCandidate public final native void notify();</span><br></pre></td></tr></table></figure>
+<h2 id="9-notifyAll-方法"><a href="#9-notifyAll-方法" class="headerlink" title="9. notifyAll 方法"></a>9. notifyAll 方法</h2><blockquote>
+<p>唤醒正在此对象的监听器上等待的所有线程。</p>
+</blockquote>
+<p>源码：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@HotSpotIntrinsicCandidate public final native void notifyAll();</span><br></pre></td></tr></table></figure>
+]]></content>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>原始类型特化</title>
     <url>/2020/06/13/%E5%8E%9F%E5%A7%8B%E7%B1%BB%E5%9E%8B%E7%89%B9%E5%8C%96/</url>
     <content><![CDATA[<p><strong>引言</strong></p>
@@ -1119,70 +1248,6 @@
       <tags>
         <tag>Java</tag>
         <tag>设计模式</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>正确的避免NullPointException</title>
-    <url>/2020/06/13/%E6%AD%A3%E7%A1%AE%E7%9A%84%E9%81%BF%E5%85%8DNullPointException/</url>
-    <content><![CDATA[<h2 id="1-正确使用-String类的-equals-方法-和-Object类的-equals-方法"><a href="#1-正确使用-String类的-equals-方法-和-Object类的-equals-方法" class="headerlink" title="1. 正确使用 String类的 equals()方法 和 Object类的 equals() 方法"></a>1. 正确使用 String类的 equals()方法 和 Object类的 equals() 方法</h2><blockquote>
-<p>已知对象在前，未知对象在后。注意：已知对象不为 null</p>
-</blockquote>
-<a id="more"></a>
-
-<p>######正确示例</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    String name &#x3D; &quot;sungm&quot;; </span><br><span class="line">    &#x2F;&#x2F;name为已知对象且被赋予初始值不为空</span><br><span class="line">    if (name.equals(getOtherName())) &#123;</span><br><span class="line">        &#x2F;&#x2F;todo do something</span><br><span class="line">        System.out.println(&quot;todo do something&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static String getOtherName() &#123;</span><br><span class="line">    return &quot;sungm&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>######错误示例</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">    String name &#x3D; &quot;sungm&quot;;</span><br><span class="line">    &#x2F;&#x2F;getOtherName()方法返回值为 null。抛出NPE</span><br><span class="line">    if (getOtherName().equals(name)) &#123;</span><br><span class="line">        &#x2F;&#x2F;todo do something</span><br><span class="line">        System.out.println(&quot;todo do something&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static String getOtherName() &#123;</span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="2-未知对象转String使用String-valueOf-方法"><a href="#2-未知对象转String使用String-valueOf-方法" class="headerlink" title="2. 未知对象转String使用String.valueOf()方法"></a>2. 未知对象转String使用String.valueOf()方法</h2><blockquote>
-<p>空对象调用 toString() 方法会抛出NPE，使用 String.valueOf() 替代</p>
-</blockquote>
-<p>#####示例</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    &#x2F;&#x2F;抛NPE</span><br><span class="line">    System.out.println(getPrice().toString());</span><br><span class="line">    &#x2F;&#x2F;不抛NPE</span><br><span class="line">    System.out.println(String.valueOf(getPrice()));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static BigDecimal getPrice() &#123;</span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h5 id="String-valueOf-方法源码"><a href="#String-valueOf-方法源码" class="headerlink" title="String.valueOf() 方法源码"></a>String.valueOf() 方法源码</h5><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static String valueOf(Object obj) &#123;</span><br><span class="line">    return (obj &#x3D;&#x3D; null) ? &quot;null&quot; : obj.toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="3-使用第三方类库或者自己封装的工具类"><a href="#3-使用第三方类库或者自己封装的工具类" class="headerlink" title="3. 使用第三方类库或者自己封装的工具类"></a>3. 使用第三方类库或者自己封装的工具类</h2><blockquote>
-<p>例如 Apache 的 StringUtils 类</p>
-</blockquote>
-<p>#####Apache 的 StringUtils工具类部分源码</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">public static boolean isEmpty(String str) &#123;</span><br><span class="line">    return str &#x3D;&#x3D; null || str.length() &#x3D;&#x3D; 0;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static boolean isNotEmpty(String str) &#123;</span><br><span class="line">    return !isEmpty(str);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static boolean isBlank(String str) &#123;</span><br><span class="line">    int strLen;</span><br><span class="line">    if (str !&#x3D; null &amp;&amp; (strLen &#x3D; str.length()) !&#x3D; 0) &#123;</span><br><span class="line">        for(int i &#x3D; 0; i &lt; strLen; ++i) &#123;</span><br><span class="line">            if (!Character.isWhitespace(str.charAt(i))) &#123;</span><br><span class="line">                return false;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return true;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static boolean isNotBlank(String str) &#123;</span><br><span class="line">    return !isBlank(str);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>#####Apache 中 StringUtils 中 isEmpty() 方法 和 isBlank() 方法的区别：</p>
-<blockquote>
-<p>1: isEmpty() 方法：当Sting为null或者空（””）时返回true<br>2: isBlank() 方法 ：当Sting为null或者空（””）或者空字符串（”     “）时返回true</p>
-</blockquote>
-<p>#####示例</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">    String empty &#x3D; null;</span><br><span class="line">    System.out.println(StringUtils.isEmpty(empty));</span><br><span class="line"></span><br><span class="line">    empty &#x3D; &quot;&quot;;</span><br><span class="line">    System.out.println(StringUtils.isEmpty(empty));</span><br><span class="line"></span><br><span class="line">    empty &#x3D; &quot;      &quot;;</span><br><span class="line">    System.out.println(StringUtils.isBlank(empty));</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="4-避免自动拆箱可能抛出NPE"><a href="#4-避免自动拆箱可能抛出NPE" class="headerlink" title="4. 避免自动拆箱可能抛出NPE"></a>4. 避免自动拆箱可能抛出NPE</h2><blockquote>
-<p>自动拆箱可能抛出NPE</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;反例</span><br><span class="line">public int function() &#123;</span><br><span class="line">    return Integer对象;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="5-数据库查出的数据可能为null，做空判断"><a href="#5-数据库查出的数据可能为null，做空判断" class="headerlink" title="5. 数据库查出的数据可能为null，做空判断"></a>5. 数据库查出的数据可能为null，做空判断</h2><blockquote>
-<p>数据库非空字段可以加非空约束；对可能为空的字段做空判断、防止NPE。</p>
-</blockquote>
-<hr>
-<h2 id="6-级联调用容易抛出NPE，建议使用Java-8-的-Optional类"><a href="#6-级联调用容易抛出NPE，建议使用Java-8-的-Optional类" class="headerlink" title="6. 级联调用容易抛出NPE，建议使用Java 8 的 Optional类"></a>6. 级联调用容易抛出NPE，建议使用Java 8 的 Optional类</h2><blockquote>
-<p>例如 object.getMehtodA().getMethodB().getMethodC()；很容易抛出NPE</p>
-</blockquote>
-<hr>
-<h2 id="7-远程调用返回对象容易抛出NPE，建议做空判断"><a href="#7-远程调用返回对象容易抛出NPE，建议做空判断" class="headerlink" title="7. 远程调用返回对象容易抛出NPE，建议做空判断"></a>7. 远程调用返回对象容易抛出NPE，建议做空判断</h2><blockquote>
-<p>调用第三方接口等返回对象可能为空，建议对该对象操作之前做空判断。</p>
-</blockquote>
-<hr>
-<h2 id="8-取Session中-的值之前做空判断"><a href="#8-取Session中-的值之前做空判断" class="headerlink" title="8. 取Session中 的值之前做空判断"></a>8. 取Session中 的值之前做空判断</h2><blockquote>
-<p> 取Session的值之前对Session做空判断，对获取的Session值操作之前对Session值做空判断、避免NPE</p>
-</blockquote>
-<hr>
-<h2 id="9-对集合的操作之前做空判断"><a href="#9-对集合的操作之前做空判断" class="headerlink" title="9. 对集合的操作之前做空判断"></a>9. 对集合的操作之前做空判断</h2><blockquote>
-<p> 取集合中的值之前对集合做空判断，对获取的集合值操作之前对集合值做空判断、避免NPE</p>
-</blockquote>
-<hr>
-]]></content>
-      <tags>
-        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -1298,6 +1363,27 @@
       </tags>
   </entry>
   <entry>
+    <title>验证XML</title>
+    <url>/2020/06/18/%E9%AA%8C%E8%AF%81XML/</url>
+    <content><![CDATA[<h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h2><blockquote>
+<ul>
+<li>如果我们解析XML之后，获取到XML的内容，再校验XML内容或格式是否符合设计规范，这个工作是很繁琐的。</li>
+<li>幸好，XML解析器的一个很大的好处就是它能够自动校验某个文档是否具有正确的结构，这样解析工作就变的简单的多。</li>
+<li>通过定义一个 <a href="https://www.w3school.com.cn/dtd/dtd_intro.asp" target="_blank" rel="noopener">DTD</a> 或者 <a href="https://www.w3school.com.cn/schema/schema_intro.asp" target="_blank" rel="noopener">XML Schema</a>， DTD 或者 Schema 包含了用于解释文档如何构成的规则，这些规则指定了每个元素的合法子元素和属性。</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="2-定义DTD校验规则"><a href="#2-定义DTD校验规则" class="headerlink" title="2. 定义DTD校验规则"></a>2. 定义DTD校验规则</h2><p><strong>XML文档</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot; ?&gt;</span><br><span class="line">&lt;!-- 定义DTD校验规则 --&gt;</span><br><span class="line">&lt;!DOCTYPE class [</span><br><span class="line">    &lt;!-- 定义class至少包含一个student --&gt;</span><br><span class="line">    &lt;!ELEMENT class (student+)&gt;</span><br><span class="line">    &lt;!-- 定义student只包含name,age,sex,className属性 --&gt;</span><br><span class="line">    &lt;!ELEMENT student (name, age, sex, className)&gt;</span><br><span class="line">        &lt;!-- 定义id属性, 属性默认值为0 --&gt;</span><br><span class="line">        &lt;!ATTLIST student id CDATA &quot;0&quot;&gt;</span><br><span class="line">    &lt;!ELEMENT name (#PCDATA)&gt;</span><br><span class="line">    &lt;!ELEMENT age (#PCDATA)&gt;</span><br><span class="line">    &lt;!ELEMENT sex (#PCDATA)&gt;</span><br><span class="line">    &lt;!ELEMENT className (#PCDATA)&gt;</span><br><span class="line">]&gt;</span><br><span class="line">&lt;class&gt;</span><br><span class="line">    &lt;student id&#x3D;&quot;1&quot;&gt;</span><br><span class="line">        &lt;name&gt;sungm&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age&gt;25&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className&gt;Class One&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">    &lt;student id&#x3D;&quot;2&quot;&gt;</span><br><span class="line">        &lt;name&gt;sunhw&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age&gt;1&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className&gt;Class Two&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">&lt;&#x2F;class&gt;</span><br></pre></td></tr></table></figure>
+
+
+]]></content>
+      <tags>
+        <tag>Java</tag>
+        <tag>XML</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>通用Builder</title>
     <url>/2020/06/15/%E9%80%9A%E7%94%A8Builder/</url>
     <content><![CDATA[<blockquote>
@@ -1326,27 +1412,6 @@
         <tag>Java</tag>
         <tag>工具类</tag>
         <tag>设计模式</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>验证XML</title>
-    <url>/2020/06/18/%E9%AA%8C%E8%AF%81XML/</url>
-    <content><![CDATA[<h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h2><blockquote>
-<ul>
-<li>如果我们解析XML之后，获取到XML的内容，再校验XML内容或格式是否符合设计规范，这个工作是很繁琐的。</li>
-<li>幸好，XML解析器的一个很大的好处就是它能够自动校验某个文档是否具有正确的结构，这样解析工作就变的简单的多。</li>
-<li>通过定义一个 <a href="https://www.w3school.com.cn/dtd/dtd_intro.asp" target="_blank" rel="noopener">DTD</a> 或者 <a href="https://www.w3school.com.cn/schema/schema_intro.asp" target="_blank" rel="noopener">XML Schema</a>， DTD 或者 Schema 包含了用于解释文档如何构成的规则，这些规则指定了每个元素的合法子元素和属性。</li>
-</ul>
-</blockquote>
-<hr>
-<h2 id="2-定义DTD校验规则"><a href="#2-定义DTD校验规则" class="headerlink" title="2. 定义DTD校验规则"></a>2. 定义DTD校验规则</h2><p><strong>XML文档</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot; ?&gt;</span><br><span class="line">&lt;!-- 定义DTD校验规则 --&gt;</span><br><span class="line">&lt;!DOCTYPE class [</span><br><span class="line">    &lt;!-- 定义class至少包含一个student --&gt;</span><br><span class="line">    &lt;!ELEMENT class (student+)&gt;</span><br><span class="line">    &lt;!-- 定义student只包含name,age,sex,className属性 --&gt;</span><br><span class="line">    &lt;!ELEMENT student (name, age, sex, className)&gt;</span><br><span class="line">        &lt;!-- 定义id属性, 属性默认值为0 --&gt;</span><br><span class="line">        &lt;!ATTLIST student id CDATA &quot;0&quot;&gt;</span><br><span class="line">    &lt;!ELEMENT name (#PCDATA)&gt;</span><br><span class="line">    &lt;!ELEMENT age (#PCDATA)&gt;</span><br><span class="line">    &lt;!ELEMENT sex (#PCDATA)&gt;</span><br><span class="line">    &lt;!ELEMENT className (#PCDATA)&gt;</span><br><span class="line">]&gt;</span><br><span class="line">&lt;class&gt;</span><br><span class="line">    &lt;student id&#x3D;&quot;1&quot;&gt;</span><br><span class="line">        &lt;name&gt;sungm&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age&gt;25&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className&gt;Class One&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">    &lt;student id&#x3D;&quot;2&quot;&gt;</span><br><span class="line">        &lt;name&gt;sunhw&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age&gt;1&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className&gt;Class Two&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">&lt;&#x2F;class&gt;</span><br></pre></td></tr></table></figure>
-
-
-]]></content>
-      <tags>
-        <tag>Java</tag>
-        <tag>XML</tag>
       </tags>
   </entry>
 </search>
