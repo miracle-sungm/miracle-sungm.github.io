@@ -9,9 +9,20 @@
 
 
 
-    <meta name="description" content="引言
+    <meta name="description" content="1. 并发和多线程并发编程
 
-上篇我们介绍了三个函数式接口：Predicate、Consumer、Function&amp;lt;T，R&amp;gt; 。还有一些函数式接口是专门为某些类型涉及的。https://www.jianshu.com/p/4c93e1f7c19b"/>
+并发编程涵盖了多线程技术在内，指并发执行任务时可能出现的问题，使用的多线程技术，以及解决方案。
+
+多线程：
+
+同一个应用程序中，多个线程同时执行。
+
+多线程应用程序:
+
+多线程应用程序是一个多 CPU 同时执行不同的线程的应用程序。如图
+
+
+一个线程不等于一个CPU，通"/>
 
 
 <!--Author-->
@@ -21,14 +32,25 @@
 
 <!--Open Graph Title-->
 
-    <meta property="og:title" content="原始类型特化"/>
+    <meta property="og:title" content="[Java 并发编程] 1. 并发和多线程"/>
 
 
 <!--Open Graph Description-->
 
-    <meta property="og:description" content="引言
+    <meta property="og:description" content="1. 并发和多线程并发编程
 
-上篇我们介绍了三个函数式接口：Predicate、Consumer、Function&amp;lt;T，R&amp;gt; 。还有一些函数式接口是专门为某些类型涉及的。https://www.jianshu.com/p/4c93e1f7c19b"/>
+并发编程涵盖了多线程技术在内，指并发执行任务时可能出现的问题，使用的多线程技术，以及解决方案。
+
+多线程：
+
+同一个应用程序中，多个线程同时执行。
+
+多线程应用程序:
+
+多线程应用程序是一个多 CPU 同时执行不同的线程的应用程序。如图
+
+
+一个线程不等于一个CPU，通"/>
 
 
 <!--Open Graph Site Name-->
@@ -55,7 +77,7 @@
 
 <!-- Title -->
 
-<title>原始类型特化 - Miracle&#39;s Blog</title>
+<title>[Java 并发编程] 1. 并发和多线程 - Miracle&#39;s Blog</title>
 
 <!-- Bootstrap Core CSS -->
 <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
@@ -123,7 +145,7 @@
         <div class="row">
             <div class="col-lg-12 col-md-12 text-center">
                 <div class="post-heading text-white">
-                    <h1>原始类型特化</h1>
+                    <h1>[Java 并发编程] 1. 并发和多线程</h1>
                     
                 </div>
             </div>
@@ -145,7 +167,7 @@
     
         <span class="post-meta-split">&nbsp;|&nbsp;</span>
         <i class="far fa-calendar-check fa-fw"></i>
-        2020-06-13
+        2020-08-09
     
     <!-- word count and read count -->
     
@@ -155,47 +177,146 @@
     
 </span>  
                 
-                <p><strong>引言</strong></p>
+                <h3 id="1-并发和多线程"><a href="#1-并发和多线程" class="headerlink" title="1. 并发和多线程"></a>1. 并发和多线程</h3><p><strong>并发编程</strong></p>
 <blockquote>
-<p>上篇我们介绍了三个函数式接口：Predicate<T>、Consumer<T>、Function&lt;T，R&gt; 。还有一些函数式接口是专门为某些类型涉及的。<a href="https://www.jianshu.com/p/4c93e1f7c19b" target="_blank" rel="noopener">https://www.jianshu.com/p/4c93e1f7c19b</a></T></T></p>
+<p>并发编程涵盖了多线程技术在内，指并发执行任务时可能出现的问题，使用的多线程技术，以及解决方案。</p>
 </blockquote>
-<a id="more"></a>
-
-<p> <strong>Java 类型</strong></p>
+<p><strong>多线程：</strong></p>
 <blockquote>
-<ul>
-<li>引用类型（如 Byte、Integer、Long、Object、List）</li>
-<li>原始类型（byte、short、int、float、double、long、char、boolean）</li>
-</ul>
+<p>同一个应用程序中，多个线程同时执行。</p>
 </blockquote>
-<p> <strong>回顾知识点：</strong></p>
+<p><strong>多线程应用程序:</strong></p>
 <blockquote>
-<ul>
-<li>Java 类型要么是引用类型，要么是原始类型。</li>
-<li>泛型只能绑定到引用类型上面、这是由泛型内部的实现方式造成的。</li>
-<li>在 Java 中有一个将原始类型转换为对应的引用类型的机制、这个机智就叫做装箱。相反的操作、也就是将引用类型转换成对应的原始类型的机制，这种机智叫做拆箱。Java 还有一个自动装拆箱的机智来帮助我们程序员执行这一任务：装箱和拆箱都是自动完成的。</li>
-</ul>
+<p>多线程应用程序是一个多 CPU 同时执行不同的线程的应用程序。如图<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/introduction-1.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/introduction-1.png" alt></div></p>
 </blockquote>
-<p><strong>注意：</strong></p>
 <blockquote>
-<p>虽然 Java 提供了自动装拆箱的机智，但这在性能方面是要付出代价的，装箱的本质是就是把原始类型包裹起来，并保存在堆里。因此、装箱后的值需要更多的内存、并需要额外的内存搜索来获取被包裹的值。因此、为提高程序的执行效率、Java  8 为我们前面所提到的函数式接口提供了一个专门的版本、以便在输入和输出都是原始类型时避免自动装拆箱的操作。</p>
+<p>一个线程不等于一个CPU，通常情况下一个CPU在不同时间段交换执行不同的线程，不同的CPU同时执行不同的线程。如图：<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/introduction-2.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/introduction-2.png" alt></div></p>
 </blockquote>
-<p><strong>举例</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;IntPredicate 源码</span><br><span class="line"></span><br><span class="line">@FunctionalInterface</span><br><span class="line">public interface IntPredicate &#123;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * Evaluates this predicate on the given argument.</span><br><span class="line">     *</span><br><span class="line">     * @param value the input argument</span><br><span class="line">     * @return &#123;@code true&#125; if the input argument matches the predicate,</span><br><span class="line">     * otherwise &#123;@code false&#125;</span><br><span class="line">     *&#x2F;</span><br><span class="line">    boolean test(int value);</span><br><span class="line">  </span><br><span class="line">    &#x2F;&#x2F; 其他默认方法省略</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>说明</strong></p>
-<blockquote>
-<p> IntPredicate 源码解析：IntPredicate 类的 test方法接收一个原始类型 int类型的入参，其返回值为 boolean，避免了输入和输出都是原始类型时自动装拆箱的操作。 </p>
-</blockquote>
-<p><strong>Java 8中的常用函数式接口</strong></p>
-<p><div class="img-item" data-src="https://upload-images.jianshu.io/upload_images/11864885-b49768e2e438afa1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-sub-html=".caption"><img src="https://upload-images.jianshu.io/upload_images/11864885-b49768e2e438afa1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt></div></p>
-<p><div class="img-item" data-src="https://upload-images.jianshu.io/upload_images/11864885-b03a23c45dc9e0d6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-sub-html=".caption"><img src="https://upload-images.jianshu.io/upload_images/11864885-b03a23c45dc9e0d6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="常用函数式接口"><div class="img-caption d-block text-center"><span class="center-caption text-muted border-bottom">常用函数式接口</span></div></div></p>
-<p><strong>Lambdas及函数式接口的例子</strong><br><div class="img-item" data-src="https://upload-images.jianshu.io/upload_images/11864885-049343497380171b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-sub-html=".caption"><img src="https://upload-images.jianshu.io/upload_images/11864885-049343497380171b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Lambdas及函数式接口的例子"><div class="img-caption d-block text-center"><span class="center-caption text-muted border-bottom">Lambdas及函数式接口的例子</span></div></div></p>
 <hr>
-<p><strong>推荐书籍</strong></p>
+<h3 id="2-为什么使用多线程"><a href="#2-为什么使用多线程" class="headerlink" title="2. 为什么使用多线程"></a>2. 为什么使用多线程</h3><blockquote>
+<ul>
+<li>更好的利用单 CPU 资源</li>
+<li>更好的利用多 CPU 或 CPU 内核</li>
+<li>更快速的响应-提高用户体验</li>
+<li>更公平的响应-提高用户体验</li>
+</ul>
+</blockquote>
+<p><strong>更好的利用单 CPU 资源</strong></p>
+<blockquote>
+<p>单个CPU通过分配CPU时间片达到交换地执行不同线程的目的，让我们感觉多个线程是同时执行的，时间片一般是几十毫秒。</p>
+</blockquote>
+<p><strong>更好的利用多 CPU 或 CPU 内核</strong></p>
+<blockquote>
+<p>创建多个线程，充分地利用多个CPU同时执行不同的线程，加快程序执行速度，充分利用多CPU资源。</p>
+</blockquote>
+<p><strong>更快速的响应-提高用户体验</strong></p>
+<blockquote>
+<p>充分的利用单CPU资源和多CPU资源都能够加快程序的执行速度，以提高用户体验</p>
+</blockquote>
+<p><strong>更公平的响应-提高用户体验</strong></p>
+<blockquote>
+<p>不同的线程在单CPU中分配CPU时间片交换执行，在某些特定情况下以一种更加公平的方式执行不同的线程。比如某个线程需要调用网络资源或者其他的操作需要长时间占用CPU，导致许多线程需要等待CPU去执行，造成阻塞。</p>
+</blockquote>
+<hr>
+<h3 id="3-使用多线程不一定更快"><a href="#3-使用多线程不一定更快" class="headerlink" title="3. 使用多线程不一定更快"></a>3. 使用多线程不一定更快</h3><blockquote>
+<p>由于线程的创建和上下文的切换的开销，多线程的执行效率不一定比单线程的执行效率更好。</p>
+</blockquote>
+<p><strong>线程创建的方式</strong></p>
 <blockquote>
 <ul>
-<li>《Java 8 in Action》</li>
+<li>继承Thread类，重写 run() 方法</li>
+<li>实现Runnable接口，重写 run() 方法</li>
+<li>实现Callable接口，重写 call() 方法</li>
 </ul>
+</blockquote>
+<p><strong>上下文切换</strong></p>
+<blockquote>
+<p>单核处理器也支持多线程执行代码，CPU 通过给每个线程分配CPU时间片来实现这个机制。当前任务执行一个时间片后会切换到下一个任务。但是切换前会保存上一个任务的状态，以便于下次切换到该任务时，可以再加载这个任务的状态。任务从保存到再加载的过程就是一次上下文切换。</p>
+</blockquote>
+<hr>
+<h3 id="4-多线程-PK-多任务"><a href="#4-多线程-PK-多任务" class="headerlink" title="4. 多线程 PK 多任务"></a>4. 多线程 PK 多任务</h3><p><strong>多任务</strong></p>
+<blockquote>
+<p>不同CPU同时执行不同的应用程序的不同线程。</p>
+</blockquote>
+<p><strong>多线程</strong></p>
+<blockquote>
+<p>不同CPU同时执行相同的应用程序的不同线程。</p>
+</blockquote>
+<p><strong>多线程技术更难实现</strong></p>
+<blockquote>
+<p>多线程技术可以以一种很好的方式提高某些类型的应用程序的性能。但是多线程技术比多任务技术要面临更多的技术挑战。不同的线程在同一个应用程序中同时执行，它们可能存在一个线程在读取共享内存的数据，另外一个线程在写入数据至共享内存，造成线程不安全的问题发生，以至于产生了单线程技术通常情况下不会发生的错误。</p>
+</blockquote>
+<blockquote>
+<p>现代计算机通常拥有多个CPU或者多个CPU内核，这意味着不同的线程可以被不同的CPU同时执行。如图<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/java-concurrency-tutorial-introduction-1.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/java-concurrency-tutorial-introduction-1.png" alt></div></p>
+</blockquote>
+<hr>
+<h3 id="5-Java-中的并发和多线程"><a href="#5-Java-中的并发和多线程" class="headerlink" title="5. Java 中的并发和多线程"></a>5. Java 中的并发和多线程</h3><p><strong>并发模型</strong></p>
+<blockquote>
+<ul>
+<li>共享状态并发模型（shared state concurrency model）</li>
+<li>隔离状态并发模型（separate state concurrency model）</li>
+</ul>
+</blockquote>
+<p><strong>共享状态并发模型</strong></p>
+<blockquote>
+<p>同一个应用程序中的不同的线程使用了同一个共享对象（或变量）。在共享状态并发模型中存在很多问题，这些问题难以完美地解决。</p>
+</blockquote>
+<p><strong>隔离状态并发模型</strong></p>
+<blockquote>
+<p>同一个应用程序中的不同的线程不共享任何对象（或变量）。</p>
+</blockquote>
+<hr>
+<h3 id="Java-并发学习指南"><a href="#Java-并发学习指南" class="headerlink" title="Java 并发学习指南"></a>Java 并发学习指南</h3><p><strong>并发和多线程理论知识</strong></p>
+<blockquote>
+<ul>
+<li>多线程的好处</li>
+<li>多线程的成本</li>
+<li>并发模型</li>
+<li>同一线程</li>
+<li>并发 PK 并行</li>
+</ul>
+</blockquote>
+<p><strong>Java并发的基础理论知识</strong></p>
+<blockquote>
+<ul>
+<li>创建和开始一个线程</li>
+<li>线程安全和共享资源</li>
+<li>线程安全和不变性</li>
+<li>JMM (Java memory model)</li>
+<li>synchronize 关键字</li>
+<li>volatile 关键字</li>
+<li>ThreadLocal </li>
+</ul>
+</blockquote>
+<p><strong>Java 并发常见问题</strong></p>
+<blockquote>
+<ul>
+<li>死锁</li>
+<li>预防死锁</li>
+</ul>
+</blockquote>
+<p><strong>Java 提供的一些解决常见问题的工具</strong></p>
+<blockquote>
+<ul>
+<li>Lock （锁）</li>
+<li>Read / Write Lock （读写锁）</li>
+<li>ReentrantLock （可重入锁）</li>
+<li>Semaphores （信号）</li>
+<li>Blocking Queues （阻塞队列）</li>
+<li>Thread Pools （线程池）</li>
+<li>Compare and Swap （CAS）</li>
+</ul>
+</blockquote>
+<p><strong>Java 并发工具包 （JUC: java.util.concurrent）</strong></p>
+<blockquote>
+<ul>
+<li>Java Concurrency Utilities - java.util.concurrent</li>
+</ul>
+</blockquote>
+<hr>
+<p><strong>推荐</strong></p>
+<blockquote>
+<p>&lt;Java 并发编程的艺术&gt;</p>
 </blockquote>
 
             </div>
@@ -209,7 +330,7 @@
             
             
         
-            <a href="/tags/Java/">#Java</a>
+            <a href="/tags/Java/">#Java</a> <a href="/tags/Java并发编程/">#Java并发编程</a>
         
     </div>
 
@@ -217,10 +338,10 @@
     <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
         <ul class="pagination d-block text-center">
             
-                <li class="previous page-item d-inline"><a href="/2020/06/13/Lambda-%E8%A1%A8%E8%BE%BE%E5%BC%8F/" class="page-link float-left">&larr;  下一页</a></li>
+                <li class="previous page-item d-inline"><a href="/2020/08/09/%E4%BD%BF%E7%94%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E6%88%90%E6%9C%AC/" class="page-link float-left">&larr;  下一页</a></li>
             
             
-                <li class="next page-item d-inline"><a href="/2020/06/13/%E8%80%83%E8%99%91%E4%BD%BF%E7%94%A8%E9%9D%99%E6%80%81%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%E4%BB%A3%E6%9B%BF%E6%9E%84%E9%80%A0%E6%96%B9%E6%B3%95/" class="page-link float-right">上一页  &rarr;</a></li>
+                <li class="next page-item d-inline"><a href="/2020/07/09/%E5%B9%B6%E8%A1%8C%E6%B5%81/" class="page-link float-right">上一页  &rarr;</a></li>
             
         </ul>
     </div>

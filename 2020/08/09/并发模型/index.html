@@ -9,6 +9,15 @@
 
 
 
+    <meta name="description" content="前言：
+
+我们可以通过使用不同的并发模型来实现一个并发系统，线程之间通过协作完成系统给定的任务。不同的并发模型以不同的方式切割任务，线程之间可能存在通信和合作完成不同的任务。
+
+1. 并发模型与分布式系统相似
+
+在一个并发系统中，不同的线程之间相互通信。
+在一个分布式系统中，不同的进程之间相互通信。"/>
+
 
 <!--Author-->
 
@@ -17,10 +26,19 @@
 
 <!--Open Graph Title-->
 
-    <meta property="og:title" content="Miracle&#39;s Blog"/>
+    <meta property="og:title" content="[Java 并发编程] 3. 并发模型"/>
 
 
 <!--Open Graph Description-->
+
+    <meta property="og:description" content="前言：
+
+我们可以通过使用不同的并发模型来实现一个并发系统，线程之间通过协作完成系统给定的任务。不同的并发模型以不同的方式切割任务，线程之间可能存在通信和合作完成不同的任务。
+
+1. 并发模型与分布式系统相似
+
+在一个并发系统中，不同的线程之间相互通信。
+在一个分布式系统中，不同的进程之间相互通信。"/>
 
 
 <!--Open Graph Site Name-->
@@ -28,7 +46,7 @@
 
 <!--Type page-->
 
-    <meta property="og:type" content="website"/>
+    <meta property="og:type" content="article"/>
 
 
 <!--Page Cover-->
@@ -47,7 +65,7 @@
 
 <!-- Title -->
 
-<title>Miracle&#39;s Blog</title>
+<title>[Java 并发编程] 3. 并发模型 - Miracle&#39;s Blog</title>
 
 <!-- Bootstrap Core CSS -->
 <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
@@ -108,249 +126,154 @@
 
     <!-- Main Content -->
     <!-- Page Header -->
-<!-- Set your background image for this header in the theme's configuration: index_cover -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
 <header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
     <div class="container">
         <div class="row">
-            <div class="col-lg-8 offset-md-2 col-md-10 offset-md-1">
-                <div class="site-heading text-center text-white">
-                    <h1>Miracle's Blog</h1>
-                    <hr class="small">
-                    <span class="subheading d-block">Miracles happen every day.</span>
+            <div class="col-lg-12 col-md-12 text-center">
+                <div class="post-heading text-white">
+                    <h1>[Java 并发编程] 3. 并发模型</h1>
+                    
                 </div>
             </div>
         </div>
     </div>
 </header>
 
-<!-- Main Content -->
-<div class="container page-index">
-    <div class="row">
-        <div class="col-lg-8 offset-md-2 col-md-10 offset-md-1">
-            
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Main Content -->
+            <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
                 
-            
-                
-            
-                
-            
-                
-            
-                
-            
-                
-            
-                
-            
-                
-            
-                
-            
-                
-            
-                
-            
-                
-            
-                
-            
-                
-            
-                
-            
-                
-            
-                
-            
-                
-            
-                
-            
-        </div>
-        <div class="col-lg-8 offset-md-2 col-md-10 offset-md-1 post-all">    
-            
-                
-                    <div class="post-preview post-preview-index">
-    <a href="/2020/08/09/%E5%B9%B6%E5%8F%91%E6%A8%A1%E5%9E%8B/">
-        <h2 class="post-title">
-            [Java 并发编程] 3. 并发模型
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2020-08-09
-    </p>
-</div>
-<hr>
-                
-            
-                
-                    <div class="post-preview post-preview-index">
-    <a href="/2020/08/09/%E4%BD%BF%E7%94%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E6%88%90%E6%9C%AC/">
-        <h2 class="post-title">
-            [Java 并发编程] 2. 使用多线程的成本
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2020-08-09
-    </p>
-</div>
-<hr>
-                
-            
-                
-                    <div class="post-preview post-preview-index">
-    <a href="/2020/08/09/Java-Concurrency-and-Multithreading/">
-        <h2 class="post-title">
-            [Java 并发编程] 1. 并发和多线程
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2020-08-09
-    </p>
-</div>
-<hr>
-                
-            
-                
-                    <div class="post-preview post-preview-index">
-    <a href="/2020/07/09/%E5%B9%B6%E8%A1%8C%E6%B5%81/">
-        <h2 class="post-title">
-            并行流
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2020-07-09
-    </p>
-</div>
-<hr>
-                
-            
-                
-                    <div class="post-preview post-preview-index">
-    <a href="/2020/07/01/%E5%87%BD%E6%95%B0%E5%BC%8F%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86/">
-        <h2 class="post-title">
-            函数式数据处理
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2020-07-01
-    </p>
-</div>
-<hr>
-                
-            
-                
-                    <div class="post-preview post-preview-index">
-    <a href="/2020/06/28/Effective-Java-%E6%80%BB%E7%BB%93/">
-        <h2 class="post-title">
-            Effective Java
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2020-06-28
-    </p>
-</div>
-<hr>
-                
-            
-                
-                    <div class="post-preview post-preview-index">
-    <a href="/2020/06/18/%E9%AA%8C%E8%AF%81XML/">
-        <h2 class="post-title">
-            验证XML
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2020-06-18
-    </p>
-</div>
-<hr>
-                
-            
-                
-                    <div class="post-preview post-preview-index">
-    <a href="/2020/06/16/%E8%A7%A3%E6%9E%90XML/">
-        <h2 class="post-title">
-            解析XML
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2020-06-16
-    </p>
-</div>
-<hr>
-                
-            
-                
-                    <div class="post-preview post-preview-index">
-    <a href="/2020/06/16/XML%E5%9F%BA%E7%A1%80/">
-        <h2 class="post-title">
-            XML基础
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2020-06-16
-    </p>
-</div>
-<hr>
-                
-            
-                
-                    <div class="post-preview post-preview-index">
-    <a href="/2020/06/15/Check%E5%B7%A5%E5%85%B7%E7%B1%BB/">
-        <h2 class="post-title">
-            Check工具类
-        </h2>
-        
-    </a>
-    <p class="post-meta">
-        <!-- Date and Author -->
-        
-        2020-06-15
-    </p>
-</div>
-<hr>
-                
-            
-        </div>
-        <div class="col-lg-8 offset-md-2 col-md-10 offset-md-1 post-all">    
-            <ul class="pagination d-block text-center">
+                    <span class="meta d-inline-block">
     
     
-        <li class="next page-item d-inline"><a href="/page/2/" class="page-link float-right">上一页  &rarr;</a></li>
+    <!-- Date -->
     
+        <span class="post-meta-split">&nbsp;|&nbsp;</span>
+        <i class="far fa-calendar-check fa-fw"></i>
+        2020-08-09
+    
+    <!-- word count and read count -->
+    
+
+    
+
+    
+</span>  
+                
+                <p><strong>前言：</strong></p>
+<blockquote>
+<p>我们可以通过使用不同的并发模型来实现一个并发系统，线程之间通过协作完成系统给定的任务。不同的并发模型以不同的方式切割任务，线程之间可能存在通信和合作完成不同的任务。</p>
+</blockquote>
+<h3 id="1-并发模型与分布式系统相似"><a href="#1-并发模型与分布式系统相似" class="headerlink" title="1. 并发模型与分布式系统相似"></a>1. 并发模型与分布式系统相似</h3><blockquote>
+<ul>
+<li>在一个并发系统中，不同的线程之间相互通信。</li>
+<li>在一个分布式系统中，不同的进程之间相互通信。</li>
+<li>进程和线程在本质上非常的相似。</li>
 </ul>
+</blockquote>
+<blockquote>
+<p>分布式系统比并发系统面临更多的挑战，比如可能面临网络异常、远程主机或进程停止；并发系统理论上也存在相似的问题，比如CPU异常，内存或硬盘损坏等情况，这种异常的概率相对较小，但实际上是存在的。</p>
+</blockquote>
+<h3 id="2-共享状态内存模型-vs-隔离状态内存模型"><a href="#2-共享状态内存模型-vs-隔离状态内存模型" class="headerlink" title="2. 共享状态内存模型 vs 隔离状态内存模型"></a>2. 共享状态内存模型 vs 隔离状态内存模型</h3><h5 id="2-1-共享状态内存模型"><a href="#2-1-共享状态内存模型" class="headerlink" title="2.1 共享状态内存模型"></a>2.1 共享状态内存模型</h5><blockquote>
+<p>共享状态意味着同一系统的多个线程之间共享一些状态（一般指数据，共享一个或多个对象的数据）。当线程共享状态时，容易引发一些并发问题，比如死锁，竞争条件等等，这取决于线程怎样地使用和访问共享数据等等。</p>
+</blockquote>
+<p><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-0-1.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-0-1.png" alt></div></p>
+<h5 id="2-2-隔离状态内存模型"><a href="#2-2-隔离状态内存模型" class="headerlink" title="2.2 隔离状态内存模型"></a>2.2 隔离状态内存模型</h5><blockquote>
+<p>隔离状态意味着同一系统的多个线程之间不共享状态。如果不同的线程之间需要进行通信，可以通过交换不可变对象、或者使用复制的对象进行通信。当多个线程之间不存在共享状态（或共享数据），就可以避免最常见的并发问题。</p>
+</blockquote>
+<p><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-0-2.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-0-2.png" alt></div></p>
+<p><strong>备注</strong></p>
+<blockquote>
+<p>使用隔离状态并发设计，通常情况下可以让代码实现更加简单，并且可以不用担心并发访问对象的问题，避免一些常见的并发问题。在一些特殊情况下，使用分离状态并发设计可能存在更大的挑战。</p>
+</blockquote>
+
+            </div>
+
+            <!-- Post information -->
+            
+    <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 post-tags">
+        
+            <i class="fas fa-tag" style="vertical-align: middle;font-size: .8rem;"></i>
+            tags:&nbsp;
+            
+            
+        
+            <a href="/tags/Java/">#Java</a> <a href="/tags/Java并发编程/">#Java并发编程</a>
+        
+    </div>
+
+            
+    <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
+        <ul class="pagination d-block text-center">
+            
+            
+                <li class="next page-item d-inline"><a href="/2020/08/09/%E4%BD%BF%E7%94%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E6%88%90%E6%9C%AC/" class="page-link float-right">上一页  &rarr;</a></li>
+            
+        </ul>
+    </div>
+
+
+            
+                <!-- Comments -->
+                
+
+                
+
+            
+
         </div>
     </div>
-</div>
+</article> 
 
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+    <style>
+        #toc-content .toc-link::before {
+            background-color: transparent;
+            max-height: 25px;
+        }
+
+        #toc-content .toc-link.is-active-link::before {
+            background-color: #404040;
+        }
+    </style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    <div class="ui-toc dropup scrollspy-body pull-right" style="right: 3%;">
+        <button type="button" class="toc-btn btn btn-light" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
+            <i class="fas fa-list"></i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right p-2"  aria-labelledby="tocLabel">
+            <div class="toc-widget">
+                <div id="toc-content" class="text-truncate">
+                </div>
+            </div>
+            <div class="toc-menu pt-3 pl-4">
+                <a class="expand-toggle d-block py-1" href="#"><span class="expand-text">全部展开</span><span class="close-text" style="display: none;">全部收起</span></a>
+                <a class="back-to-top d-block py-1" href="#">回到顶部</a>
+                <a class="go-to-bottom d-block py-1" href="#">移至底部</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        tocbot.init({
+            // Where to render the table of contents.
+            tocSelector: '#toc-content',
+            // Where to grab the headings to build the table of contents.
+            contentSelector: 'article',
+            // Which headings to grab inside of the contentSelector element.
+            headingSelector: 'h1, h2, h3',
+            // For headings inside relative or absolute positioned containers within content.
+            hasInnerContainers: true,
+        });
+    </script>
+
+
+    
 
 
     <!-- Footer -->

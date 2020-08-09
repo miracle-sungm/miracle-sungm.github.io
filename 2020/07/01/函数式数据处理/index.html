@@ -235,84 +235,84 @@ Lambda表达式博客链接
 <tbody><tr>
 <td align="left">filter</td>
 <td align="left">中间</td>
-<td align="left">Stream<T></td>
-<td align="left">Predicate<T></td>
+<td align="left">Stream<T></T></td>
+<td align="left">Predicate<T></T></td>
 <td align="left">T -&gt; boolean</td>
 </tr>
 <tr>
 <td align="left">distinct</td>
 <td align="left">中间(有状态 &amp; 无界)</td>
-<td align="left">Stream<T></td>
+<td align="left">Stream<T></T></td>
 <td align="left"></td>
 <td align="left"></td>
 </tr>
 <tr>
 <td align="left">skip</td>
 <td align="left">中间(有状态 &amp; 有界)</td>
-<td align="left">Stream<T> long</td>
+<td align="left">Stream<T> long</T></td>
 <td align="left"></td>
 <td align="left"></td>
 </tr>
 <tr>
 <td align="left">limit</td>
 <td align="left">中间(有状态 &amp; 有界)</td>
-<td align="left">Stream<T> long</td>
+<td align="left">Stream<T> long</T></td>
 <td align="left"></td>
 <td align="left"></td>
 </tr>
 <tr>
 <td align="left">map</td>
 <td align="left">中间</td>
-<td align="left">Stream<R></td>
+<td align="left">Stream<R></R></td>
 <td align="left">Function&lt;T, R&gt;</td>
 <td align="left">T -&gt; R</td>
 </tr>
 <tr>
 <td align="left">flatMap</td>
 <td align="left">中间</td>
-<td align="left">Stream<R></td>
-<td align="left">Function&lt;T, Stream<R>&gt;</td>
-<td align="left">T -&gt; Stream<R></td>
+<td align="left">Stream<R></R></td>
+<td align="left">Function&lt;T, Stream<R>&gt;</R></td>
+<td align="left">T -&gt; Stream<R></R></td>
 </tr>
 <tr>
 <td align="left">sorted</td>
 <td align="left">中间(有状态 &amp; 无界)</td>
-<td align="left">Stream<T></td>
-<td align="left">Comparator<T></td>
+<td align="left">Stream<T></T></td>
+<td align="left">Comparator<T></T></td>
 <td align="left">(T, T) -&gt; int</td>
 </tr>
 <tr>
 <td align="left">anyMatch</td>
 <td align="left">终端</td>
 <td align="left">boolean</td>
-<td align="left">Predicate<T></td>
+<td align="left">Predicate<T></T></td>
 <td align="left">T -&gt; boolean</td>
 </tr>
 <tr>
 <td align="left">noneMatch</td>
 <td align="left">终端</td>
 <td align="left">boolean</td>
-<td align="left">Predicate<T></td>
+<td align="left">Predicate<T></T></td>
 <td align="left">T -&gt; boolean</td>
 </tr>
 <tr>
 <td align="left">allMatch</td>
 <td align="left">终端</td>
 <td align="left">boolean</td>
-<td align="left">Predicate<T></td>
+<td align="left">Predicate<T></T></td>
 <td align="left">T -&gt; boolean</td>
 </tr>
 <tr>
 <td align="left">findAny</td>
 <td align="left">终端</td>
-<td align="left">Optional<T></td>
+<td align="left">Optional<T></T></td>
 <td align="left"></td>
 <td align="left"></td>
 </tr>
 <tr>
 <td align="left">findFirst</td>
 <td align="left">终端</td>
-<td align="left">Optional<T></td>
+<td align="left">Optional<T></T></td>
 <td align="left"></td>
 <td align="left"></td>
 </tr>
@@ -320,7 +320,7 @@ Lambda表达式博客链接
 <td align="left">forEach</td>
 <td align="left">终端</td>
 <td align="left">void</td>
-<td align="left">Consumer<T></td>
+<td align="left">Consumer<T></T></td>
 <td align="left">T -&gt; void</td>
 </tr>
 <tr>
@@ -333,8 +333,8 @@ Lambda表达式博客链接
 <tr>
 <td align="left">reduce</td>
 <td align="left">终端(有状态 &amp; 有界)</td>
-<td align="left">Optional<T></td>
-<td align="left">BinaryOperator<T></td>
+<td align="left">Optional<T></T></td>
+<td align="left">BinaryOperator<T></T></td>
 <td align="left">(T, T) -&gt; T</td>
 </tr>
 <tr>
@@ -387,7 +387,7 @@ Lambda表达式博客链接
 <p>该方法接受一个与流元素类型相同的泛型对象 T 和一个 BinaryOperator(该类继承了BiFunction)对象；返回一个与流元素类型相同的规约后的对象。<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;Stream 源码</span><br><span class="line">T reduce(T identity, BinaryOperator&lt;T&gt; accumulator);</span><br></pre></td></tr></table></figure></p>
 <p>举例：对集合内元素求和<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    int number &#x3D; numbers.stream().reduce(0, Integer::sum);</span><br><span class="line">    System.out.println(number);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">36</span><br></pre></td></tr></table></figure><br>举例：对集合内元素求积<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    int number &#x3D; numbers.stream().reduce(1, (a, b) -&gt; a * b);</span><br><span class="line">    System.out.println(number);</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">40320</span><br></pre></td></tr></table></figure></p>
 <p><strong>第二个方法</strong></p>
-<p>该方法接受一个 BinaryOperator<T> 对象；返回 Optional<T> 对象。<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;Stream 源码</span><br><span class="line">Optional&lt;T&gt; reduce(BinaryOperator&lt;T&gt; accumulator);</span><br></pre></td></tr></table></figure></p>
+<p>该方法接受一个 BinaryOperator<T> 对象；返回 Optional<T> 对象。<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;Stream 源码</span><br><span class="line">Optional&lt;T&gt; reduce(BinaryOperator&lt;T&gt; accumulator);</span><br></pre></td></tr></table></figure></T></T></p>
 <p>举例：对集合内元素求和<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    Optional&lt;Integer&gt; numberOptional &#x3D; numbers.stream().reduce(Integer::sum);</span><br><span class="line">    System.out.println(numberOptional.orElse(0));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">36</span><br></pre></td></tr></table></figure><br>举例：对集合内元素求积<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    Optional&lt;Integer&gt; numberOptional &#x3D; numbers.stream().reduce((a, b) -&gt; a * b);</span><br><span class="line">    System.out.println(numberOptional.orElse(0));</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">40320</span><br></pre></td></tr></table></figure><br>举例：对集合内元素最大值(若需要并行执行，可使用并行流parallelStream())<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    Optional&lt;Integer&gt; numberOptional &#x3D; numbers.stream().reduce(Integer:max);</span><br><span class="line">    System.out.println(numberOptional.orElse(0));</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">8</span><br></pre></td></tr></table></figure><br>举例：对集合内元素最小值(若需要并行执行，可使用并行流parallelStream())<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Integer&gt; numbers &#x3D; Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);</span><br><span class="line">    Optional&lt;Integer&gt; numberOptional &#x3D; numbers.stream().reduce(Integer:min);</span><br><span class="line">    System.out.println(numberOptional.orElse(0));</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;输出结果</span><br><span class="line">1</span><br></pre></td></tr></table></figure></p>
 <p><strong>2个方法的区别</strong></p>
 <blockquote>
@@ -576,7 +576,7 @@ Lambda表达式博客链接
 <blockquote>
 <ul>
 <li>该方法入参是函数式接口BinaryOperator(二元运算符，BinaryOperator 继承了BiFunction)对象，该BinaryOperator将2个需要进行规约操作的对象，按照BinaryOperator规约成一个对象</li>
-<li>该方法返回一个Optional<T>类的对象。</li>
+<li>该方法返回一个Optional<T>类的对象。</T></li>
 </ul>
 </blockquote>
 <p>举例：</p>
@@ -598,8 +598,18 @@ Lambda表达式博客链接
 <blockquote>
 <p>就实际应用而言，建议使用Collectors类的reduce方法，无轮从可读性还是性能上讲，Collectors类的reduce方法都更好。</p>
 </blockquote>
-<h2 id="5-3-分组"><a href="#5-3-分组" class="headerlink" title="5.3 分组"></a>5.3 分组</h2><h4 id="5-3-1-groupingBy-分组"><a href="#5-3-1-groupingBy-分组" class="headerlink" title="5.3.1 groupingBy 分组"></a>5.3.1 groupingBy 分组</h4><p>//TODO </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="5-3-分组"><a href="#5-3-分组" class="headerlink" title="5.3 分组"></a>5.3 分组</h2><h4 id="5-3-1-groupingBy-分组"><a href="#5-3-1-groupingBy-分组" class="headerlink" title="5.3.1 groupingBy 分组"></a>5.3.1 groupingBy 分组</h4><p>举例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    List&lt;Student&gt; students &#x3D; Arrays.asList(new Student(1L, &quot;miracle&quot;, 25, &quot;Boy&quot;)</span><br><span class="line">            , new Student(2L, &quot;bob&quot;, 24, &quot;Boy&quot;)</span><br><span class="line">            , new Student(3L, &quot;lucky&quot;, 22, &quot;Girl&quot;)</span><br><span class="line">            , new Student(3L, &quot;lusa&quot;, 24, &quot;Girl&quot;));</span><br><span class="line">    &#x2F;&#x2F;按照性别分组</span><br><span class="line">    Map&lt;String, List&lt;Student&gt;&gt; map &#x3D; students.stream().collect(Collectors.groupingBy(Student::getSex));</span><br><span class="line">    System.out.println(map.toString());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;输出结果：</span><br><span class="line">&#123;</span><br><span class="line">    Girl&#x3D;[Student&#123;id&#x3D;3, name&#x3D;&#39;lucky&#39;, age&#x3D;22, sex&#x3D;&#39;Girl&#39;&#125;, Student&#123;id&#x3D;3, name&#x3D;&#39;lusa&#39;, age&#x3D;24, sex&#x3D;&#39;Girl&#39;&#125;], </span><br><span class="line">    Boy&#x3D;[Student&#123;id&#x3D;1, name&#x3D;&#39;miracle&#39;, age&#x3D;25, sex&#x3D;&#39;Boy&#39;&#125;, Student&#123;id&#x3D;2, name&#x3D;&#39;bob&#39;, age&#x3D;24, sex&#x3D;&#39;Boy&#39;&#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明：</p>
+<blockquote>
+<p>示例中给groupingBy传入一个Function，我们把这个Function叫作分类函数，因为它用来把流中的元素分成不同的组。</p>
+</blockquote>
+<p>groupingBy源码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public static &lt;T, K&gt; Collector&lt;T, ?, Map&lt;K, List&lt;T&gt;&gt;&gt;</span><br><span class="line">groupingBy(Function&lt;? super T, ? extends K&gt; classifier) &#123;</span><br><span class="line">    return groupingBy(classifier, toList());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
 
 
 
@@ -630,6 +640,8 @@ Lambda表达式博客链接
             
     <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
         <ul class="pagination d-block text-center">
+            
+                <li class="previous page-item d-inline"><a href="/2020/07/09/%E5%B9%B6%E8%A1%8C%E6%B5%81/" class="page-link float-left">&larr;  下一页</a></li>
             
             
                 <li class="next page-item d-inline"><a href="/2020/06/28/Effective-Java-%E6%80%BB%E7%BB%93/" class="page-link float-right">上一页  &rarr;</a></li>
