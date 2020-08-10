@@ -1,34 +1,153 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Check工具类</title>
-    <url>/2020/06/15/Check%E5%B7%A5%E5%85%B7%E7%B1%BB/</url>
-    <content><![CDATA[<blockquote>
-<p>直接上代码</p>
+    <title>[Java 并发编程] 1. 并发和多线程</title>
+    <url>/2020/08/09/Java-Concurrency-and-Multithreading/</url>
+    <content><![CDATA[<h3 id="1-并发和多线程"><a href="#1-并发和多线程" class="headerlink" title="1. 并发和多线程"></a>1. 并发和多线程</h3><p><strong>并发编程</strong></p>
+<blockquote>
+<p>并发编程涵盖了多线程技术在内，指并发执行任务时可能出现的问题，使用的多线程技术，以及解决方案。</p>
+</blockquote>
+<p><strong>多线程：</strong></p>
+<blockquote>
+<p>同一个应用程序中，多个线程同时执行。</p>
+</blockquote>
+<p><strong>多线程应用程序:</strong></p>
+<blockquote>
+<p>多线程应用程序是一个多 CPU 同时执行不同的线程的应用程序。如图<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/introduction-1.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/introduction-1.png" alt></div></p>
 </blockquote>
 <blockquote>
-<p>定义Check注解</p>
+<p>一个线程不等于一个CPU，通常情况下一个CPU在不同时间段交换执行不同的线程，不同的CPU同时执行不同的线程。如图：<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/introduction-2.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/introduction-2.png" alt></div></p>
 </blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import java.lang.annotation.ElementType;</span><br><span class="line">import java.lang.annotation.Retention;</span><br><span class="line">import java.lang.annotation.RetentionPolicy;</span><br><span class="line">import java.lang.annotation.Target;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since  : 2020-06-15</span><br><span class="line"> *&#x2F;</span><br><span class="line">@Target(ElementType.FIELD)</span><br><span class="line">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="line">public @interface Check &#123;</span><br><span class="line"></span><br><span class="line">    boolean notNull() default false;</span><br><span class="line"></span><br><span class="line">    boolean notEmpty() default false;</span><br><span class="line"></span><br><span class="line">    boolean notBlank() default false;</span><br><span class="line"></span><br><span class="line">    String regex() default &quot;&quot;;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+<hr>
+<h3 id="2-为什么使用多线程"><a href="#2-为什么使用多线程" class="headerlink" title="2. 为什么使用多线程"></a>2. 为什么使用多线程</h3><blockquote>
+<ul>
+<li>更好的利用单 CPU 资源</li>
+<li>更好的利用多 CPU 或 CPU 内核</li>
+<li>更快速的响应-提高用户体验</li>
+<li>更公平的响应-提高用户体验</li>
+</ul>
+</blockquote>
+<p><strong>更好的利用单 CPU 资源</strong></p>
 <blockquote>
-<p>校验工具类</p>
+<p>单个CPU通过分配CPU时间片达到交换地执行不同线程的目的，让我们感觉多个线程是同时执行的，时间片一般是几十毫秒。</p>
 </blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import demo.annotations.Check;</span><br><span class="line"></span><br><span class="line">import java.lang.reflect.Field;</span><br><span class="line">import java.util.Objects;</span><br><span class="line">import java.util.regex.Pattern;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2020-06-15 16:01</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class CheckUtils &#123;</span><br><span class="line"></span><br><span class="line">    private static final String EMPTY &#x3D; &quot;&quot;;</span><br><span class="line"></span><br><span class="line">    public static &lt;T&gt; void check(T t) throws Exception &#123;</span><br><span class="line">        Class clazz &#x3D; t.getClass();</span><br><span class="line">        Field[] fields &#x3D; clazz.getDeclaredFields();</span><br><span class="line">        if (fields.length &#x3D;&#x3D; 0) &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        for (Field field : fields) &#123;</span><br><span class="line">            field.setAccessible(true);</span><br><span class="line">            check(field.get(t), field);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void check(Object value, Field field) throws Exception &#123;</span><br><span class="line">        Check check &#x3D; field.getAnnotation(Check.class);</span><br><span class="line">        if (Objects.isNull(check)) &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if (check.notNull() &amp;&amp; Objects.isNull(value)) &#123;</span><br><span class="line">            throw new Exception(&quot;Field (&quot; + field.getName() + &quot;) cannot be null.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        if (check.notEmpty() &amp;&amp; (Objects.isNull(value) || EMPTY.equals(value.toString()))) &#123;</span><br><span class="line">            throw new Exception(&quot;Field (&quot; + field.getName() + &quot;) cannot be empty.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        if (check.notBlank() &amp;&amp; (Objects.isNull(value) || EMPTY.equals(value.toString().trim()))) &#123;</span><br><span class="line">            throw new Exception(&quot;Field (&quot; + field.getName() + &quot;) cannot be blank.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        checkRegex(field, value, check.regex());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void checkRegex(Field field, Object value, String regex) throws Exception &#123;</span><br><span class="line">        if (EMPTY.equals(regex) || Objects.isNull(value)) &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if (!Pattern.matches(regex, value.toString())) &#123;</span><br><span class="line">            throw new Exception(&quot;Wrong data format : Field (&quot; + field.getName() + &quot;), value  is : &quot; + &quot; value&quot; + &quot;, regex is : &quot; + regex);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
+<p><strong>更好的利用多 CPU 或 CPU 内核</strong></p>
 <blockquote>
-<p>DTO 数据传输层</p>
+<p>创建多个线程，充分地利用多个CPU同时执行不同的线程，加快程序执行速度，充分利用多CPU资源。</p>
 </blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class PersonDto &#123;</span><br><span class="line"></span><br><span class="line">    @Check(notBlank &#x3D; true)</span><br><span class="line">    private String name;</span><br><span class="line">    @Check(notNull &#x3D; true, regex &#x3D; &quot;\\d\\d&quot;)</span><br><span class="line">    private Integer age;</span><br><span class="line">    @Check(notBlank &#x3D; true, regex &#x3D; &quot;男|女&quot;)</span><br><span class="line">    private String sex;</span><br><span class="line">    private String idCard;</span><br><span class="line">    private String accessNumber;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;省略了getter、setter方法</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+<p><strong>更快速的响应-提高用户体验</strong></p>
 <blockquote>
-<p>程序入口</p>
+<p>充分的利用单CPU资源和多CPU资源都能够加快程序的执行速度，以提高用户体验</p>
 </blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2020-06-15 17:50</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class Main &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        PersonDto personDto &#x3D; new PersonDto();</span><br><span class="line">        personDto.setIdCard(&quot;0001&quot;);</span><br><span class="line">        personDto.setName(&quot;孙广明&quot;);</span><br><span class="line">        personDto.setSex(&quot;男&quot;);</span><br><span class="line">        personDto.setAge(25);</span><br><span class="line">        CheckUtils.check(personDto);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+<p><strong>更公平的响应-提高用户体验</strong></p>
+<blockquote>
+<p>不同的线程在单CPU中分配CPU时间片交换执行，在某些特定情况下以一种更加公平的方式执行不同的线程。比如某个线程需要调用网络资源或者其他的操作需要长时间占用CPU，导致许多线程需要等待CPU去执行，造成阻塞。</p>
+</blockquote>
+<hr>
+<h3 id="3-使用多线程不一定更快"><a href="#3-使用多线程不一定更快" class="headerlink" title="3. 使用多线程不一定更快"></a>3. 使用多线程不一定更快</h3><blockquote>
+<p>由于线程的创建和上下文的切换的开销，多线程的执行效率不一定比单线程的执行效率更好。</p>
+</blockquote>
+<p><strong>线程创建的方式</strong></p>
+<blockquote>
+<ul>
+<li>继承Thread类，重写 run() 方法</li>
+<li>实现Runnable接口，重写 run() 方法</li>
+<li>实现Callable接口，重写 call() 方法</li>
+</ul>
+</blockquote>
+<p><strong>上下文切换</strong></p>
+<blockquote>
+<p>单核处理器也支持多线程执行代码，CPU 通过给每个线程分配CPU时间片来实现这个机制。当前任务执行一个时间片后会切换到下一个任务。但是切换前会保存上一个任务的状态，以便于下次切换到该任务时，可以再加载这个任务的状态。任务从保存到再加载的过程就是一次上下文切换。</p>
+</blockquote>
+<hr>
+<h3 id="4-多线程-vs-多任务"><a href="#4-多线程-vs-多任务" class="headerlink" title="4. 多线程 vs. 多任务"></a>4. 多线程 vs. 多任务</h3><p><strong>多任务</strong></p>
+<blockquote>
+<p>不同CPU同时执行不同的应用程序的不同线程。</p>
+</blockquote>
+<p><strong>多线程</strong></p>
+<blockquote>
+<p>不同CPU同时执行相同的应用程序的不同线程。</p>
+</blockquote>
+<p><strong>多线程技术更难实现</strong></p>
+<blockquote>
+<p>多线程技术可以以一种很好的方式提高某些类型的应用程序的性能。但是多线程技术比多任务技术要面临更多的技术挑战。不同的线程在同一个应用程序中同时执行，它们可能存在一个线程在读取共享内存的数据，另外一个线程在写入数据至共享内存，造成线程不安全的问题发生，以至于产生了单线程技术通常情况下不会发生的错误。</p>
+</blockquote>
+<blockquote>
+<p>现代计算机通常拥有多个CPU或者多个CPU内核，这意味着不同的线程可以被不同的CPU同时执行。如图<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/java-concurrency-tutorial-introduction-1.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/java-concurrency-tutorial-introduction-1.png" alt></div></p>
+</blockquote>
+<hr>
+<h3 id="5-Java-中的并发和多线程"><a href="#5-Java-中的并发和多线程" class="headerlink" title="5. Java 中的并发和多线程"></a>5. Java 中的并发和多线程</h3><p><strong>并发模型</strong></p>
+<blockquote>
+<ul>
+<li>共享状态并发模型（shared state concurrency model）</li>
+<li>隔离状态并发模型（separate state concurrency model）</li>
+</ul>
+</blockquote>
+<p><strong>共享状态并发模型</strong></p>
+<blockquote>
+<p>同一个应用程序中的不同的线程使用了同一个共享对象（或变量）。在共享状态并发模型中存在很多问题，这些问题难以完美地解决。</p>
+</blockquote>
+<p><strong>隔离状态并发模型</strong></p>
+<blockquote>
+<p>同一个应用程序中的不同的线程不共享任何对象（或变量）。</p>
+</blockquote>
+<hr>
+<h3 id="Java-并发学习指南"><a href="#Java-并发学习指南" class="headerlink" title="Java 并发学习指南"></a>Java 并发学习指南</h3><p><strong>并发和多线程理论知识</strong></p>
+<blockquote>
+<ul>
+<li>多线程的好处</li>
+<li>多线程的成本</li>
+<li>并发模型</li>
+<li>同一线程</li>
+<li>并发 vs. 并行</li>
+</ul>
+</blockquote>
+<p><strong>Java并发的基础理论知识</strong></p>
+<blockquote>
+<ul>
+<li>创建和开始一个线程</li>
+<li>线程安全和共享资源</li>
+<li>线程安全和不变性</li>
+<li>JMM (Java memory model)</li>
+<li>synchronize 关键字</li>
+<li>volatile 关键字</li>
+<li>ThreadLocal </li>
+</ul>
+</blockquote>
+<p><strong>Java 并发常见问题</strong></p>
+<blockquote>
+<ul>
+<li>死锁</li>
+<li>预防死锁</li>
+</ul>
+</blockquote>
+<p><strong>Java 提供的一些解决常见问题的工具</strong></p>
+<blockquote>
+<ul>
+<li>Lock （锁）</li>
+<li>Read / Write Lock （读写锁）</li>
+<li>ReentrantLock （可重入锁）</li>
+<li>Semaphores （信号）</li>
+<li>Blocking Queues （阻塞队列）</li>
+<li>Thread Pools （线程池）</li>
+<li>Compare and Swap （CAS）</li>
+</ul>
+</blockquote>
+<p><strong>Java 并发工具包 （JUC: java.util.concurrent）</strong></p>
+<blockquote>
+<ul>
+<li>Java Concurrency Utilities - java.util.concurrent</li>
+</ul>
+</blockquote>
+<hr>
+<p><strong>推荐</strong></p>
+<blockquote>
+<p>&lt;Java 并发编程的艺术&gt;</p>
+</blockquote>
+]]></content>
       <tags>
         <tag>Java</tag>
-        <tag>工具类</tag>
+        <tag>Java并发编程</tag>
       </tags>
   </entry>
   <entry>
@@ -240,156 +359,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[Java 并发编程] 1. 并发和多线程</title>
-    <url>/2020/08/09/Java-Concurrency-and-Multithreading/</url>
-    <content><![CDATA[<h3 id="1-并发和多线程"><a href="#1-并发和多线程" class="headerlink" title="1. 并发和多线程"></a>1. 并发和多线程</h3><p><strong>并发编程</strong></p>
-<blockquote>
-<p>并发编程涵盖了多线程技术在内，指并发执行任务时可能出现的问题，使用的多线程技术，以及解决方案。</p>
-</blockquote>
-<p><strong>多线程：</strong></p>
-<blockquote>
-<p>同一个应用程序中，多个线程同时执行。</p>
-</blockquote>
-<p><strong>多线程应用程序:</strong></p>
-<blockquote>
-<p>多线程应用程序是一个多 CPU 同时执行不同的线程的应用程序。如图<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/introduction-1.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/introduction-1.png" alt></div></p>
-</blockquote>
-<blockquote>
-<p>一个线程不等于一个CPU，通常情况下一个CPU在不同时间段交换执行不同的线程，不同的CPU同时执行不同的线程。如图：<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/introduction-2.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/introduction-2.png" alt></div></p>
-</blockquote>
-<hr>
-<h3 id="2-为什么使用多线程"><a href="#2-为什么使用多线程" class="headerlink" title="2. 为什么使用多线程"></a>2. 为什么使用多线程</h3><blockquote>
-<ul>
-<li>更好的利用单 CPU 资源</li>
-<li>更好的利用多 CPU 或 CPU 内核</li>
-<li>更快速的响应-提高用户体验</li>
-<li>更公平的响应-提高用户体验</li>
-</ul>
-</blockquote>
-<p><strong>更好的利用单 CPU 资源</strong></p>
-<blockquote>
-<p>单个CPU通过分配CPU时间片达到交换地执行不同线程的目的，让我们感觉多个线程是同时执行的，时间片一般是几十毫秒。</p>
-</blockquote>
-<p><strong>更好的利用多 CPU 或 CPU 内核</strong></p>
-<blockquote>
-<p>创建多个线程，充分地利用多个CPU同时执行不同的线程，加快程序执行速度，充分利用多CPU资源。</p>
-</blockquote>
-<p><strong>更快速的响应-提高用户体验</strong></p>
-<blockquote>
-<p>充分的利用单CPU资源和多CPU资源都能够加快程序的执行速度，以提高用户体验</p>
-</blockquote>
-<p><strong>更公平的响应-提高用户体验</strong></p>
-<blockquote>
-<p>不同的线程在单CPU中分配CPU时间片交换执行，在某些特定情况下以一种更加公平的方式执行不同的线程。比如某个线程需要调用网络资源或者其他的操作需要长时间占用CPU，导致许多线程需要等待CPU去执行，造成阻塞。</p>
-</blockquote>
-<hr>
-<h3 id="3-使用多线程不一定更快"><a href="#3-使用多线程不一定更快" class="headerlink" title="3. 使用多线程不一定更快"></a>3. 使用多线程不一定更快</h3><blockquote>
-<p>由于线程的创建和上下文的切换的开销，多线程的执行效率不一定比单线程的执行效率更好。</p>
-</blockquote>
-<p><strong>线程创建的方式</strong></p>
-<blockquote>
-<ul>
-<li>继承Thread类，重写 run() 方法</li>
-<li>实现Runnable接口，重写 run() 方法</li>
-<li>实现Callable接口，重写 call() 方法</li>
-</ul>
-</blockquote>
-<p><strong>上下文切换</strong></p>
-<blockquote>
-<p>单核处理器也支持多线程执行代码，CPU 通过给每个线程分配CPU时间片来实现这个机制。当前任务执行一个时间片后会切换到下一个任务。但是切换前会保存上一个任务的状态，以便于下次切换到该任务时，可以再加载这个任务的状态。任务从保存到再加载的过程就是一次上下文切换。</p>
-</blockquote>
-<hr>
-<h3 id="4-多线程-PK-多任务"><a href="#4-多线程-PK-多任务" class="headerlink" title="4. 多线程 PK 多任务"></a>4. 多线程 PK 多任务</h3><p><strong>多任务</strong></p>
-<blockquote>
-<p>不同CPU同时执行不同的应用程序的不同线程。</p>
-</blockquote>
-<p><strong>多线程</strong></p>
-<blockquote>
-<p>不同CPU同时执行相同的应用程序的不同线程。</p>
-</blockquote>
-<p><strong>多线程技术更难实现</strong></p>
-<blockquote>
-<p>多线程技术可以以一种很好的方式提高某些类型的应用程序的性能。但是多线程技术比多任务技术要面临更多的技术挑战。不同的线程在同一个应用程序中同时执行，它们可能存在一个线程在读取共享内存的数据，另外一个线程在写入数据至共享内存，造成线程不安全的问题发生，以至于产生了单线程技术通常情况下不会发生的错误。</p>
-</blockquote>
-<blockquote>
-<p>现代计算机通常拥有多个CPU或者多个CPU内核，这意味着不同的线程可以被不同的CPU同时执行。如图<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/java-concurrency-tutorial-introduction-1.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/java-concurrency-tutorial-introduction-1.png" alt></div></p>
-</blockquote>
-<hr>
-<h3 id="5-Java-中的并发和多线程"><a href="#5-Java-中的并发和多线程" class="headerlink" title="5. Java 中的并发和多线程"></a>5. Java 中的并发和多线程</h3><p><strong>并发模型</strong></p>
-<blockquote>
-<ul>
-<li>共享状态并发模型（shared state concurrency model）</li>
-<li>隔离状态并发模型（separate state concurrency model）</li>
-</ul>
-</blockquote>
-<p><strong>共享状态并发模型</strong></p>
-<blockquote>
-<p>同一个应用程序中的不同的线程使用了同一个共享对象（或变量）。在共享状态并发模型中存在很多问题，这些问题难以完美地解决。</p>
-</blockquote>
-<p><strong>隔离状态并发模型</strong></p>
-<blockquote>
-<p>同一个应用程序中的不同的线程不共享任何对象（或变量）。</p>
-</blockquote>
-<hr>
-<h3 id="Java-并发学习指南"><a href="#Java-并发学习指南" class="headerlink" title="Java 并发学习指南"></a>Java 并发学习指南</h3><p><strong>并发和多线程理论知识</strong></p>
-<blockquote>
-<ul>
-<li>多线程的好处</li>
-<li>多线程的成本</li>
-<li>并发模型</li>
-<li>同一线程</li>
-<li>并发 PK 并行</li>
-</ul>
-</blockquote>
-<p><strong>Java并发的基础理论知识</strong></p>
-<blockquote>
-<ul>
-<li>创建和开始一个线程</li>
-<li>线程安全和共享资源</li>
-<li>线程安全和不变性</li>
-<li>JMM (Java memory model)</li>
-<li>synchronize 关键字</li>
-<li>volatile 关键字</li>
-<li>ThreadLocal </li>
-</ul>
-</blockquote>
-<p><strong>Java 并发常见问题</strong></p>
-<blockquote>
-<ul>
-<li>死锁</li>
-<li>预防死锁</li>
-</ul>
-</blockquote>
-<p><strong>Java 提供的一些解决常见问题的工具</strong></p>
-<blockquote>
-<ul>
-<li>Lock （锁）</li>
-<li>Read / Write Lock （读写锁）</li>
-<li>ReentrantLock （可重入锁）</li>
-<li>Semaphores （信号）</li>
-<li>Blocking Queues （阻塞队列）</li>
-<li>Thread Pools （线程池）</li>
-<li>Compare and Swap （CAS）</li>
-</ul>
-</blockquote>
-<p><strong>Java 并发工具包 （JUC: java.util.concurrent）</strong></p>
-<blockquote>
-<ul>
-<li>Java Concurrency Utilities - java.util.concurrent</li>
-</ul>
-</blockquote>
-<hr>
-<p><strong>推荐</strong></p>
-<blockquote>
-<p>&lt;Java 并发编程的艺术&gt;</p>
-</blockquote>
-]]></content>
-      <tags>
-        <tag>Java</tag>
-        <tag>Java并发编程</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Java NIO 概述</title>
     <url>/2020/06/13/Java-NIO-%E6%A6%82%E8%BF%B0/</url>
     <content><![CDATA[<h2 id="1-什么是NIO？"><a href="#1-什么是NIO？" class="headerlink" title="1.  什么是NIO？"></a>1.  什么是NIO？</h2><blockquote>
@@ -548,6 +517,37 @@
       </tags>
   </entry>
   <entry>
+    <title>Check工具类</title>
+    <url>/2020/06/15/Check%E5%B7%A5%E5%85%B7%E7%B1%BB/</url>
+    <content><![CDATA[<blockquote>
+<p>直接上代码</p>
+</blockquote>
+<blockquote>
+<p>定义Check注解</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import java.lang.annotation.ElementType;</span><br><span class="line">import java.lang.annotation.Retention;</span><br><span class="line">import java.lang.annotation.RetentionPolicy;</span><br><span class="line">import java.lang.annotation.Target;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since  : 2020-06-15</span><br><span class="line"> *&#x2F;</span><br><span class="line">@Target(ElementType.FIELD)</span><br><span class="line">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="line">public @interface Check &#123;</span><br><span class="line"></span><br><span class="line">    boolean notNull() default false;</span><br><span class="line"></span><br><span class="line">    boolean notEmpty() default false;</span><br><span class="line"></span><br><span class="line">    boolean notBlank() default false;</span><br><span class="line"></span><br><span class="line">    String regex() default &quot;&quot;;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>校验工具类</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import demo.annotations.Check;</span><br><span class="line"></span><br><span class="line">import java.lang.reflect.Field;</span><br><span class="line">import java.util.Objects;</span><br><span class="line">import java.util.regex.Pattern;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2020-06-15 16:01</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class CheckUtils &#123;</span><br><span class="line"></span><br><span class="line">    private static final String EMPTY &#x3D; &quot;&quot;;</span><br><span class="line"></span><br><span class="line">    public static &lt;T&gt; void check(T t) throws Exception &#123;</span><br><span class="line">        Class clazz &#x3D; t.getClass();</span><br><span class="line">        Field[] fields &#x3D; clazz.getDeclaredFields();</span><br><span class="line">        if (fields.length &#x3D;&#x3D; 0) &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        for (Field field : fields) &#123;</span><br><span class="line">            field.setAccessible(true);</span><br><span class="line">            check(field.get(t), field);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void check(Object value, Field field) throws Exception &#123;</span><br><span class="line">        Check check &#x3D; field.getAnnotation(Check.class);</span><br><span class="line">        if (Objects.isNull(check)) &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if (check.notNull() &amp;&amp; Objects.isNull(value)) &#123;</span><br><span class="line">            throw new Exception(&quot;Field (&quot; + field.getName() + &quot;) cannot be null.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        if (check.notEmpty() &amp;&amp; (Objects.isNull(value) || EMPTY.equals(value.toString()))) &#123;</span><br><span class="line">            throw new Exception(&quot;Field (&quot; + field.getName() + &quot;) cannot be empty.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        if (check.notBlank() &amp;&amp; (Objects.isNull(value) || EMPTY.equals(value.toString().trim()))) &#123;</span><br><span class="line">            throw new Exception(&quot;Field (&quot; + field.getName() + &quot;) cannot be blank.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        checkRegex(field, value, check.regex());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void checkRegex(Field field, Object value, String regex) throws Exception &#123;</span><br><span class="line">        if (EMPTY.equals(regex) || Objects.isNull(value)) &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if (!Pattern.matches(regex, value.toString())) &#123;</span><br><span class="line">            throw new Exception(&quot;Wrong data format : Field (&quot; + field.getName() + &quot;), value  is : &quot; + &quot; value&quot; + &quot;, regex is : &quot; + regex);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p>DTO 数据传输层</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class PersonDto &#123;</span><br><span class="line"></span><br><span class="line">    @Check(notBlank &#x3D; true)</span><br><span class="line">    private String name;</span><br><span class="line">    @Check(notNull &#x3D; true, regex &#x3D; &quot;\\d\\d&quot;)</span><br><span class="line">    private Integer age;</span><br><span class="line">    @Check(notBlank &#x3D; true, regex &#x3D; &quot;男|女&quot;)</span><br><span class="line">    private String sex;</span><br><span class="line">    private String idCard;</span><br><span class="line">    private String accessNumber;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;省略了getter、setter方法</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>程序入口</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2020-06-15 17:50</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class Main &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        PersonDto personDto &#x3D; new PersonDto();</span><br><span class="line">        personDto.setIdCard(&quot;0001&quot;);</span><br><span class="line">        personDto.setName(&quot;孙广明&quot;);</span><br><span class="line">        personDto.setSex(&quot;男&quot;);</span><br><span class="line">        personDto.setAge(25);</span><br><span class="line">        CheckUtils.check(personDto);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+      <tags>
+        <tag>Java</tag>
+        <tag>工具类</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>XML基础</title>
     <url>/2020/06/16/XML%E5%9F%BA%E7%A1%80/</url>
     <content><![CDATA[<h2 id="1-XML概述"><a href="#1-XML概述" class="headerlink" title="1. XML概述"></a>1. XML概述</h2><p>XML : 可拓展标记语言（Extensible Markup Language, XML）。 是一个非常有用的、用来描述结构化信息的技术。</p>
@@ -622,6 +622,141 @@
       <tags>
         <tag>Java</tag>
         <tag>XML</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Java 并发编程] 2. 使用多线程的成本</title>
+    <url>/2020/08/09/%E4%BD%BF%E7%94%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E6%88%90%E6%9C%AC/</url>
+    <content><![CDATA[<p><strong>前言：</strong></p>
+<blockquote>
+<p>从单线程应用程序到多线程应用程序不仅仅需要考虑多线程应用程序更加高效，我们还需要考虑使用多线程的成本。使用多线程技术时不要仅仅因为你会使用多线程技术，你应该有一个更好的想法，比如更好的处理线程安全问题，以及多线程使用成本。尽可能的去测试多线程应用程序的性能以及响应速度，而不是靠猜想。</p>
+</blockquote>
+<h3 id="1-成本"><a href="#1-成本" class="headerlink" title="1. 成本"></a>1. 成本</h3><blockquote>
+<ul>
+<li>更复杂的程序设计</li>
+<li>上下文切换的开销</li>
+</ul>
+</blockquote>
+<p><strong>更复杂的程序设计</strong> </p>
+<blockquote>
+<ul>
+<li>在某些情况下，一个多线程应用程序比单线程应用程序更加简单，但是在某些特殊情况下要更加复杂。</li>
+<li>在多个线程引用了同一个共享变量的情况下，多线程应用程序比单线程应用程序使用起来更加复杂，因为需要考虑线程安全问题，不正确的线程同步问题出现的问题往往防不胜防。</li>
+</ul>
+</blockquote>
+<p><strong>上下文切换的开销</strong> </p>
+<blockquote>
+<ul>
+<li>当一个CPU从当前线程切换的执行另外一个线程时，CPU需要保存当前线程的本地数据以及程序指针等等，再有另外一个线程切换到当前线程时，需要重新读取本地数据和程序指针等，这个交换的执行过程叫做上下文切换。</li>
+<li>上下文切换的成本并不便宜。</li>
+</ul>
+</blockquote>
+<p><strong>减少上下文切换</strong></p>
+<blockquote>
+<ul>
+<li>无锁并发编程：多线程竞争锁时，会引起上下文切换，所以多线程处理数据时，可以用一些方法来避免使用锁。</li>
+<li>CAS算法：Java的atomic包使用CAS算法来更新数据，而不需要加锁。</li>
+<li>使用最少线程：避免创建不需要的线程。</li>
+<li>协程：在单线程里实现多任务的调度，并在单线程里维持多个任务间的切换。</li>
+</ul>
+</blockquote>
+]]></content>
+      <tags>
+        <tag>Java</tag>
+        <tag>Java并发编程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>做有意义的命名</title>
+    <url>/2020/06/13/%E5%81%9A%E6%9C%89%E6%84%8F%E4%B9%89%E7%9A%84%E5%91%BD%E5%90%8D/</url>
+    <content><![CDATA[<blockquote>
+<p>软件中随处可见命名。我们给变量、函数、参数、类和封包命名。我们给源代码及源码所在的目录命名。我们给 jar 文件、 war 文件 和 ear 文件命名。有很多命名要做、不妨做好它。下面列出几条简单规则。</p>
+</blockquote>
+<a id="more"></a>
+
+<h2 id="1-名副其实"><a href="#1-名副其实" class="headerlink" title="1. 名副其实"></a>1. 名副其实</h2><blockquote>
+<p>变量、函数或类的名称应该已经答复了所有的大问题。它该告诉你，它为什么会存在，它做了什么事，应该怎么用。如果名称需要注释来补充，那就不算是名副其实。</p>
+</blockquote>
+<hr>
+<h2 id="2-避免误导"><a href="#2-避免误导" class="headerlink" title="2. 避免误导"></a>2. 避免误导</h2><blockquote>
+<ol>
+<li><strong>避免留下掩藏代码本意的错误线索。</strong><br>例如：使用某些专有名词作为变量名，使用缩写。</li>
+<li><strong>避免使用与本意相悖的词</strong><br>例如：<br>String[] accountList = new String[10];  accountList 实质是一个数组对象，命名后缀为<br>List产生误导作用。</li>
+<li><strong>避免使用外形相似的命名</strong><br>例如：两个变量</li>
+<li><strong>避免使用小写字母 l 与 大写字母 O 作为变量名，跟数组1 和数字 0 难以区分。</strong></li>
+</ol>
+</blockquote>
+<hr>
+<h2 id="3-做有意义的区分"><a href="#3-做有意义的区分" class="headerlink" title="3. 做有意义的区分"></a>3. 做有意义的区分</h2><blockquote>
+<p>如果只是为了满足编译器或解释器的需要而写代码，肯定会制造麻烦。</p>
+</blockquote>
+<blockquote>
+<p>#####错误示例：<br><strong>1. 添加数字系列，这样的名称纯属误导。</strong></p>
+<ul>
+<li>例如：<br>定义两个学生对象<br>Student student1 = new Student();<br>Student student2 = new Student();</li>
+</ul>
+<p><strong>2. 少使用废话，废话都是冗余。要区分名称，要以读者能鉴别之处来区分。</strong></p>
+<ul>
+<li><p>例如：假设已有一个 Product 类，还有ProductInfo 类 和 ProductData 类，虽然名称不同，意思却无差别。 Info 和 Data 就i想 a、an、the 一样，都是意义含混的废话。</p>
+</li>
+<li><p>例如：如果你需要获取账户信息，你该调用那个方法呢 ？<br>getAccount();<br>getAccounts();<br>getAccountInfo();</p>
+</li>
+<li><p>例如：<br>moneyAmount 和 money 没区别，<br>customerInfo 与 customer 没区别，<br>accountData 和 account 没区别，<br>theMessage 和 message 没区别 。</p>
+</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="4-使用读的出来的名称"><a href="#4-使用读的出来的名称" class="headerlink" title="4. 使用读的出来的名称"></a>4. 使用读的出来的名称</h2><blockquote>
+<p>#####错误示例：<br><strong>1.  使用汉语拼音，只会让别人觉得你写的代码很 low.</strong></p>
+<p><strong>2. 使用罕见的英语词汇</strong></p>
+</blockquote>
+<hr>
+<h2 id="5-使用可搜索的名称"><a href="#5-使用可搜索的名称" class="headerlink" title="5. 使用可搜索的名称"></a>5. 使用可搜索的名称</h2><blockquote>
+<p>#####建议:<br><strong>1. 使用长名称，长名称胜于短名称。</strong></p>
+<ul>
+<li>例如： WORK_DAYS_PER_WEEK 比数字 5 好找得多。</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="6-避免使用编码"><a href="#6-避免使用编码" class="headerlink" title="6. 避免使用编码"></a>6. 避免使用编码</h2><blockquote>
+<p>编码已经太多，不需要自找麻烦。</p>
+</blockquote>
+<hr>
+<h2 id="7-避免使用前缀"><a href="#7-避免使用前缀" class="headerlink" title="7. 避免使用前缀"></a>7. 避免使用前缀</h2><blockquote>
+<p>不必使用 m_ 前缀来表名成员变量，很多时候阅读代码的人不会去看前缀，直接看后面有意义的名称，前缀反而成了废代码。</p>
+</blockquote>
+<hr>
+<h2 id="8-接口和实现"><a href="#8-接口和实现" class="headerlink" title="8. 接口和实现"></a>8. 接口和实现</h2><p>略</p>
+<hr>
+<h2 id="9-类名"><a href="#9-类名" class="headerlink" title="9. 类名"></a>9. 类名</h2><blockquote>
+<p>类名和对象名应该是名词或者名词短语，不应该是动词。</p>
+<ul>
+<li>正例：Customer</li>
+<li>反例：CustomerInfo、CustomerData、 Data .</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="10-方法名"><a href="#10-方法名" class="headerlink" title="10. 方法名"></a>10. 方法名</h2><blockquote>
+<p>方法名应该是动词或者动词短语，不应该是名词。</p>
+<ul>
+<li>例如：getName(); setName() 等。</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="11-避免思维映射"><a href="#11-避免思维映射" class="headerlink" title="11. 避免思维映射"></a>11. 避免思维映射</h2><blockquote>
+<ul>
+<li>例如：变量 i、j 通常用于 for 循环中，传统惯用这种单字母名词作为循环计数器，并不是一种好的选择。</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="12-避免使用双关语"><a href="#12-避免使用双关语" class="headerlink" title="12. 避免使用双关语"></a>12. 避免使用双关语</h2><blockquote>
+<ul>
+<li>例如：add方法用来添加一个对象，返回结果应该是布尔类型（添加成功或者失败） ，如果你需要添加一个对象并返回添加后产生的新值，建议使用append方法和insert方法。</li>
+</ul>
+</blockquote>
+]]></content>
+      <tags>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -769,46 +904,9 @@
       </tags>
   </entry>
   <entry>
-    <title>[Java 并发编程] 2. 使用多线程的成本</title>
-    <url>/2020/08/09/%E4%BD%BF%E7%94%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E6%88%90%E6%9C%AC/</url>
-    <content><![CDATA[<p><strong>前言：</strong></p>
-<blockquote>
-<p>从单线程应用程序到多线程应用程序不仅仅需要考虑多线程应用程序更加高效，我们还需要考虑使用多线程的成本。使用多线程技术时不要仅仅因为你会使用多线程技术，你应该有一个更好的想法，比如更好的处理线程安全问题，以及多线程使用成本。尽可能的去测试多线程应用程序的性能以及响应速度，而不是靠猜想。</p>
-</blockquote>
-<h3 id="1-成本"><a href="#1-成本" class="headerlink" title="1. 成本"></a>1. 成本</h3><blockquote>
-<ul>
-<li>更复杂的程序设计</li>
-<li>上下文切换的开销</li>
-</ul>
-</blockquote>
-<p><strong>更复杂的程序设计</strong> </p>
-<blockquote>
-<ul>
-<li>在某些情况下，一个多线程应用程序比单线程应用程序更加简单，但是在某些特殊情况下要更加复杂。</li>
-<li>在多个线程引用了同一个共享变量的情况下，多线程应用程序比单线程应用程序使用起来更加复杂，因为需要考虑线程安全问题，不正确的线程同步问题出现的问题往往防不胜防。</li>
-</ul>
-</blockquote>
-<p><strong>上下文切换的开销</strong> </p>
-<blockquote>
-<ul>
-<li>当一个CPU从当前线程切换的执行另外一个线程时，CPU需要保存当前线程的本地数据以及程序指针等等，再有另外一个线程切换到当前线程时，需要重新读取本地数据和程序指针等，这个交换的执行过程叫做上下文切换。</li>
-<li>上下文切换的成本并不便宜。</li>
-</ul>
-</blockquote>
-<p><strong>减少上下文切换</strong></p>
-<blockquote>
-<ul>
-<li>无锁并发编程：多线程竞争锁时，会引起上下文切换，所以多线程处理数据时，可以用一些方法来避免使用锁。</li>
-<li>CAS算法：Java的atomic包使用CAS算法来更新数据，而不需要加锁。</li>
-<li>使用最少线程：避免创建不需要的线程。</li>
-<li>协程：在单线程里实现多任务的调度，并在单线程里维持多个任务间的切换。</li>
-</ul>
-</blockquote>
-]]></content>
-      <tags>
-        <tag>Java</tag>
-        <tag>Java并发编程</tag>
-      </tags>
+    <title>并行流</title>
+    <url>/2020/07/09/%E5%B9%B6%E8%A1%8C%E6%B5%81/</url>
+    <content><![CDATA[]]></content>
   </entry>
   <entry>
     <title>java.lang.Object 类详解</title>
@@ -913,96 +1011,320 @@
       </tags>
   </entry>
   <entry>
-    <title>做有意义的命名</title>
-    <url>/2020/06/13/%E5%81%9A%E6%9C%89%E6%84%8F%E4%B9%89%E7%9A%84%E5%91%BD%E5%90%8D/</url>
-    <content><![CDATA[<blockquote>
-<p>软件中随处可见命名。我们给变量、函数、参数、类和封包命名。我们给源代码及源码所在的目录命名。我们给 jar 文件、 war 文件 和 ear 文件命名。有很多命名要做、不妨做好它。下面列出几条简单规则。</p>
+    <title>原始类型特化</title>
+    <url>/2020/06/13/%E5%8E%9F%E5%A7%8B%E7%B1%BB%E5%9E%8B%E7%89%B9%E5%8C%96/</url>
+    <content><![CDATA[<p><strong>引言</strong></p>
+<blockquote>
+<p>上篇我们介绍了三个函数式接口：Predicate<T>、Consumer<T>、Function&lt;T，R&gt; 。还有一些函数式接口是专门为某些类型涉及的。<a href="https://www.jianshu.com/p/4c93e1f7c19b" target="_blank" rel="noopener">https://www.jianshu.com/p/4c93e1f7c19b</a></T></T></p>
 </blockquote>
 <a id="more"></a>
 
-<h2 id="1-名副其实"><a href="#1-名副其实" class="headerlink" title="1. 名副其实"></a>1. 名副其实</h2><blockquote>
-<p>变量、函数或类的名称应该已经答复了所有的大问题。它该告诉你，它为什么会存在，它做了什么事，应该怎么用。如果名称需要注释来补充，那就不算是名副其实。</p>
-</blockquote>
-<hr>
-<h2 id="2-避免误导"><a href="#2-避免误导" class="headerlink" title="2. 避免误导"></a>2. 避免误导</h2><blockquote>
-<ol>
-<li><strong>避免留下掩藏代码本意的错误线索。</strong><br>例如：使用某些专有名词作为变量名，使用缩写。</li>
-<li><strong>避免使用与本意相悖的词</strong><br>例如：<br>String[] accountList = new String[10];  accountList 实质是一个数组对象，命名后缀为<br>List产生误导作用。</li>
-<li><strong>避免使用外形相似的命名</strong><br>例如：两个变量</li>
-<li><strong>避免使用小写字母 l 与 大写字母 O 作为变量名，跟数组1 和数字 0 难以区分。</strong></li>
-</ol>
-</blockquote>
-<hr>
-<h2 id="3-做有意义的区分"><a href="#3-做有意义的区分" class="headerlink" title="3. 做有意义的区分"></a>3. 做有意义的区分</h2><blockquote>
-<p>如果只是为了满足编译器或解释器的需要而写代码，肯定会制造麻烦。</p>
-</blockquote>
+<p> <strong>Java 类型</strong></p>
 <blockquote>
-<p>#####错误示例：<br><strong>1. 添加数字系列，这样的名称纯属误导。</strong></p>
 <ul>
-<li>例如：<br>定义两个学生对象<br>Student student1 = new Student();<br>Student student2 = new Student();</li>
-</ul>
-<p><strong>2. 少使用废话，废话都是冗余。要区分名称，要以读者能鉴别之处来区分。</strong></p>
-<ul>
-<li><p>例如：假设已有一个 Product 类，还有ProductInfo 类 和 ProductData 类，虽然名称不同，意思却无差别。 Info 和 Data 就i想 a、an、the 一样，都是意义含混的废话。</p>
-</li>
-<li><p>例如：如果你需要获取账户信息，你该调用那个方法呢 ？<br>getAccount();<br>getAccounts();<br>getAccountInfo();</p>
-</li>
-<li><p>例如：<br>moneyAmount 和 money 没区别，<br>customerInfo 与 customer 没区别，<br>accountData 和 account 没区别，<br>theMessage 和 message 没区别 。</p>
-</li>
+<li>引用类型（如 Byte、Integer、Long、Object、List）</li>
+<li>原始类型（byte、short、int、float、double、long、char、boolean）</li>
 </ul>
 </blockquote>
-<hr>
-<h2 id="4-使用读的出来的名称"><a href="#4-使用读的出来的名称" class="headerlink" title="4. 使用读的出来的名称"></a>4. 使用读的出来的名称</h2><blockquote>
-<p>#####错误示例：<br><strong>1.  使用汉语拼音，只会让别人觉得你写的代码很 low.</strong></p>
-<p><strong>2. 使用罕见的英语词汇</strong></p>
-</blockquote>
-<hr>
-<h2 id="5-使用可搜索的名称"><a href="#5-使用可搜索的名称" class="headerlink" title="5. 使用可搜索的名称"></a>5. 使用可搜索的名称</h2><blockquote>
-<p>#####建议:<br><strong>1. 使用长名称，长名称胜于短名称。</strong></p>
+<p> <strong>回顾知识点：</strong></p>
+<blockquote>
 <ul>
-<li>例如： WORK_DAYS_PER_WEEK 比数字 5 好找得多。</li>
+<li>Java 类型要么是引用类型，要么是原始类型。</li>
+<li>泛型只能绑定到引用类型上面、这是由泛型内部的实现方式造成的。</li>
+<li>在 Java 中有一个将原始类型转换为对应的引用类型的机制、这个机智就叫做装箱。相反的操作、也就是将引用类型转换成对应的原始类型的机制，这种机智叫做拆箱。Java 还有一个自动装拆箱的机智来帮助我们程序员执行这一任务：装箱和拆箱都是自动完成的。</li>
 </ul>
 </blockquote>
-<hr>
-<h2 id="6-避免使用编码"><a href="#6-避免使用编码" class="headerlink" title="6. 避免使用编码"></a>6. 避免使用编码</h2><blockquote>
-<p>编码已经太多，不需要自找麻烦。</p>
+<p><strong>注意：</strong></p>
+<blockquote>
+<p>虽然 Java 提供了自动装拆箱的机智，但这在性能方面是要付出代价的，装箱的本质是就是把原始类型包裹起来，并保存在堆里。因此、装箱后的值需要更多的内存、并需要额外的内存搜索来获取被包裹的值。因此、为提高程序的执行效率、Java  8 为我们前面所提到的函数式接口提供了一个专门的版本、以便在输入和输出都是原始类型时避免自动装拆箱的操作。</p>
 </blockquote>
-<hr>
-<h2 id="7-避免使用前缀"><a href="#7-避免使用前缀" class="headerlink" title="7. 避免使用前缀"></a>7. 避免使用前缀</h2><blockquote>
-<p>不必使用 m_ 前缀来表名成员变量，很多时候阅读代码的人不会去看前缀，直接看后面有意义的名称，前缀反而成了废代码。</p>
+<p><strong>举例</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;IntPredicate 源码</span><br><span class="line"></span><br><span class="line">@FunctionalInterface</span><br><span class="line">public interface IntPredicate &#123;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * Evaluates this predicate on the given argument.</span><br><span class="line">     *</span><br><span class="line">     * @param value the input argument</span><br><span class="line">     * @return &#123;@code true&#125; if the input argument matches the predicate,</span><br><span class="line">     * otherwise &#123;@code false&#125;</span><br><span class="line">     *&#x2F;</span><br><span class="line">    boolean test(int value);</span><br><span class="line">  </span><br><span class="line">    &#x2F;&#x2F; 其他默认方法省略</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>说明</strong></p>
+<blockquote>
+<p> IntPredicate 源码解析：IntPredicate 类的 test方法接收一个原始类型 int类型的入参，其返回值为 boolean，避免了输入和输出都是原始类型时自动装拆箱的操作。 </p>
 </blockquote>
+<p><strong>Java 8中的常用函数式接口</strong></p>
+<p><div class="img-item" data-src="https://upload-images.jianshu.io/upload_images/11864885-b49768e2e438afa1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-sub-html=".caption"><img src="https://upload-images.jianshu.io/upload_images/11864885-b49768e2e438afa1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt></div></p>
+<p><div class="img-item" data-src="https://upload-images.jianshu.io/upload_images/11864885-b03a23c45dc9e0d6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-sub-html=".caption"><img src="https://upload-images.jianshu.io/upload_images/11864885-b03a23c45dc9e0d6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="常用函数式接口"><div class="img-caption d-block text-center"><span class="center-caption text-muted border-bottom">常用函数式接口</span></div></div></p>
+<p><strong>Lambdas及函数式接口的例子</strong><br><div class="img-item" data-src="https://upload-images.jianshu.io/upload_images/11864885-049343497380171b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-sub-html=".caption"><img src="https://upload-images.jianshu.io/upload_images/11864885-049343497380171b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Lambdas及函数式接口的例子"><div class="img-caption d-block text-center"><span class="center-caption text-muted border-bottom">Lambdas及函数式接口的例子</span></div></div></p>
 <hr>
-<h2 id="8-接口和实现"><a href="#8-接口和实现" class="headerlink" title="8. 接口和实现"></a>8. 接口和实现</h2><p>略</p>
-<hr>
-<h2 id="9-类名"><a href="#9-类名" class="headerlink" title="9. 类名"></a>9. 类名</h2><blockquote>
-<p>类名和对象名应该是名词或者名词短语，不应该是动词。</p>
+<p><strong>推荐书籍</strong></p>
+<blockquote>
 <ul>
-<li>正例：Customer</li>
-<li>反例：CustomerInfo、CustomerData、 Data .</li>
-</ul>
-</blockquote>
-<hr>
-<h2 id="10-方法名"><a href="#10-方法名" class="headerlink" title="10. 方法名"></a>10. 方法名</h2><blockquote>
-<p>方法名应该是动词或者动词短语，不应该是名词。</p>
-<ul>
-<li>例如：getName(); setName() 等。</li>
-</ul>
-</blockquote>
-<hr>
-<h2 id="11-避免思维映射"><a href="#11-避免思维映射" class="headerlink" title="11. 避免思维映射"></a>11. 避免思维映射</h2><blockquote>
-<ul>
-<li>例如：变量 i、j 通常用于 for 循环中，传统惯用这种单字母名词作为循环计数器，并不是一种好的选择。</li>
-</ul>
-</blockquote>
-<hr>
-<h2 id="12-避免使用双关语"><a href="#12-避免使用双关语" class="headerlink" title="12. 避免使用双关语"></a>12. 避免使用双关语</h2><blockquote>
-<ul>
-<li>例如：add方法用来添加一个对象，返回结果应该是布尔类型（添加成功或者失败） ，如果你需要添加一个对象并返回添加后产生的新值，建议使用append方法和insert方法。</li>
+<li>《Java 8 in Action》</li>
 </ul>
 </blockquote>
 ]]></content>
       <tags>
         <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Java 并发编程] 3. 并发模型</title>
+    <url>/2020/08/09/%E5%B9%B6%E5%8F%91%E6%A8%A1%E5%9E%8B/</url>
+    <content><![CDATA[<p><strong>前言：</strong><br>我们可以通过使用不同的并发模型来实现一个并发系统，线程之间通过协作完成系统给定的任务。不同的并发模型以不同的方式切割任务，线程之间可能存在通信和合作完成不同的任务。</p>
+<h3 id="1-并发模型与分布式系统相似"><a href="#1-并发模型与分布式系统相似" class="headerlink" title="1. 并发模型与分布式系统相似"></a>1. 并发模型与分布式系统相似</h3><blockquote>
+<ul>
+<li>在一个并发系统中，不同的线程之间相互通信。</li>
+<li>在一个分布式系统中，不同的进程之间相互通信。</li>
+<li>进程和线程在本质上非常的相似。</li>
+</ul>
+</blockquote>
+<p>分布式系统比并发系统面临更多的挑战，比如可能面临网络异常、远程主机或进程停止；并发系统理论上也存在相似的问题，比如CPU异常，内存或硬盘损坏等情况，这种异常的概率相对较小，但实际上是存在的。</p>
+<h3 id="2-共享状态-vs-隔离状态"><a href="#2-共享状态-vs-隔离状态" class="headerlink" title="2. 共享状态 vs 隔离状态"></a>2. 共享状态 vs 隔离状态</h3><h5 id="2-1-共享状态"><a href="#2-1-共享状态" class="headerlink" title="2.1 共享状态"></a>2.1 共享状态</h5><p>共享状态意味着同一系统的多个线程之间共享一些状态（一般指数据，共享一个或多个对象的数据）。当线程共享状态时，容易引发一些并发问题，比如死锁，竞争条件等等，这取决于线程怎样地使用和访问共享数据等等。</p>
+<p><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-0-1.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-0-1.png" alt></div></p>
+<h5 id="2-2-隔离状态"><a href="#2-2-隔离状态" class="headerlink" title="2.2 隔离状态"></a>2.2 隔离状态</h5><p>隔离状态意味着同一系统的多个线程之间不共享状态。如果不同的线程之间需要进行通信，可以通过交换不可变对象、或者使用复制的对象进行通信。当多个线程之间不存在共享状态（或共享数据），就可以避免最常见的并发问题。</p>
+<p><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-0-2.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-0-2.png" alt></div></p>
+<p><strong>备注</strong><br>隔离状态通常情况下可以让代码实现更加简单，并且可以不用担心发生并发访问的问题，避免一些常见的并发问题。在一些特殊情况下，使用分离状态并发设计可能存在更大的挑战。</p>
+<h3 id="3-并发模型"><a href="#3-并发模型" class="headerlink" title="3. 并发模型"></a>3. 并发模型</h3><h5 id="3-1-Parallel-Workers-并行工作者并发模式"><a href="#3-1-Parallel-Workers-并行工作者并发模式" class="headerlink" title="3.1 Parallel Workers (并行工作者并发模式)"></a>3.1 Parallel Workers (并行工作者并发模式)</h5><p><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-1.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-1.png" alt></div></p>
+<p><strong>并行工作者模式：</strong><br>传入的工作被分配到不同的工作者去执行，每个工作者执行完整的工作流程。工作者在不同的线程中执行。并行工作者并发模型在 Java 应用程序中很常见，JUC包中很多并发工具类的设计都采用了这种并发模型。 </p>
+<h6 id="优点："><a href="#优点：" class="headerlink" title="优点："></a>优点：</h6><blockquote>
+<ul>
+<li>非常容易理解：如果要提高并行效率只需要增加更多的工作者</li>
+</ul>
+</blockquote>
+<h6 id="缺点："><a href="#缺点：" class="headerlink" title="缺点："></a>缺点：</h6><blockquote>
+<ul>
+<li>存在共享状态时实现更加复杂</li>
+<li>工作顺序不固定</li>
+</ul>
+</blockquote>
+<p><strong>缺点1：存在共享状态时实现更加复杂</strong><br>并行工作者模式不同线程存在共享数据时，实现变得更加复杂。共享线程通常需要访问共享对象，不论共享对象存在于内存中还是数据库中。如下图所示<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-2.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-2.png" alt></div></p>
+<p>某些共享状态是工作队列中的通信机制，也有些共享状态是业务数据、数据缓存、数据库连接池等等。</p>
+<p>并行工作者并发模式的线程之间存在共享数据时会更加复杂，当一个线程修改了共享数据变量时，需要确保其他线程读取的共享数据变量是最新的（线程修改了共享数据变量应该把数据保存至主内存中，而不是保存至线程独有的CPU高速缓存栈中）。线程需要避免死锁、竞争条件、或者其他共享状态的并发问题。</p>
+<p>当某个线程正在访问共享数据结构时，其他线程会等待正在访问共享数据结构的线程执行完毕，造成阻塞。这可能导致这些线程在竞争共享数据资源，高的竞争条件会导致许多线程访问共享数据时串行执行。</p>
+<p>现代非阻塞并发算法可能降低竞争并且提高性能，但是非阻塞并发算法很难实现。</p>
+<p>持久性数据结构是另一种选择，当持久性数据结构被修改时，他总是保持修改前版本。当多个线程引用了某个持久性数据结构，其中某个线程对持久性数据结构做了修改时，这个修改了持久性数据结构的线程获得了最新的引用数据，而其他的线程保持原来的引用的数据。在共享数据被修改时，持久性数据结构的方式是一个很好的解决方案。</p>
+<blockquote>
+<p>关于持久性数据结构的举例：</p>
+<ul>
+<li>当某个线程给ArrayList添加一个元素时，新添加的元素对其他线程并不可见</li>
+<li>也存在某些缺陷，比如LinkedList， 由于LinkedList是链表的数据结构，链表的每个元素都是一个单独的对象，这种数据结构分布在内存块中的各个地方。然而现代CPU在访问顺序的数据结构时要快的多，比如ArrayList，所以CPU在访问ArrayList时能够表现出更加卓越的性能。CPU能够一次加载一个较大的数组类型的数据结构至高速缓存中，但是无法将一个元素分布至内存各个地方的链表（ListedList）加载到CPU的高速缓存中。</li>
+</ul>
+</blockquote>
+<p><strong>无状态工作者</strong><br>共享数据可以被系统中某个线程修改，其他线程在每次访问共享数据时必须重新读取最新的内存中的数据，以保证线程在执行中时拿到的是最新的内存副本，一个线程不始终保持自己线程独有的CPU高速缓存数据的状态称为无状态。</p>
+<p><strong>缺点2：工作顺序不固定</strong><br>工作A可能被分配给线程A执行，也可能被分配给线程B执行，因此并行工作者模式的执行顺序不是固定的。</p>
+<h5 id="3-2-Assembly-Line-流水线并发模式"><a href="#3-2-Assembly-Line-流水线并发模式" class="headerlink" title="3.2 Assembly Line (流水线并发模式)"></a>3.2 Assembly Line (流水线并发模式)</h5><p><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-3.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-3.png" alt></div></p>
+<p>这种模式就像工厂中流水线的工人一样，每个工作者只负责整个生产车间的一部分工作，每个工作者负责的这部分工作完成之后会传递给下一个工作者。</p>
+<p>每个工作者在自己的线程内执行，不存在共享状态，流水线并发模式也被称为无共享并发模式。</p>
+<p>流水线并发模式经常在非阻塞IO (NIO) 被设计使用。当一个工作者开始IO操作，其他工作者不需要等待IO操作结束。IO操作很慢，所以等待IO操作完成会浪费大量CPU时间，当IO操作完成时，IO操作的结果会被传递给其他工作者。</p>
+<p>关于NIO， 在IO操作确定工人之间的界限。如图<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-4.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-4.png" alt></div></p>
+<p>实际上，工作模式可能不只一条流水线，大多数系统可以设计多条流水线。<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-5.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-5.png" alt></div></p>
+<p>工作可能并定向到一个工作者进行并行处理。比如一个工作可能同时被分配到工作执行器和日志执行器中执行。<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-6.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-6.png" alt></div></p>
+<p>流水线并发模式也被称为反应系统或者事件响应系统。</p>
+<p><strong>优点：</strong></p>
+<blockquote>
+<ul>
+<li>不共享状态</li>
+<li>可以顺序执行工作</li>
+</ul>
+</blockquote>
+<p><strong>缺点</strong></p>
+<blockquote>
+<ul>
+<li>作业的执行分散在各个工人</li>
+<li>调试更加复杂</li>
+</ul>
+</blockquote>
+]]></content>
+      <tags>
+        <tag>Java</tag>
+        <tag>Java并发编程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>正确的避免NullPointException</title>
+    <url>/2020/06/13/%E6%AD%A3%E7%A1%AE%E7%9A%84%E9%81%BF%E5%85%8DNullPointException/</url>
+    <content><![CDATA[<h2 id="1-正确使用-String类的-equals-方法-和-Object类的-equals-方法"><a href="#1-正确使用-String类的-equals-方法-和-Object类的-equals-方法" class="headerlink" title="1. 正确使用 String类的 equals()方法 和 Object类的 equals() 方法"></a>1. 正确使用 String类的 equals()方法 和 Object类的 equals() 方法</h2><blockquote>
+<p>已知对象在前，未知对象在后。注意：已知对象不为 null</p>
+</blockquote>
+<a id="more"></a>
+
+<p>######正确示例</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    String name &#x3D; &quot;sungm&quot;; </span><br><span class="line">    &#x2F;&#x2F;name为已知对象且被赋予初始值不为空</span><br><span class="line">    if (name.equals(getOtherName())) &#123;</span><br><span class="line">        &#x2F;&#x2F;todo do something</span><br><span class="line">        System.out.println(&quot;todo do something&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static String getOtherName() &#123;</span><br><span class="line">    return &quot;sungm&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>######错误示例</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">    String name &#x3D; &quot;sungm&quot;;</span><br><span class="line">    &#x2F;&#x2F;getOtherName()方法返回值为 null。抛出NPE</span><br><span class="line">    if (getOtherName().equals(name)) &#123;</span><br><span class="line">        &#x2F;&#x2F;todo do something</span><br><span class="line">        System.out.println(&quot;todo do something&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static String getOtherName() &#123;</span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="2-未知对象转String使用String-valueOf-方法"><a href="#2-未知对象转String使用String-valueOf-方法" class="headerlink" title="2. 未知对象转String使用String.valueOf()方法"></a>2. 未知对象转String使用String.valueOf()方法</h2><blockquote>
+<p>空对象调用 toString() 方法会抛出NPE，使用 String.valueOf() 替代</p>
+</blockquote>
+<p>#####示例</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    &#x2F;&#x2F;抛NPE</span><br><span class="line">    System.out.println(getPrice().toString());</span><br><span class="line">    &#x2F;&#x2F;不抛NPE</span><br><span class="line">    System.out.println(String.valueOf(getPrice()));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static BigDecimal getPrice() &#123;</span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="String-valueOf-方法源码"><a href="#String-valueOf-方法源码" class="headerlink" title="String.valueOf() 方法源码"></a>String.valueOf() 方法源码</h5><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static String valueOf(Object obj) &#123;</span><br><span class="line">    return (obj &#x3D;&#x3D; null) ? &quot;null&quot; : obj.toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="3-使用第三方类库或者自己封装的工具类"><a href="#3-使用第三方类库或者自己封装的工具类" class="headerlink" title="3. 使用第三方类库或者自己封装的工具类"></a>3. 使用第三方类库或者自己封装的工具类</h2><blockquote>
+<p>例如 Apache 的 StringUtils 类</p>
+</blockquote>
+<p>#####Apache 的 StringUtils工具类部分源码</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">public static boolean isEmpty(String str) &#123;</span><br><span class="line">    return str &#x3D;&#x3D; null || str.length() &#x3D;&#x3D; 0;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static boolean isNotEmpty(String str) &#123;</span><br><span class="line">    return !isEmpty(str);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static boolean isBlank(String str) &#123;</span><br><span class="line">    int strLen;</span><br><span class="line">    if (str !&#x3D; null &amp;&amp; (strLen &#x3D; str.length()) !&#x3D; 0) &#123;</span><br><span class="line">        for(int i &#x3D; 0; i &lt; strLen; ++i) &#123;</span><br><span class="line">            if (!Character.isWhitespace(str.charAt(i))) &#123;</span><br><span class="line">                return false;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return true;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static boolean isNotBlank(String str) &#123;</span><br><span class="line">    return !isBlank(str);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>#####Apache 中 StringUtils 中 isEmpty() 方法 和 isBlank() 方法的区别：</p>
+<blockquote>
+<p>1: isEmpty() 方法：当Sting为null或者空（””）时返回true<br>2: isBlank() 方法 ：当Sting为null或者空（””）或者空字符串（”     “）时返回true</p>
+</blockquote>
+<p>#####示例</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">    String empty &#x3D; null;</span><br><span class="line">    System.out.println(StringUtils.isEmpty(empty));</span><br><span class="line"></span><br><span class="line">    empty &#x3D; &quot;&quot;;</span><br><span class="line">    System.out.println(StringUtils.isEmpty(empty));</span><br><span class="line"></span><br><span class="line">    empty &#x3D; &quot;      &quot;;</span><br><span class="line">    System.out.println(StringUtils.isBlank(empty));</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="4-避免自动拆箱可能抛出NPE"><a href="#4-避免自动拆箱可能抛出NPE" class="headerlink" title="4. 避免自动拆箱可能抛出NPE"></a>4. 避免自动拆箱可能抛出NPE</h2><blockquote>
+<p>自动拆箱可能抛出NPE</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;反例</span><br><span class="line">public int function() &#123;</span><br><span class="line">    return Integer对象;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="5-数据库查出的数据可能为null，做空判断"><a href="#5-数据库查出的数据可能为null，做空判断" class="headerlink" title="5. 数据库查出的数据可能为null，做空判断"></a>5. 数据库查出的数据可能为null，做空判断</h2><blockquote>
+<p>数据库非空字段可以加非空约束；对可能为空的字段做空判断、防止NPE。</p>
+</blockquote>
+<hr>
+<h2 id="6-级联调用容易抛出NPE，建议使用Java-8-的-Optional类"><a href="#6-级联调用容易抛出NPE，建议使用Java-8-的-Optional类" class="headerlink" title="6. 级联调用容易抛出NPE，建议使用Java 8 的 Optional类"></a>6. 级联调用容易抛出NPE，建议使用Java 8 的 Optional类</h2><blockquote>
+<p>例如 object.getMehtodA().getMethodB().getMethodC()；很容易抛出NPE</p>
+</blockquote>
+<hr>
+<h2 id="7-远程调用返回对象容易抛出NPE，建议做空判断"><a href="#7-远程调用返回对象容易抛出NPE，建议做空判断" class="headerlink" title="7. 远程调用返回对象容易抛出NPE，建议做空判断"></a>7. 远程调用返回对象容易抛出NPE，建议做空判断</h2><blockquote>
+<p>调用第三方接口等返回对象可能为空，建议对该对象操作之前做空判断。</p>
+</blockquote>
+<hr>
+<h2 id="8-取Session中-的值之前做空判断"><a href="#8-取Session中-的值之前做空判断" class="headerlink" title="8. 取Session中 的值之前做空判断"></a>8. 取Session中 的值之前做空判断</h2><blockquote>
+<p> 取Session的值之前对Session做空判断，对获取的Session值操作之前对Session值做空判断、避免NPE</p>
+</blockquote>
+<hr>
+<h2 id="9-对集合的操作之前做空判断"><a href="#9-对集合的操作之前做空判断" class="headerlink" title="9. 对集合的操作之前做空判断"></a>9. 对集合的操作之前做空判断</h2><blockquote>
+<p> 取集合中的值之前对集合做空判断，对获取的集合值操作之前对集合值做空判断、避免NPE</p>
+</blockquote>
+<hr>
+]]></content>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>解析XML</title>
+    <url>/2020/06/16/%E8%A7%A3%E6%9E%90XML/</url>
+    <content><![CDATA[<blockquote>
+<ul>
+<li>Java 8 官方API : <a href="https://docs.oracle.com/javase/8/docs/api/" target="_blank" rel="noopener">Java 8 API</a></li>
+<li>github代码地址: <a href="https://github.com/miracle-sungm/learn_xml" target="_blank" rel="noopener">Github</a></li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="1-DOM解析XML"><a href="#1-DOM解析XML" class="headerlink" title="1. DOM解析XML"></a>1. DOM解析XML</h2><p><strong>xml文档</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot; ?&gt;</span><br><span class="line">&lt;class&gt;</span><br><span class="line">    &lt;student&gt;</span><br><span class="line">        &lt;name nameAttr&#x3D;&quot;sungm&quot;&gt;sungm&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age ageAttr&#x3D;&quot;25&quot;&gt;25&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex sexAttr&#x3D;&quot;Man&quot;&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className classAttr&#x3D;&quot;ClassOne&quot;&gt;Class One&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">    &lt;student&gt;</span><br><span class="line">        &lt;name nameAttr&#x3D;&quot;sunhw&quot;&gt;sunhw&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age ageAttr&#x3D;&quot;1&quot;&gt;1&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex sexAttr&#x3D;&quot;Man&quot;&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className classAttr&#x3D;&quot;ClassTwo&quot;&gt;Class Two&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">&lt;&#x2F;class&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>程序入口</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import org.w3c.dom.*;</span><br><span class="line"></span><br><span class="line">import javax.xml.parsers.DocumentBuilder;</span><br><span class="line">import javax.xml.parsers.DocumentBuilderFactory;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2020-06-16 16:59</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class Main &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        &#x2F;&#x2F;获取一个xml解析器的文档构建者工厂实例（设计模式：工厂模式）</span><br><span class="line">        DocumentBuilderFactory factory &#x3D; DocumentBuilderFactory.newInstance();</span><br><span class="line">        &#x2F;&#x2F;获取一个xml解析器的文档构建者实例（设计模式：Builder模式）</span><br><span class="line">        DocumentBuilder builder &#x3D; factory.newDocumentBuilder();</span><br><span class="line">        &#x2F;&#x2F;使用xml解析器builder解析文档，获取解析后的Document对象</span><br><span class="line">        Document document &#x3D; builder.parse(&quot;src&#x2F;main&#x2F;resources&#x2F;student.xml&quot;);</span><br><span class="line">        &#x2F;&#x2F;获取根元素</span><br><span class="line">        Element rootElement &#x3D; document.getDocumentElement();</span><br><span class="line">        &#x2F;&#x2F;获取文档中student元素列表（也可以直接通过document.getElementsByTagName(&quot;student&quot;)获取所有的student元素）</span><br><span class="line">        NodeList studentNodes &#x3D; rootElement.getElementsByTagName(&quot;student&quot;);</span><br><span class="line">        for (int index &#x3D; 0, size &#x3D; studentNodes.getLength(); index &lt; size; index++) &#123;</span><br><span class="line">            Element element &#x3D; (Element) studentNodes.item(index);</span><br><span class="line">            &#x2F;&#x2F;元素（备注：通过getElementsByTagName()方法获取指定的元素）</span><br><span class="line">            Element nameElement &#x3D; (Element) element.getElementsByTagName(&quot;name&quot;).item(0);</span><br><span class="line">            Element ageElement &#x3D; (Element) element.getElementsByTagName(&quot;age&quot;).item(0);</span><br><span class="line">            Element sexElement &#x3D; (Element) element.getElementsByTagName(&quot;sex&quot;).item(0);</span><br><span class="line">            Element classElement &#x3D; (Element) element.getElementsByTagName(&quot;className&quot;).item(0);</span><br><span class="line"></span><br><span class="line">            &#x2F;&#x2F;文本（备注：通过getNodeName()方法获取元素名称，通过getTextContent()方法获取文本内容）</span><br><span class="line">            System.out.println(nameElement.getNodeName()  + &quot; : &quot; + nameElement.getTextContent());</span><br><span class="line">            System.out.println(ageElement.getNodeName()   + &quot; : &quot; + ageElement.getTextContent());</span><br><span class="line">            System.out.println(sexElement.getNodeName()   + &quot; : &quot; + sexElement.getTextContent());</span><br><span class="line">            System.out.println(classElement.getNodeName() + &quot; : &quot; + classElement.getTextContent());</span><br><span class="line"></span><br><span class="line">            &#x2F;&#x2F;属性（备注：通过getAttributeNode(name)方法属性节点，通过getAttribute(name)方法获取属性内容）</span><br><span class="line">            Attr nameAttr &#x3D; nameElement.getAttributeNode(&quot;nameAttr&quot;);</span><br><span class="line">            Attr ageAttr &#x3D; ageElement.getAttributeNode(&quot;ageAttr&quot;);</span><br><span class="line">            Attr sexAttr &#x3D; sexElement.getAttributeNode(&quot;sexAttr&quot;);</span><br><span class="line">            Attr classAttr &#x3D; classElement.getAttributeNode(&quot;classAttr&quot;);</span><br><span class="line">            System.out.println(nameAttr.getName()  + &quot; : &quot; + nameAttr.getValue());</span><br><span class="line">            System.out.println(ageAttr.getName()   + &quot; : &quot; + ageAttr.getValue());</span><br><span class="line">            System.out.println(sexAttr.getName()   + &quot; : &quot; + sexAttr.getValue());</span><br><span class="line">            System.out.println(classAttr.getName()   + &quot; : &quot; + classAttr.getValue());</span><br><span class="line">            System.out.println();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>运行结果</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">name : sungm</span><br><span class="line">age : 25</span><br><span class="line">sex : Man</span><br><span class="line">className : Class One</span><br><span class="line">nameAttr : sungm</span><br><span class="line">ageAttr : 25</span><br><span class="line">sexAttr : Man</span><br><span class="line">classAttr : ClassOne</span><br><span class="line"></span><br><span class="line">name : sunhw</span><br><span class="line">age : 1</span><br><span class="line">sex : Man</span><br><span class="line">className : Class Two</span><br><span class="line">nameAttr : sunhw</span><br><span class="line">ageAttr : 1</span><br><span class="line">sexAttr : Man</span><br><span class="line">classAttr : ClassTwo</span><br></pre></td></tr></table></figure>
+
+<p><strong>优点：</strong></p>
+<blockquote>
+<ul>
+<li>树结构，方便理解与使用</li>
+<li>解析过程中树结构保存在内存中，方便修改</li>
+</ul>
+</blockquote>
+<p><strong>缺点：</strong></p>
+<blockquote>
+<ul>
+<li>当文件过大时耗用内存，需谨慎使用</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="2-SAX解析XML"><a href="#2-SAX解析XML" class="headerlink" title="2. SAX解析XML"></a>2. SAX解析XML</h2><p><strong>xml文档</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot; ?&gt;</span><br><span class="line">&lt;class&gt;</span><br><span class="line">    &lt;student&gt;</span><br><span class="line">        &lt;name nameAttr&#x3D;&quot;sungm&quot;&gt;sungm&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age ageAttr&#x3D;&quot;25&quot;&gt;25&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex sexAttr&#x3D;&quot;Man&quot;&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className classAttr&#x3D;&quot;ClassOne&quot;&gt;Class One&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">    &lt;student&gt;</span><br><span class="line">        &lt;name nameAttr&#x3D;&quot;sunhw&quot;&gt;sunhw&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age ageAttr&#x3D;&quot;1&quot;&gt;1&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex sexAttr&#x3D;&quot;Man&quot;&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className classAttr&#x3D;&quot;ClassTwo&quot;&gt;Class Two&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">&lt;&#x2F;class&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>自定义Handler处理器</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import org.xml.sax.Attributes;</span><br><span class="line">import org.xml.sax.SAXException;</span><br><span class="line">import org.xml.sax.helpers.DefaultHandler;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2020-06-17 17:42</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class StudentParserHandler extends DefaultHandler &#123;</span><br><span class="line"></span><br><span class="line">    interface Constants &#123;</span><br><span class="line"></span><br><span class="line">        String ROOT_ELEMENT &#x3D; &quot;class&quot;;</span><br><span class="line"></span><br><span class="line">        String EMPTY &#x3D; &quot;&quot;;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;方法执行顺序：startDocument -&gt; startElement -&gt; characters -&gt; endElement -&gt; characters -&gt; endDocument</span><br><span class="line">    &#x2F;&#x2F;执行次数        只执行一次      元素循环执行    元素循环执行   元素循环执行   元素循环执行    只执行一次</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void startDocument() throws SAXException &#123;</span><br><span class="line">        super.startDocument();</span><br><span class="line">        System.out.println(&quot;开始解析XML文档&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void endDocument() throws SAXException &#123;</span><br><span class="line">        super.endDocument();</span><br><span class="line">        System.out.println(&quot;解析XML文档结束&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException &#123;</span><br><span class="line">        super.startElement(uri, localName, qName, attributes);</span><br><span class="line">        System.out.println(Constants.ROOT_ELEMENT.equals(qName) ? &quot;开始解析根节点&quot; : &quot;节点名称 ： &quot; + qName);</span><br><span class="line">        &#x2F;&#x2F;获取元素的属性</span><br><span class="line">        for (int index &#x3D; 0, size &#x3D; attributes.getLength(); index &lt; size; index++) &#123;</span><br><span class="line">            String attrName &#x3D; attributes.getLocalName(index);</span><br><span class="line">            String attrValue &#x3D; attributes.getValue(index);</span><br><span class="line">            System.out.println(&quot;attrName &#x3D; &quot; + attrName + &quot;, attrValue &#x3D; &quot; + attrValue);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void endElement(String uri, String localName, String qName) throws SAXException &#123;</span><br><span class="line">        super.endElement(uri, localName, qName);</span><br><span class="line">        if (Constants.ROOT_ELEMENT.equals(qName)) &#123;</span><br><span class="line">            System.out.println(&quot;解析根节点结束&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void characters(char[] ch, int start, int length) throws SAXException &#123;</span><br><span class="line">        super.characters(ch, start, length);</span><br><span class="line">        String value &#x3D; new String(ch, start, length).trim();</span><br><span class="line">        if (!Constants.EMPTY.equals(value)) &#123;</span><br><span class="line">            System.out.println(&quot;节点值：&quot; + value);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>程序入口</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import javax.xml.parsers.SAXParser;</span><br><span class="line">import javax.xml.parsers.SAXParserFactory;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2020-06-17 17:33</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class Main &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        &#x2F;&#x2F;获取一个Sax解析工厂实例</span><br><span class="line">        SAXParserFactory saxParserFactory &#x3D; SAXParserFactory.newInstance();</span><br><span class="line">        &#x2F;&#x2F;获取一个Sax解析器实例</span><br><span class="line">        SAXParser saxParser &#x3D; saxParserFactory.newSAXParser();</span><br><span class="line">        &#x2F;&#x2F;创建一个Handel实例</span><br><span class="line">        StudentParserHandler handler &#x3D; new StudentParserHandler();</span><br><span class="line">        &#x2F;&#x2F;解析文件</span><br><span class="line">        saxParser.parse(&quot;src&#x2F;main&#x2F;resources&#x2F;student.xml&quot;, handler);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>运行结果</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">开始解析XML文档</span><br><span class="line">开始解析根节点</span><br><span class="line">节点名称 ： class</span><br><span class="line">节点名称 ： student</span><br><span class="line">节点名称 ： name</span><br><span class="line">attrName &#x3D; nameAttr, attrValue &#x3D; sungm</span><br><span class="line">节点值：sungm</span><br><span class="line">节点名称 ： age</span><br><span class="line">attrName &#x3D; ageAttr, attrValue &#x3D; 25</span><br><span class="line">节点值：25</span><br><span class="line">节点名称 ： sex</span><br><span class="line">attrName &#x3D; sexAttr, attrValue &#x3D; Man</span><br><span class="line">节点值：Man</span><br><span class="line">节点名称 ： className</span><br><span class="line">attrName &#x3D; classAttr, attrValue &#x3D; ClassOne</span><br><span class="line">节点值：Class One</span><br><span class="line">节点名称 ： student</span><br><span class="line">节点名称 ： name</span><br><span class="line">attrName &#x3D; nameAttr, attrValue &#x3D; sunhw</span><br><span class="line">节点值：sunhw</span><br><span class="line">节点名称 ： age</span><br><span class="line">attrName &#x3D; ageAttr, attrValue &#x3D; 1</span><br><span class="line">节点值：1</span><br><span class="line">节点名称 ： sex</span><br><span class="line">attrName &#x3D; sexAttr, attrValue &#x3D; Man</span><br><span class="line">节点值：Man</span><br><span class="line">节点名称 ： className</span><br><span class="line">attrName &#x3D; classAttr, attrValue &#x3D; ClassTwo</span><br><span class="line">节点值：Class Two</span><br><span class="line">解析根节点结束</span><br><span class="line">解析XML文档结束</span><br></pre></td></tr></table></figure>
+
+<p><strong>优点：</strong></p>
+<blockquote>
+<ul>
+<li>采用事件驱动的方式，耗用内存更少</li>
+<li>适用于只需要处理xml文件的数据时使用</li>
+</ul>
+</blockquote>
+<p><strong>缺点：</strong></p>
+<blockquote>
+<ul>
+<li>需编写自定义的handler类，不易编写</li>
+<li>很难同时访问同一个xml中的不同数据</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="3-JDOM解析XML"><a href="#3-JDOM解析XML" class="headerlink" title="3. JDOM解析XML"></a>3. JDOM解析XML</h2><p><strong>引入依赖</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!-- https:&#x2F;&#x2F;mvnrepository.com&#x2F;artifact&#x2F;org.jdom&#x2F;jdom --&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.jdom&lt;&#x2F;groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;jdom&lt;&#x2F;artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.0.2&lt;&#x2F;version&gt;</span><br><span class="line">&lt;&#x2F;dependency&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>XML</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot; ?&gt;</span><br><span class="line">&lt;class&gt;</span><br><span class="line">    &lt;student&gt;</span><br><span class="line">        &lt;name nameAttr&#x3D;&quot;sungm&quot;&gt;sungm&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age ageAttr&#x3D;&quot;25&quot;&gt;25&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex sexAttr&#x3D;&quot;Man&quot;&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className classAttr&#x3D;&quot;ClassOne&quot;&gt;Class One&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">    &lt;student&gt;</span><br><span class="line">        &lt;name nameAttr&#x3D;&quot;sunhw&quot;&gt;sunhw&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age ageAttr&#x3D;&quot;1&quot;&gt;1&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex sexAttr&#x3D;&quot;Man&quot;&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className classAttr&#x3D;&quot;ClassTwo&quot;&gt;Class Two&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">&lt;&#x2F;class&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>程序入口</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import org.jdom2.Attribute;</span><br><span class="line">import org.jdom2.Document;</span><br><span class="line">import org.jdom2.Element;</span><br><span class="line">import org.jdom2.input.SAXBuilder;</span><br><span class="line"></span><br><span class="line">import java.util.List;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2020-06-18 10:46</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class Main &#123;</span><br><span class="line"></span><br><span class="line">    interface Constants &#123;</span><br><span class="line"></span><br><span class="line">        String EMPTY &#x3D; &quot;&quot;;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception&#123;</span><br><span class="line">        SAXBuilder saxBuilder &#x3D; new SAXBuilder();</span><br><span class="line">        Document document &#x3D; saxBuilder.build(&quot;src&#x2F;main&#x2F;resources&#x2F;student.xml&quot;);</span><br><span class="line">        Element rootElement &#x3D; document.getRootElement();</span><br><span class="line">        System.out.println(&quot;根节点：&quot; + rootElement.getName());</span><br><span class="line">        parseElement(rootElement);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void parseElement(Element element) &#123;</span><br><span class="line">        &#x2F;&#x2F;元素内容</span><br><span class="line">        if (element.getText() !&#x3D; null &amp;&amp; !Constants.EMPTY.equals(element.getTextTrim())) &#123;</span><br><span class="line">            System.out.println(element.getName() + &quot;:&quot; + element.getTextTrim());</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F;元素属性</span><br><span class="line">        if (element.hasAttributes()) &#123;</span><br><span class="line">            element.getAttributes().forEach(Main::parseAttribute);</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F;解析子元素</span><br><span class="line">        List&lt;Element&gt; childrenElement &#x3D; element.getChildren();</span><br><span class="line">        if (childrenElement !&#x3D; null &amp;&amp; childrenElement.size() &gt; 0) &#123;</span><br><span class="line">            childrenElement.forEach(Main::parseElement);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void parseAttribute(Attribute attribute) &#123;</span><br><span class="line">        System.out.println(attribute.getName() + &quot; : &quot; + attribute.getValue());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>运行结果</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">根节点：class</span><br><span class="line">name:sungm</span><br><span class="line">nameAttr : sungm</span><br><span class="line">age:25</span><br><span class="line">ageAttr : 25</span><br><span class="line">sex:Man</span><br><span class="line">sexAttr : Man</span><br><span class="line">className:Class One</span><br><span class="line">classAttr : ClassOne</span><br><span class="line">name:sunhw</span><br><span class="line">nameAttr : sunhw</span><br><span class="line">age:1</span><br><span class="line">ageAttr : 1</span><br><span class="line">sex:Man</span><br><span class="line">sexAttr : Man</span><br><span class="line">className:Class Two</span><br><span class="line">classAttr : ClassTwo</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>优点：</strong></p>
+<blockquote>
+<ul>
+<li>API简单易用，推荐使用</li>
+</ul>
+</blockquote>
+<p><strong>缺点：</strong></p>
+<blockquote>
+<ul>
+<li>用了很多具体类，没使用接口</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="4-DOM4J解析XML"><a href="#4-DOM4J解析XML" class="headerlink" title="4. DOM4J解析XML"></a>4. DOM4J解析XML</h2><p><strong>引入依赖</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!-- https:&#x2F;&#x2F;mvnrepository.com&#x2F;artifact&#x2F;dom4j&#x2F;dom4j --&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;dom4j&lt;&#x2F;groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;dom4j&lt;&#x2F;artifactId&gt;</span><br><span class="line">    &lt;version&gt;1.6.1&lt;&#x2F;version&gt;</span><br><span class="line">&lt;&#x2F;dependency&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>XML</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot; ?&gt;</span><br><span class="line">&lt;class&gt;</span><br><span class="line">    &lt;student&gt;</span><br><span class="line">        &lt;name nameAttr&#x3D;&quot;sungm&quot;&gt;sungm&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age ageAttr&#x3D;&quot;25&quot;&gt;25&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex sexAttr&#x3D;&quot;Man&quot;&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className classAttr&#x3D;&quot;ClassOne&quot;&gt;Class One&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">    &lt;student&gt;</span><br><span class="line">        &lt;name nameAttr&#x3D;&quot;sunhw&quot;&gt;sunhw&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age ageAttr&#x3D;&quot;1&quot;&gt;1&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex sexAttr&#x3D;&quot;Man&quot;&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className classAttr&#x3D;&quot;ClassTwo&quot;&gt;Class Two&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">&lt;&#x2F;class&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>程序入口</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import org.dom4j.Attribute;</span><br><span class="line">import org.dom4j.Document;</span><br><span class="line">import org.dom4j.Element;</span><br><span class="line">import org.dom4j.io.SAXReader;</span><br><span class="line"></span><br><span class="line">import java.util.Iterator;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2020-06-18 11:27</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class Main &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        SAXReader reader &#x3D; new SAXReader();</span><br><span class="line">        Document document &#x3D; reader.read(&quot;src&#x2F;main&#x2F;resources&#x2F;student.xml&quot;);</span><br><span class="line">        Element element &#x3D; document.getRootElement();</span><br><span class="line">        System.out.println(&quot;根节点：名称 &#x3D; &quot; + element.getName());</span><br><span class="line">        &#x2F;&#x2F;递归解析</span><br><span class="line">        parseElement(element);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="line">    private static void parseElement(Element element) &#123;</span><br><span class="line">        System.out.println(&quot;节点：名称 &#x3D; &quot; + element.getName() + &quot;, value &#x3D; &quot; + element.getTextTrim());</span><br><span class="line">        Iterator iterator &#x3D; element.elementIterator();</span><br><span class="line">        while (iterator.hasNext()) &#123;</span><br><span class="line">            Element childElement &#x3D; (Element) iterator.next();</span><br><span class="line">            &#x2F;&#x2F;解析属性</span><br><span class="line">            if (childElement.attributeCount() &gt; 0) &#123;</span><br><span class="line">                childElement.attributes().forEach(Main::parseAttribute);</span><br><span class="line">            &#125;</span><br><span class="line">            &#x2F;&#x2F;解析元素</span><br><span class="line">            parseElement(childElement);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void parseAttribute(Object attribute) &#123;</span><br><span class="line">        System.out.println(&quot;属性：&quot; + ((Attribute) attribute).getName() + &quot; : &quot; + ((Attribute) attribute).getValue());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>运行结果</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">根节点：名称 &#x3D; class</span><br><span class="line">节点：名称 &#x3D; class, value &#x3D; </span><br><span class="line">节点：名称 &#x3D; student, value &#x3D; </span><br><span class="line">属性：nameAttr : sungm</span><br><span class="line">节点：名称 &#x3D; name, value &#x3D; sungm</span><br><span class="line">属性：ageAttr : 25</span><br><span class="line">节点：名称 &#x3D; age, value &#x3D; 25</span><br><span class="line">属性：sexAttr : Man</span><br><span class="line">节点：名称 &#x3D; sex, value &#x3D; Man</span><br><span class="line">属性：classAttr : ClassOne</span><br><span class="line">节点：名称 &#x3D; className, value &#x3D; Class One</span><br><span class="line">节点：名称 &#x3D; student, value &#x3D; </span><br><span class="line">属性：nameAttr : sunhw</span><br><span class="line">节点：名称 &#x3D; name, value &#x3D; sunhw</span><br><span class="line">属性：ageAttr : 1</span><br><span class="line">节点：名称 &#x3D; age, value &#x3D; 1</span><br><span class="line">属性：sexAttr : Man</span><br><span class="line">节点：名称 &#x3D; sex, value &#x3D; Man</span><br><span class="line">属性：classAttr : ClassTwo</span><br><span class="line">节点：名称 &#x3D; className, value &#x3D; Class Two</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>优点：</strong></p>
+<blockquote>
+<ul>
+<li>使用了接口和抽象方案，是个优秀的API</li>
+<li>灵活性好、性能优异、易用性好。推荐使用</li>
+</ul>
+</blockquote>
+<hr>
+]]></content>
+      <tags>
+        <tag>Java</tag>
+        <tag>XML</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>考虑使用静态工厂方法代替构造方法</title>
+    <url>/2020/06/13/%E8%80%83%E8%99%91%E4%BD%BF%E7%94%A8%E9%9D%99%E6%80%81%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%E4%BB%A3%E6%9B%BF%E6%9E%84%E9%80%A0%E6%96%B9%E6%B3%95/</url>
+    <content><![CDATA[<h2 id="1-静态工厂方法例子："><a href="#1-静态工厂方法例子：" class="headerlink" title="1. 静态工厂方法例子："></a>1. 静态工厂方法例子：</h2><p>如Boolean类中的valueOf(boolean b) 方法</p>
+<a id="more"></a>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * The &#123;@code Boolean&#125; object corresponding to the primitive</span><br><span class="line"> * value &#123;@code true&#125;.</span><br><span class="line"> *&#x2F;</span><br><span class="line">public static final Boolean TRUE &#x3D; new Boolean(true);</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * The &#123;@code Boolean&#125; object corresponding to the primitive</span><br><span class="line"> * value &#123;@code false&#125;.</span><br><span class="line"> *&#x2F;</span><br><span class="line">public static final Boolean FALSE &#x3D; new Boolean(false);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;...中间代码省略</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;静态工厂方法</span><br><span class="line">@HotSpotIntrinsicCandidate</span><br><span class="line">public static Boolean valueOf(boolean b) &#123;</span><br><span class="line">    return (b ? TRUE : FALSE);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意：</strong><br>静态工厂方法与工厂方法模式不同，类可以直接提供静态工厂方法，而不是公共的构造方法。</p>
+<h2 id="2-使用静态工厂方法代替构造方法的优缺点"><a href="#2-使用静态工厂方法代替构造方法的优缺点" class="headerlink" title="2. 使用静态工厂方法代替构造方法的优缺点"></a>2. 使用静态工厂方法代替构造方法的优缺点</h2><h3 id="2-1-优点"><a href="#2-1-优点" class="headerlink" title="2.1 优点"></a>2.1 优点</h3><p>（1）. 静态工厂方法不像构造方法，它们是有名字的。（属于类的方法）<br>（2）. 静态工厂方法与构造方法不同，他们被调用时不需要每次都创建一个对象。例如调用Boolean.valueOf(true)方法，返回的是Boolean类中定义的静态不变属性TRUE对象；<br>（3）. 静态工厂方法与构造方法不同，他们可以返回任意对象，构造方法只能返回当前类的对象。<br>（4）. 静态工厂方法返回对象的类可以根据输入类型不同而不同。例如使用泛型。<br>（5）. 在编写该方法的类时，返回的对象的类不需要存在。（static关键字的作用）</p>
+<h3 id="2-2-缺点"><a href="#2-2-缺点" class="headerlink" title="2.2 缺点"></a>2.2 缺点</h3><p>（1）. 只提供静态工厂方法、没有提供公共或者受保护的构造方法时不能被子类化。（主要限制）<br>（2）. 静态工厂方法并不像构造方法那样突出、不容易被程序员阅读。</p>
+<h3 id="2-3-总结"><a href="#2-3-总结" class="headerlink" title="2.3 总结"></a>2.3 总结</h3><p>静态工厂方法和公共构造方法都有他们的用途，并且了解他们的相对有点时值得的。通常，静态工厂方法更可取，因此避免在没有考虑静态工厂方法的情况下、提供公共构造方法。</p>
+]]></content>
+      <tags>
+        <tag>Java</tag>
+        <tag>设计模式</tag>
       </tags>
   </entry>
   <entry>
@@ -1462,283 +1784,20 @@
       </tags>
   </entry>
   <entry>
-    <title>原始类型特化</title>
-    <url>/2020/06/13/%E5%8E%9F%E5%A7%8B%E7%B1%BB%E5%9E%8B%E7%89%B9%E5%8C%96/</url>
-    <content><![CDATA[<p><strong>引言</strong></p>
-<blockquote>
-<p>上篇我们介绍了三个函数式接口：Predicate<T>、Consumer<T>、Function&lt;T，R&gt; 。还有一些函数式接口是专门为某些类型涉及的。<a href="https://www.jianshu.com/p/4c93e1f7c19b" target="_blank" rel="noopener">https://www.jianshu.com/p/4c93e1f7c19b</a></T></T></p>
-</blockquote>
-<a id="more"></a>
-
-<p> <strong>Java 类型</strong></p>
-<blockquote>
+    <title>验证XML</title>
+    <url>/2020/06/18/%E9%AA%8C%E8%AF%81XML/</url>
+    <content><![CDATA[<h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h2><blockquote>
 <ul>
-<li>引用类型（如 Byte、Integer、Long、Object、List）</li>
-<li>原始类型（byte、short、int、float、double、long、char、boolean）</li>
-</ul>
-</blockquote>
-<p> <strong>回顾知识点：</strong></p>
-<blockquote>
-<ul>
-<li>Java 类型要么是引用类型，要么是原始类型。</li>
-<li>泛型只能绑定到引用类型上面、这是由泛型内部的实现方式造成的。</li>
-<li>在 Java 中有一个将原始类型转换为对应的引用类型的机制、这个机智就叫做装箱。相反的操作、也就是将引用类型转换成对应的原始类型的机制，这种机智叫做拆箱。Java 还有一个自动装拆箱的机智来帮助我们程序员执行这一任务：装箱和拆箱都是自动完成的。</li>
-</ul>
-</blockquote>
-<p><strong>注意：</strong></p>
-<blockquote>
-<p>虽然 Java 提供了自动装拆箱的机智，但这在性能方面是要付出代价的，装箱的本质是就是把原始类型包裹起来，并保存在堆里。因此、装箱后的值需要更多的内存、并需要额外的内存搜索来获取被包裹的值。因此、为提高程序的执行效率、Java  8 为我们前面所提到的函数式接口提供了一个专门的版本、以便在输入和输出都是原始类型时避免自动装拆箱的操作。</p>
-</blockquote>
-<p><strong>举例</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;IntPredicate 源码</span><br><span class="line"></span><br><span class="line">@FunctionalInterface</span><br><span class="line">public interface IntPredicate &#123;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * Evaluates this predicate on the given argument.</span><br><span class="line">     *</span><br><span class="line">     * @param value the input argument</span><br><span class="line">     * @return &#123;@code true&#125; if the input argument matches the predicate,</span><br><span class="line">     * otherwise &#123;@code false&#125;</span><br><span class="line">     *&#x2F;</span><br><span class="line">    boolean test(int value);</span><br><span class="line">  </span><br><span class="line">    &#x2F;&#x2F; 其他默认方法省略</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>说明</strong></p>
-<blockquote>
-<p> IntPredicate 源码解析：IntPredicate 类的 test方法接收一个原始类型 int类型的入参，其返回值为 boolean，避免了输入和输出都是原始类型时自动装拆箱的操作。 </p>
-</blockquote>
-<p><strong>Java 8中的常用函数式接口</strong></p>
-<p><div class="img-item" data-src="https://upload-images.jianshu.io/upload_images/11864885-b49768e2e438afa1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-sub-html=".caption"><img src="https://upload-images.jianshu.io/upload_images/11864885-b49768e2e438afa1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt></div></p>
-<p><div class="img-item" data-src="https://upload-images.jianshu.io/upload_images/11864885-b03a23c45dc9e0d6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-sub-html=".caption"><img src="https://upload-images.jianshu.io/upload_images/11864885-b03a23c45dc9e0d6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="常用函数式接口"><div class="img-caption d-block text-center"><span class="center-caption text-muted border-bottom">常用函数式接口</span></div></div></p>
-<p><strong>Lambdas及函数式接口的例子</strong><br><div class="img-item" data-src="https://upload-images.jianshu.io/upload_images/11864885-049343497380171b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-sub-html=".caption"><img src="https://upload-images.jianshu.io/upload_images/11864885-049343497380171b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Lambdas及函数式接口的例子"><div class="img-caption d-block text-center"><span class="center-caption text-muted border-bottom">Lambdas及函数式接口的例子</span></div></div></p>
-<hr>
-<p><strong>推荐书籍</strong></p>
-<blockquote>
-<ul>
-<li>《Java 8 in Action》</li>
-</ul>
-</blockquote>
-]]></content>
-      <tags>
-        <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Java 并发编程] 3. 并发模型</title>
-    <url>/2020/08/09/%E5%B9%B6%E5%8F%91%E6%A8%A1%E5%9E%8B/</url>
-    <content><![CDATA[<p><strong>前言：</strong></p>
-<blockquote>
-<p>我们可以通过使用不同的并发模型来实现一个并发系统，线程之间通过协作完成系统给定的任务。不同的并发模型以不同的方式切割任务，线程之间可能存在通信和合作完成不同的任务。</p>
-</blockquote>
-<h3 id="1-并发模型与分布式系统相似"><a href="#1-并发模型与分布式系统相似" class="headerlink" title="1. 并发模型与分布式系统相似"></a>1. 并发模型与分布式系统相似</h3><blockquote>
-<ul>
-<li>在一个并发系统中，不同的线程之间相互通信。</li>
-<li>在一个分布式系统中，不同的进程之间相互通信。</li>
-<li>进程和线程在本质上非常的相似。</li>
-</ul>
-</blockquote>
-<blockquote>
-<p>分布式系统比并发系统面临更多的挑战，比如可能面临网络异常、远程主机或进程停止；并发系统理论上也存在相似的问题，比如CPU异常，内存或硬盘损坏等情况，这种异常的概率相对较小，但实际上是存在的。</p>
-</blockquote>
-<h3 id="2-共享状态内存模型-vs-隔离状态内存模型"><a href="#2-共享状态内存模型-vs-隔离状态内存模型" class="headerlink" title="2. 共享状态内存模型 vs 隔离状态内存模型"></a>2. 共享状态内存模型 vs 隔离状态内存模型</h3><h5 id="2-1-共享状态内存模型"><a href="#2-1-共享状态内存模型" class="headerlink" title="2.1 共享状态内存模型"></a>2.1 共享状态内存模型</h5><blockquote>
-<p>共享状态意味着同一系统的多个线程之间共享一些状态（一般指数据，共享一个或多个对象的数据）。当线程共享状态时，容易引发一些并发问题，比如死锁，竞争条件等等，这取决于线程怎样地使用和访问共享数据等等。</p>
-</blockquote>
-<p><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-0-1.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-0-1.png" alt></div></p>
-<h5 id="2-2-隔离状态内存模型"><a href="#2-2-隔离状态内存模型" class="headerlink" title="2.2 隔离状态内存模型"></a>2.2 隔离状态内存模型</h5><blockquote>
-<p>隔离状态意味着同一系统的多个线程之间不共享状态。如果不同的线程之间需要进行通信，可以通过交换不可变对象、或者使用复制的对象进行通信。当多个线程之间不存在共享状态（或共享数据），就可以避免最常见的并发问题。</p>
-</blockquote>
-<p><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-0-2.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-0-2.png" alt></div></p>
-<p><strong>备注</strong></p>
-<blockquote>
-<p>使用隔离状态并发设计，通常情况下可以让代码实现更加简单，并且可以不用担心并发访问对象的问题，避免一些常见的并发问题。在一些特殊情况下，使用分离状态并发设计可能存在更大的挑战。</p>
-</blockquote>
-]]></content>
-      <tags>
-        <tag>Java</tag>
-        <tag>Java并发编程</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>并行流</title>
-    <url>/2020/07/09/%E5%B9%B6%E8%A1%8C%E6%B5%81/</url>
-    <content><![CDATA[]]></content>
-  </entry>
-  <entry>
-    <title>正确的避免NullPointException</title>
-    <url>/2020/06/13/%E6%AD%A3%E7%A1%AE%E7%9A%84%E9%81%BF%E5%85%8DNullPointException/</url>
-    <content><![CDATA[<h2 id="1-正确使用-String类的-equals-方法-和-Object类的-equals-方法"><a href="#1-正确使用-String类的-equals-方法-和-Object类的-equals-方法" class="headerlink" title="1. 正确使用 String类的 equals()方法 和 Object类的 equals() 方法"></a>1. 正确使用 String类的 equals()方法 和 Object类的 equals() 方法</h2><blockquote>
-<p>已知对象在前，未知对象在后。注意：已知对象不为 null</p>
-</blockquote>
-<a id="more"></a>
-
-<p>######正确示例</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    String name &#x3D; &quot;sungm&quot;; </span><br><span class="line">    &#x2F;&#x2F;name为已知对象且被赋予初始值不为空</span><br><span class="line">    if (name.equals(getOtherName())) &#123;</span><br><span class="line">        &#x2F;&#x2F;todo do something</span><br><span class="line">        System.out.println(&quot;todo do something&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static String getOtherName() &#123;</span><br><span class="line">    return &quot;sungm&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>######错误示例</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">    String name &#x3D; &quot;sungm&quot;;</span><br><span class="line">    &#x2F;&#x2F;getOtherName()方法返回值为 null。抛出NPE</span><br><span class="line">    if (getOtherName().equals(name)) &#123;</span><br><span class="line">        &#x2F;&#x2F;todo do something</span><br><span class="line">        System.out.println(&quot;todo do something&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static String getOtherName() &#123;</span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="2-未知对象转String使用String-valueOf-方法"><a href="#2-未知对象转String使用String-valueOf-方法" class="headerlink" title="2. 未知对象转String使用String.valueOf()方法"></a>2. 未知对象转String使用String.valueOf()方法</h2><blockquote>
-<p>空对象调用 toString() 方法会抛出NPE，使用 String.valueOf() 替代</p>
-</blockquote>
-<p>#####示例</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    &#x2F;&#x2F;抛NPE</span><br><span class="line">    System.out.println(getPrice().toString());</span><br><span class="line">    &#x2F;&#x2F;不抛NPE</span><br><span class="line">    System.out.println(String.valueOf(getPrice()));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static BigDecimal getPrice() &#123;</span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h5 id="String-valueOf-方法源码"><a href="#String-valueOf-方法源码" class="headerlink" title="String.valueOf() 方法源码"></a>String.valueOf() 方法源码</h5><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static String valueOf(Object obj) &#123;</span><br><span class="line">    return (obj &#x3D;&#x3D; null) ? &quot;null&quot; : obj.toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="3-使用第三方类库或者自己封装的工具类"><a href="#3-使用第三方类库或者自己封装的工具类" class="headerlink" title="3. 使用第三方类库或者自己封装的工具类"></a>3. 使用第三方类库或者自己封装的工具类</h2><blockquote>
-<p>例如 Apache 的 StringUtils 类</p>
-</blockquote>
-<p>#####Apache 的 StringUtils工具类部分源码</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">public static boolean isEmpty(String str) &#123;</span><br><span class="line">    return str &#x3D;&#x3D; null || str.length() &#x3D;&#x3D; 0;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static boolean isNotEmpty(String str) &#123;</span><br><span class="line">    return !isEmpty(str);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static boolean isBlank(String str) &#123;</span><br><span class="line">    int strLen;</span><br><span class="line">    if (str !&#x3D; null &amp;&amp; (strLen &#x3D; str.length()) !&#x3D; 0) &#123;</span><br><span class="line">        for(int i &#x3D; 0; i &lt; strLen; ++i) &#123;</span><br><span class="line">            if (!Character.isWhitespace(str.charAt(i))) &#123;</span><br><span class="line">                return false;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return true;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static boolean isNotBlank(String str) &#123;</span><br><span class="line">    return !isBlank(str);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>#####Apache 中 StringUtils 中 isEmpty() 方法 和 isBlank() 方法的区别：</p>
-<blockquote>
-<p>1: isEmpty() 方法：当Sting为null或者空（””）时返回true<br>2: isBlank() 方法 ：当Sting为null或者空（””）或者空字符串（”     “）时返回true</p>
-</blockquote>
-<p>#####示例</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">    String empty &#x3D; null;</span><br><span class="line">    System.out.println(StringUtils.isEmpty(empty));</span><br><span class="line"></span><br><span class="line">    empty &#x3D; &quot;&quot;;</span><br><span class="line">    System.out.println(StringUtils.isEmpty(empty));</span><br><span class="line"></span><br><span class="line">    empty &#x3D; &quot;      &quot;;</span><br><span class="line">    System.out.println(StringUtils.isBlank(empty));</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="4-避免自动拆箱可能抛出NPE"><a href="#4-避免自动拆箱可能抛出NPE" class="headerlink" title="4. 避免自动拆箱可能抛出NPE"></a>4. 避免自动拆箱可能抛出NPE</h2><blockquote>
-<p>自动拆箱可能抛出NPE</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;反例</span><br><span class="line">public int function() &#123;</span><br><span class="line">    return Integer对象;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="5-数据库查出的数据可能为null，做空判断"><a href="#5-数据库查出的数据可能为null，做空判断" class="headerlink" title="5. 数据库查出的数据可能为null，做空判断"></a>5. 数据库查出的数据可能为null，做空判断</h2><blockquote>
-<p>数据库非空字段可以加非空约束；对可能为空的字段做空判断、防止NPE。</p>
-</blockquote>
-<hr>
-<h2 id="6-级联调用容易抛出NPE，建议使用Java-8-的-Optional类"><a href="#6-级联调用容易抛出NPE，建议使用Java-8-的-Optional类" class="headerlink" title="6. 级联调用容易抛出NPE，建议使用Java 8 的 Optional类"></a>6. 级联调用容易抛出NPE，建议使用Java 8 的 Optional类</h2><blockquote>
-<p>例如 object.getMehtodA().getMethodB().getMethodC()；很容易抛出NPE</p>
-</blockquote>
-<hr>
-<h2 id="7-远程调用返回对象容易抛出NPE，建议做空判断"><a href="#7-远程调用返回对象容易抛出NPE，建议做空判断" class="headerlink" title="7. 远程调用返回对象容易抛出NPE，建议做空判断"></a>7. 远程调用返回对象容易抛出NPE，建议做空判断</h2><blockquote>
-<p>调用第三方接口等返回对象可能为空，建议对该对象操作之前做空判断。</p>
-</blockquote>
-<hr>
-<h2 id="8-取Session中-的值之前做空判断"><a href="#8-取Session中-的值之前做空判断" class="headerlink" title="8. 取Session中 的值之前做空判断"></a>8. 取Session中 的值之前做空判断</h2><blockquote>
-<p> 取Session的值之前对Session做空判断，对获取的Session值操作之前对Session值做空判断、避免NPE</p>
-</blockquote>
-<hr>
-<h2 id="9-对集合的操作之前做空判断"><a href="#9-对集合的操作之前做空判断" class="headerlink" title="9. 对集合的操作之前做空判断"></a>9. 对集合的操作之前做空判断</h2><blockquote>
-<p> 取集合中的值之前对集合做空判断，对获取的集合值操作之前对集合值做空判断、避免NPE</p>
-</blockquote>
-<hr>
-]]></content>
-      <tags>
-        <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>考虑使用静态工厂方法代替构造方法</title>
-    <url>/2020/06/13/%E8%80%83%E8%99%91%E4%BD%BF%E7%94%A8%E9%9D%99%E6%80%81%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%E4%BB%A3%E6%9B%BF%E6%9E%84%E9%80%A0%E6%96%B9%E6%B3%95/</url>
-    <content><![CDATA[<h2 id="1-静态工厂方法例子："><a href="#1-静态工厂方法例子：" class="headerlink" title="1. 静态工厂方法例子："></a>1. 静态工厂方法例子：</h2><p>如Boolean类中的valueOf(boolean b) 方法</p>
-<a id="more"></a>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * The &#123;@code Boolean&#125; object corresponding to the primitive</span><br><span class="line"> * value &#123;@code true&#125;.</span><br><span class="line"> *&#x2F;</span><br><span class="line">public static final Boolean TRUE &#x3D; new Boolean(true);</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * The &#123;@code Boolean&#125; object corresponding to the primitive</span><br><span class="line"> * value &#123;@code false&#125;.</span><br><span class="line"> *&#x2F;</span><br><span class="line">public static final Boolean FALSE &#x3D; new Boolean(false);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;...中间代码省略</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;静态工厂方法</span><br><span class="line">@HotSpotIntrinsicCandidate</span><br><span class="line">public static Boolean valueOf(boolean b) &#123;</span><br><span class="line">    return (b ? TRUE : FALSE);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>注意：</strong><br>静态工厂方法与工厂方法模式不同，类可以直接提供静态工厂方法，而不是公共的构造方法。</p>
-<h2 id="2-使用静态工厂方法代替构造方法的优缺点"><a href="#2-使用静态工厂方法代替构造方法的优缺点" class="headerlink" title="2. 使用静态工厂方法代替构造方法的优缺点"></a>2. 使用静态工厂方法代替构造方法的优缺点</h2><h3 id="2-1-优点"><a href="#2-1-优点" class="headerlink" title="2.1 优点"></a>2.1 优点</h3><p>（1）. 静态工厂方法不像构造方法，它们是有名字的。（属于类的方法）<br>（2）. 静态工厂方法与构造方法不同，他们被调用时不需要每次都创建一个对象。例如调用Boolean.valueOf(true)方法，返回的是Boolean类中定义的静态不变属性TRUE对象；<br>（3）. 静态工厂方法与构造方法不同，他们可以返回任意对象，构造方法只能返回当前类的对象。<br>（4）. 静态工厂方法返回对象的类可以根据输入类型不同而不同。例如使用泛型。<br>（5）. 在编写该方法的类时，返回的对象的类不需要存在。（static关键字的作用）</p>
-<h3 id="2-2-缺点"><a href="#2-2-缺点" class="headerlink" title="2.2 缺点"></a>2.2 缺点</h3><p>（1）. 只提供静态工厂方法、没有提供公共或者受保护的构造方法时不能被子类化。（主要限制）<br>（2）. 静态工厂方法并不像构造方法那样突出、不容易被程序员阅读。</p>
-<h3 id="2-3-总结"><a href="#2-3-总结" class="headerlink" title="2.3 总结"></a>2.3 总结</h3><p>静态工厂方法和公共构造方法都有他们的用途，并且了解他们的相对有点时值得的。通常，静态工厂方法更可取，因此避免在没有考虑静态工厂方法的情况下、提供公共构造方法。</p>
-]]></content>
-      <tags>
-        <tag>Java</tag>
-        <tag>设计模式</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>解析XML</title>
-    <url>/2020/06/16/%E8%A7%A3%E6%9E%90XML/</url>
-    <content><![CDATA[<blockquote>
-<ul>
-<li>Java 8 官方API : <a href="https://docs.oracle.com/javase/8/docs/api/" target="_blank" rel="noopener">Java 8 API</a></li>
-<li>github代码地址: <a href="https://github.com/miracle-sungm/learn_xml" target="_blank" rel="noopener">Github</a></li>
+<li>如果我们解析XML之后，获取到XML的内容，再校验XML内容或格式是否符合设计规范，这个工作是很繁琐的。</li>
+<li>幸好，XML解析器的一个很大的好处就是它能够自动校验某个文档是否具有正确的结构，这样解析工作就变的简单的多。</li>
+<li>通过定义一个 <a href="https://www.w3school.com.cn/dtd/dtd_intro.asp" target="_blank" rel="noopener">DTD</a> 或者 <a href="https://www.w3school.com.cn/schema/schema_intro.asp" target="_blank" rel="noopener">XML Schema</a>， DTD 或者 Schema 包含了用于解释文档如何构成的规则，这些规则指定了每个元素的合法子元素和属性。</li>
 </ul>
 </blockquote>
 <hr>
-<h2 id="1-DOM解析XML"><a href="#1-DOM解析XML" class="headerlink" title="1. DOM解析XML"></a>1. DOM解析XML</h2><p><strong>xml文档</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot; ?&gt;</span><br><span class="line">&lt;class&gt;</span><br><span class="line">    &lt;student&gt;</span><br><span class="line">        &lt;name nameAttr&#x3D;&quot;sungm&quot;&gt;sungm&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age ageAttr&#x3D;&quot;25&quot;&gt;25&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex sexAttr&#x3D;&quot;Man&quot;&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className classAttr&#x3D;&quot;ClassOne&quot;&gt;Class One&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">    &lt;student&gt;</span><br><span class="line">        &lt;name nameAttr&#x3D;&quot;sunhw&quot;&gt;sunhw&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age ageAttr&#x3D;&quot;1&quot;&gt;1&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex sexAttr&#x3D;&quot;Man&quot;&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className classAttr&#x3D;&quot;ClassTwo&quot;&gt;Class Two&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">&lt;&#x2F;class&gt;</span><br></pre></td></tr></table></figure>
-
-<p><strong>程序入口</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import org.w3c.dom.*;</span><br><span class="line"></span><br><span class="line">import javax.xml.parsers.DocumentBuilder;</span><br><span class="line">import javax.xml.parsers.DocumentBuilderFactory;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2020-06-16 16:59</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class Main &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        &#x2F;&#x2F;获取一个xml解析器的文档构建者工厂实例（设计模式：工厂模式）</span><br><span class="line">        DocumentBuilderFactory factory &#x3D; DocumentBuilderFactory.newInstance();</span><br><span class="line">        &#x2F;&#x2F;获取一个xml解析器的文档构建者实例（设计模式：Builder模式）</span><br><span class="line">        DocumentBuilder builder &#x3D; factory.newDocumentBuilder();</span><br><span class="line">        &#x2F;&#x2F;使用xml解析器builder解析文档，获取解析后的Document对象</span><br><span class="line">        Document document &#x3D; builder.parse(&quot;src&#x2F;main&#x2F;resources&#x2F;student.xml&quot;);</span><br><span class="line">        &#x2F;&#x2F;获取根元素</span><br><span class="line">        Element rootElement &#x3D; document.getDocumentElement();</span><br><span class="line">        &#x2F;&#x2F;获取文档中student元素列表（也可以直接通过document.getElementsByTagName(&quot;student&quot;)获取所有的student元素）</span><br><span class="line">        NodeList studentNodes &#x3D; rootElement.getElementsByTagName(&quot;student&quot;);</span><br><span class="line">        for (int index &#x3D; 0, size &#x3D; studentNodes.getLength(); index &lt; size; index++) &#123;</span><br><span class="line">            Element element &#x3D; (Element) studentNodes.item(index);</span><br><span class="line">            &#x2F;&#x2F;元素（备注：通过getElementsByTagName()方法获取指定的元素）</span><br><span class="line">            Element nameElement &#x3D; (Element) element.getElementsByTagName(&quot;name&quot;).item(0);</span><br><span class="line">            Element ageElement &#x3D; (Element) element.getElementsByTagName(&quot;age&quot;).item(0);</span><br><span class="line">            Element sexElement &#x3D; (Element) element.getElementsByTagName(&quot;sex&quot;).item(0);</span><br><span class="line">            Element classElement &#x3D; (Element) element.getElementsByTagName(&quot;className&quot;).item(0);</span><br><span class="line"></span><br><span class="line">            &#x2F;&#x2F;文本（备注：通过getNodeName()方法获取元素名称，通过getTextContent()方法获取文本内容）</span><br><span class="line">            System.out.println(nameElement.getNodeName()  + &quot; : &quot; + nameElement.getTextContent());</span><br><span class="line">            System.out.println(ageElement.getNodeName()   + &quot; : &quot; + ageElement.getTextContent());</span><br><span class="line">            System.out.println(sexElement.getNodeName()   + &quot; : &quot; + sexElement.getTextContent());</span><br><span class="line">            System.out.println(classElement.getNodeName() + &quot; : &quot; + classElement.getTextContent());</span><br><span class="line"></span><br><span class="line">            &#x2F;&#x2F;属性（备注：通过getAttributeNode(name)方法属性节点，通过getAttribute(name)方法获取属性内容）</span><br><span class="line">            Attr nameAttr &#x3D; nameElement.getAttributeNode(&quot;nameAttr&quot;);</span><br><span class="line">            Attr ageAttr &#x3D; ageElement.getAttributeNode(&quot;ageAttr&quot;);</span><br><span class="line">            Attr sexAttr &#x3D; sexElement.getAttributeNode(&quot;sexAttr&quot;);</span><br><span class="line">            Attr classAttr &#x3D; classElement.getAttributeNode(&quot;classAttr&quot;);</span><br><span class="line">            System.out.println(nameAttr.getName()  + &quot; : &quot; + nameAttr.getValue());</span><br><span class="line">            System.out.println(ageAttr.getName()   + &quot; : &quot; + ageAttr.getValue());</span><br><span class="line">            System.out.println(sexAttr.getName()   + &quot; : &quot; + sexAttr.getValue());</span><br><span class="line">            System.out.println(classAttr.getName()   + &quot; : &quot; + classAttr.getValue());</span><br><span class="line">            System.out.println();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>运行结果</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">name : sungm</span><br><span class="line">age : 25</span><br><span class="line">sex : Man</span><br><span class="line">className : Class One</span><br><span class="line">nameAttr : sungm</span><br><span class="line">ageAttr : 25</span><br><span class="line">sexAttr : Man</span><br><span class="line">classAttr : ClassOne</span><br><span class="line"></span><br><span class="line">name : sunhw</span><br><span class="line">age : 1</span><br><span class="line">sex : Man</span><br><span class="line">className : Class Two</span><br><span class="line">nameAttr : sunhw</span><br><span class="line">ageAttr : 1</span><br><span class="line">sexAttr : Man</span><br><span class="line">classAttr : ClassTwo</span><br></pre></td></tr></table></figure>
-
-<p><strong>优点：</strong></p>
-<blockquote>
-<ul>
-<li>树结构，方便理解与使用</li>
-<li>解析过程中树结构保存在内存中，方便修改</li>
-</ul>
-</blockquote>
-<p><strong>缺点：</strong></p>
-<blockquote>
-<ul>
-<li>当文件过大时耗用内存，需谨慎使用</li>
-</ul>
-</blockquote>
-<hr>
-<h2 id="2-SAX解析XML"><a href="#2-SAX解析XML" class="headerlink" title="2. SAX解析XML"></a>2. SAX解析XML</h2><p><strong>xml文档</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot; ?&gt;</span><br><span class="line">&lt;class&gt;</span><br><span class="line">    &lt;student&gt;</span><br><span class="line">        &lt;name nameAttr&#x3D;&quot;sungm&quot;&gt;sungm&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age ageAttr&#x3D;&quot;25&quot;&gt;25&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex sexAttr&#x3D;&quot;Man&quot;&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className classAttr&#x3D;&quot;ClassOne&quot;&gt;Class One&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">    &lt;student&gt;</span><br><span class="line">        &lt;name nameAttr&#x3D;&quot;sunhw&quot;&gt;sunhw&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age ageAttr&#x3D;&quot;1&quot;&gt;1&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex sexAttr&#x3D;&quot;Man&quot;&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className classAttr&#x3D;&quot;ClassTwo&quot;&gt;Class Two&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">&lt;&#x2F;class&gt;</span><br></pre></td></tr></table></figure>
-
-<p><strong>自定义Handler处理器</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import org.xml.sax.Attributes;</span><br><span class="line">import org.xml.sax.SAXException;</span><br><span class="line">import org.xml.sax.helpers.DefaultHandler;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2020-06-17 17:42</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class StudentParserHandler extends DefaultHandler &#123;</span><br><span class="line"></span><br><span class="line">    interface Constants &#123;</span><br><span class="line"></span><br><span class="line">        String ROOT_ELEMENT &#x3D; &quot;class&quot;;</span><br><span class="line"></span><br><span class="line">        String EMPTY &#x3D; &quot;&quot;;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;方法执行顺序：startDocument -&gt; startElement -&gt; characters -&gt; endElement -&gt; characters -&gt; endDocument</span><br><span class="line">    &#x2F;&#x2F;执行次数        只执行一次      元素循环执行    元素循环执行   元素循环执行   元素循环执行    只执行一次</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void startDocument() throws SAXException &#123;</span><br><span class="line">        super.startDocument();</span><br><span class="line">        System.out.println(&quot;开始解析XML文档&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void endDocument() throws SAXException &#123;</span><br><span class="line">        super.endDocument();</span><br><span class="line">        System.out.println(&quot;解析XML文档结束&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException &#123;</span><br><span class="line">        super.startElement(uri, localName, qName, attributes);</span><br><span class="line">        System.out.println(Constants.ROOT_ELEMENT.equals(qName) ? &quot;开始解析根节点&quot; : &quot;节点名称 ： &quot; + qName);</span><br><span class="line">        &#x2F;&#x2F;获取元素的属性</span><br><span class="line">        for (int index &#x3D; 0, size &#x3D; attributes.getLength(); index &lt; size; index++) &#123;</span><br><span class="line">            String attrName &#x3D; attributes.getLocalName(index);</span><br><span class="line">            String attrValue &#x3D; attributes.getValue(index);</span><br><span class="line">            System.out.println(&quot;attrName &#x3D; &quot; + attrName + &quot;, attrValue &#x3D; &quot; + attrValue);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void endElement(String uri, String localName, String qName) throws SAXException &#123;</span><br><span class="line">        super.endElement(uri, localName, qName);</span><br><span class="line">        if (Constants.ROOT_ELEMENT.equals(qName)) &#123;</span><br><span class="line">            System.out.println(&quot;解析根节点结束&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void characters(char[] ch, int start, int length) throws SAXException &#123;</span><br><span class="line">        super.characters(ch, start, length);</span><br><span class="line">        String value &#x3D; new String(ch, start, length).trim();</span><br><span class="line">        if (!Constants.EMPTY.equals(value)) &#123;</span><br><span class="line">            System.out.println(&quot;节点值：&quot; + value);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>程序入口</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import javax.xml.parsers.SAXParser;</span><br><span class="line">import javax.xml.parsers.SAXParserFactory;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2020-06-17 17:33</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class Main &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        &#x2F;&#x2F;获取一个Sax解析工厂实例</span><br><span class="line">        SAXParserFactory saxParserFactory &#x3D; SAXParserFactory.newInstance();</span><br><span class="line">        &#x2F;&#x2F;获取一个Sax解析器实例</span><br><span class="line">        SAXParser saxParser &#x3D; saxParserFactory.newSAXParser();</span><br><span class="line">        &#x2F;&#x2F;创建一个Handel实例</span><br><span class="line">        StudentParserHandler handler &#x3D; new StudentParserHandler();</span><br><span class="line">        &#x2F;&#x2F;解析文件</span><br><span class="line">        saxParser.parse(&quot;src&#x2F;main&#x2F;resources&#x2F;student.xml&quot;, handler);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>运行结果</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">开始解析XML文档</span><br><span class="line">开始解析根节点</span><br><span class="line">节点名称 ： class</span><br><span class="line">节点名称 ： student</span><br><span class="line">节点名称 ： name</span><br><span class="line">attrName &#x3D; nameAttr, attrValue &#x3D; sungm</span><br><span class="line">节点值：sungm</span><br><span class="line">节点名称 ： age</span><br><span class="line">attrName &#x3D; ageAttr, attrValue &#x3D; 25</span><br><span class="line">节点值：25</span><br><span class="line">节点名称 ： sex</span><br><span class="line">attrName &#x3D; sexAttr, attrValue &#x3D; Man</span><br><span class="line">节点值：Man</span><br><span class="line">节点名称 ： className</span><br><span class="line">attrName &#x3D; classAttr, attrValue &#x3D; ClassOne</span><br><span class="line">节点值：Class One</span><br><span class="line">节点名称 ： student</span><br><span class="line">节点名称 ： name</span><br><span class="line">attrName &#x3D; nameAttr, attrValue &#x3D; sunhw</span><br><span class="line">节点值：sunhw</span><br><span class="line">节点名称 ： age</span><br><span class="line">attrName &#x3D; ageAttr, attrValue &#x3D; 1</span><br><span class="line">节点值：1</span><br><span class="line">节点名称 ： sex</span><br><span class="line">attrName &#x3D; sexAttr, attrValue &#x3D; Man</span><br><span class="line">节点值：Man</span><br><span class="line">节点名称 ： className</span><br><span class="line">attrName &#x3D; classAttr, attrValue &#x3D; ClassTwo</span><br><span class="line">节点值：Class Two</span><br><span class="line">解析根节点结束</span><br><span class="line">解析XML文档结束</span><br></pre></td></tr></table></figure>
-
-<p><strong>优点：</strong></p>
-<blockquote>
-<ul>
-<li>采用事件驱动的方式，耗用内存更少</li>
-<li>适用于只需要处理xml文件的数据时使用</li>
-</ul>
-</blockquote>
-<p><strong>缺点：</strong></p>
-<blockquote>
-<ul>
-<li>需编写自定义的handler类，不易编写</li>
-<li>很难同时访问同一个xml中的不同数据</li>
-</ul>
-</blockquote>
-<hr>
-<h2 id="3-JDOM解析XML"><a href="#3-JDOM解析XML" class="headerlink" title="3. JDOM解析XML"></a>3. JDOM解析XML</h2><p><strong>引入依赖</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!-- https:&#x2F;&#x2F;mvnrepository.com&#x2F;artifact&#x2F;org.jdom&#x2F;jdom --&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.jdom&lt;&#x2F;groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;jdom&lt;&#x2F;artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.0.2&lt;&#x2F;version&gt;</span><br><span class="line">&lt;&#x2F;dependency&gt;</span><br></pre></td></tr></table></figure>
-
-<p><strong>XML</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot; ?&gt;</span><br><span class="line">&lt;class&gt;</span><br><span class="line">    &lt;student&gt;</span><br><span class="line">        &lt;name nameAttr&#x3D;&quot;sungm&quot;&gt;sungm&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age ageAttr&#x3D;&quot;25&quot;&gt;25&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex sexAttr&#x3D;&quot;Man&quot;&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className classAttr&#x3D;&quot;ClassOne&quot;&gt;Class One&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">    &lt;student&gt;</span><br><span class="line">        &lt;name nameAttr&#x3D;&quot;sunhw&quot;&gt;sunhw&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age ageAttr&#x3D;&quot;1&quot;&gt;1&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex sexAttr&#x3D;&quot;Man&quot;&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className classAttr&#x3D;&quot;ClassTwo&quot;&gt;Class Two&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">&lt;&#x2F;class&gt;</span><br></pre></td></tr></table></figure>
-
-<p><strong>程序入口</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import org.jdom2.Attribute;</span><br><span class="line">import org.jdom2.Document;</span><br><span class="line">import org.jdom2.Element;</span><br><span class="line">import org.jdom2.input.SAXBuilder;</span><br><span class="line"></span><br><span class="line">import java.util.List;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2020-06-18 10:46</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class Main &#123;</span><br><span class="line"></span><br><span class="line">    interface Constants &#123;</span><br><span class="line"></span><br><span class="line">        String EMPTY &#x3D; &quot;&quot;;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception&#123;</span><br><span class="line">        SAXBuilder saxBuilder &#x3D; new SAXBuilder();</span><br><span class="line">        Document document &#x3D; saxBuilder.build(&quot;src&#x2F;main&#x2F;resources&#x2F;student.xml&quot;);</span><br><span class="line">        Element rootElement &#x3D; document.getRootElement();</span><br><span class="line">        System.out.println(&quot;根节点：&quot; + rootElement.getName());</span><br><span class="line">        parseElement(rootElement);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void parseElement(Element element) &#123;</span><br><span class="line">        &#x2F;&#x2F;元素内容</span><br><span class="line">        if (element.getText() !&#x3D; null &amp;&amp; !Constants.EMPTY.equals(element.getTextTrim())) &#123;</span><br><span class="line">            System.out.println(element.getName() + &quot;:&quot; + element.getTextTrim());</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F;元素属性</span><br><span class="line">        if (element.hasAttributes()) &#123;</span><br><span class="line">            element.getAttributes().forEach(Main::parseAttribute);</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F;解析子元素</span><br><span class="line">        List&lt;Element&gt; childrenElement &#x3D; element.getChildren();</span><br><span class="line">        if (childrenElement !&#x3D; null &amp;&amp; childrenElement.size() &gt; 0) &#123;</span><br><span class="line">            childrenElement.forEach(Main::parseElement);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void parseAttribute(Attribute attribute) &#123;</span><br><span class="line">        System.out.println(attribute.getName() + &quot; : &quot; + attribute.getValue());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>运行结果</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">根节点：class</span><br><span class="line">name:sungm</span><br><span class="line">nameAttr : sungm</span><br><span class="line">age:25</span><br><span class="line">ageAttr : 25</span><br><span class="line">sex:Man</span><br><span class="line">sexAttr : Man</span><br><span class="line">className:Class One</span><br><span class="line">classAttr : ClassOne</span><br><span class="line">name:sunhw</span><br><span class="line">nameAttr : sunhw</span><br><span class="line">age:1</span><br><span class="line">ageAttr : 1</span><br><span class="line">sex:Man</span><br><span class="line">sexAttr : Man</span><br><span class="line">className:Class Two</span><br><span class="line">classAttr : ClassTwo</span><br></pre></td></tr></table></figure>
+<h2 id="2-定义DTD校验规则"><a href="#2-定义DTD校验规则" class="headerlink" title="2. 定义DTD校验规则"></a>2. 定义DTD校验规则</h2><p><strong>XML文档</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot; ?&gt;</span><br><span class="line">&lt;!-- 定义DTD校验规则 --&gt;</span><br><span class="line">&lt;!DOCTYPE class [</span><br><span class="line">    &lt;!-- 定义class至少包含一个student --&gt;</span><br><span class="line">    &lt;!ELEMENT class (student+)&gt;</span><br><span class="line">    &lt;!-- 定义student只包含name,age,sex,className属性 --&gt;</span><br><span class="line">    &lt;!ELEMENT student (name, age, sex, className)&gt;</span><br><span class="line">        &lt;!-- 定义id属性, 属性默认值为0 --&gt;</span><br><span class="line">        &lt;!ATTLIST student id CDATA &quot;0&quot;&gt;</span><br><span class="line">    &lt;!ELEMENT name (#PCDATA)&gt;</span><br><span class="line">    &lt;!ELEMENT age (#PCDATA)&gt;</span><br><span class="line">    &lt;!ELEMENT sex (#PCDATA)&gt;</span><br><span class="line">    &lt;!ELEMENT className (#PCDATA)&gt;</span><br><span class="line">]&gt;</span><br><span class="line">&lt;class&gt;</span><br><span class="line">    &lt;student id&#x3D;&quot;1&quot;&gt;</span><br><span class="line">        &lt;name&gt;sungm&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age&gt;25&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className&gt;Class One&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">    &lt;student id&#x3D;&quot;2&quot;&gt;</span><br><span class="line">        &lt;name&gt;sunhw&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age&gt;1&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className&gt;Class Two&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">&lt;&#x2F;class&gt;</span><br></pre></td></tr></table></figure>
 
 
-<p><strong>优点：</strong></p>
-<blockquote>
-<ul>
-<li>API简单易用，推荐使用</li>
-</ul>
-</blockquote>
-<p><strong>缺点：</strong></p>
-<blockquote>
-<ul>
-<li>用了很多具体类，没使用接口</li>
-</ul>
-</blockquote>
-<hr>
-<h2 id="4-DOM4J解析XML"><a href="#4-DOM4J解析XML" class="headerlink" title="4. DOM4J解析XML"></a>4. DOM4J解析XML</h2><p><strong>引入依赖</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!-- https:&#x2F;&#x2F;mvnrepository.com&#x2F;artifact&#x2F;dom4j&#x2F;dom4j --&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;dom4j&lt;&#x2F;groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;dom4j&lt;&#x2F;artifactId&gt;</span><br><span class="line">    &lt;version&gt;1.6.1&lt;&#x2F;version&gt;</span><br><span class="line">&lt;&#x2F;dependency&gt;</span><br></pre></td></tr></table></figure>
-
-<p><strong>XML</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot; ?&gt;</span><br><span class="line">&lt;class&gt;</span><br><span class="line">    &lt;student&gt;</span><br><span class="line">        &lt;name nameAttr&#x3D;&quot;sungm&quot;&gt;sungm&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age ageAttr&#x3D;&quot;25&quot;&gt;25&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex sexAttr&#x3D;&quot;Man&quot;&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className classAttr&#x3D;&quot;ClassOne&quot;&gt;Class One&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">    &lt;student&gt;</span><br><span class="line">        &lt;name nameAttr&#x3D;&quot;sunhw&quot;&gt;sunhw&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age ageAttr&#x3D;&quot;1&quot;&gt;1&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex sexAttr&#x3D;&quot;Man&quot;&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className classAttr&#x3D;&quot;ClassTwo&quot;&gt;Class Two&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">&lt;&#x2F;class&gt;</span><br></pre></td></tr></table></figure>
-
-<p><strong>程序入口</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import org.dom4j.Attribute;</span><br><span class="line">import org.dom4j.Document;</span><br><span class="line">import org.dom4j.Element;</span><br><span class="line">import org.dom4j.io.SAXReader;</span><br><span class="line"></span><br><span class="line">import java.util.Iterator;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2020-06-18 11:27</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class Main &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        SAXReader reader &#x3D; new SAXReader();</span><br><span class="line">        Document document &#x3D; reader.read(&quot;src&#x2F;main&#x2F;resources&#x2F;student.xml&quot;);</span><br><span class="line">        Element element &#x3D; document.getRootElement();</span><br><span class="line">        System.out.println(&quot;根节点：名称 &#x3D; &quot; + element.getName());</span><br><span class="line">        &#x2F;&#x2F;递归解析</span><br><span class="line">        parseElement(element);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="line">    private static void parseElement(Element element) &#123;</span><br><span class="line">        System.out.println(&quot;节点：名称 &#x3D; &quot; + element.getName() + &quot;, value &#x3D; &quot; + element.getTextTrim());</span><br><span class="line">        Iterator iterator &#x3D; element.elementIterator();</span><br><span class="line">        while (iterator.hasNext()) &#123;</span><br><span class="line">            Element childElement &#x3D; (Element) iterator.next();</span><br><span class="line">            &#x2F;&#x2F;解析属性</span><br><span class="line">            if (childElement.attributeCount() &gt; 0) &#123;</span><br><span class="line">                childElement.attributes().forEach(Main::parseAttribute);</span><br><span class="line">            &#125;</span><br><span class="line">            &#x2F;&#x2F;解析元素</span><br><span class="line">            parseElement(childElement);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void parseAttribute(Object attribute) &#123;</span><br><span class="line">        System.out.println(&quot;属性：&quot; + ((Attribute) attribute).getName() + &quot; : &quot; + ((Attribute) attribute).getValue());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>运行结果</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">根节点：名称 &#x3D; class</span><br><span class="line">节点：名称 &#x3D; class, value &#x3D; </span><br><span class="line">节点：名称 &#x3D; student, value &#x3D; </span><br><span class="line">属性：nameAttr : sungm</span><br><span class="line">节点：名称 &#x3D; name, value &#x3D; sungm</span><br><span class="line">属性：ageAttr : 25</span><br><span class="line">节点：名称 &#x3D; age, value &#x3D; 25</span><br><span class="line">属性：sexAttr : Man</span><br><span class="line">节点：名称 &#x3D; sex, value &#x3D; Man</span><br><span class="line">属性：classAttr : ClassOne</span><br><span class="line">节点：名称 &#x3D; className, value &#x3D; Class One</span><br><span class="line">节点：名称 &#x3D; student, value &#x3D; </span><br><span class="line">属性：nameAttr : sunhw</span><br><span class="line">节点：名称 &#x3D; name, value &#x3D; sunhw</span><br><span class="line">属性：ageAttr : 1</span><br><span class="line">节点：名称 &#x3D; age, value &#x3D; 1</span><br><span class="line">属性：sexAttr : Man</span><br><span class="line">节点：名称 &#x3D; sex, value &#x3D; Man</span><br><span class="line">属性：classAttr : ClassTwo</span><br><span class="line">节点：名称 &#x3D; className, value &#x3D; Class Two</span><br></pre></td></tr></table></figure>
-
-
-<p><strong>优点：</strong></p>
-<blockquote>
-<ul>
-<li>使用了接口和抽象方案，是个优秀的API</li>
-<li>灵活性好、性能优异、易用性好。推荐使用</li>
-</ul>
-</blockquote>
-<hr>
 ]]></content>
       <tags>
         <tag>Java</tag>
@@ -1774,27 +1833,6 @@
         <tag>Java</tag>
         <tag>工具类</tag>
         <tag>设计模式</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>验证XML</title>
-    <url>/2020/06/18/%E9%AA%8C%E8%AF%81XML/</url>
-    <content><![CDATA[<h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h2><blockquote>
-<ul>
-<li>如果我们解析XML之后，获取到XML的内容，再校验XML内容或格式是否符合设计规范，这个工作是很繁琐的。</li>
-<li>幸好，XML解析器的一个很大的好处就是它能够自动校验某个文档是否具有正确的结构，这样解析工作就变的简单的多。</li>
-<li>通过定义一个 <a href="https://www.w3school.com.cn/dtd/dtd_intro.asp" target="_blank" rel="noopener">DTD</a> 或者 <a href="https://www.w3school.com.cn/schema/schema_intro.asp" target="_blank" rel="noopener">XML Schema</a>， DTD 或者 Schema 包含了用于解释文档如何构成的规则，这些规则指定了每个元素的合法子元素和属性。</li>
-</ul>
-</blockquote>
-<hr>
-<h2 id="2-定义DTD校验规则"><a href="#2-定义DTD校验规则" class="headerlink" title="2. 定义DTD校验规则"></a>2. 定义DTD校验规则</h2><p><strong>XML文档</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot; ?&gt;</span><br><span class="line">&lt;!-- 定义DTD校验规则 --&gt;</span><br><span class="line">&lt;!DOCTYPE class [</span><br><span class="line">    &lt;!-- 定义class至少包含一个student --&gt;</span><br><span class="line">    &lt;!ELEMENT class (student+)&gt;</span><br><span class="line">    &lt;!-- 定义student只包含name,age,sex,className属性 --&gt;</span><br><span class="line">    &lt;!ELEMENT student (name, age, sex, className)&gt;</span><br><span class="line">        &lt;!-- 定义id属性, 属性默认值为0 --&gt;</span><br><span class="line">        &lt;!ATTLIST student id CDATA &quot;0&quot;&gt;</span><br><span class="line">    &lt;!ELEMENT name (#PCDATA)&gt;</span><br><span class="line">    &lt;!ELEMENT age (#PCDATA)&gt;</span><br><span class="line">    &lt;!ELEMENT sex (#PCDATA)&gt;</span><br><span class="line">    &lt;!ELEMENT className (#PCDATA)&gt;</span><br><span class="line">]&gt;</span><br><span class="line">&lt;class&gt;</span><br><span class="line">    &lt;student id&#x3D;&quot;1&quot;&gt;</span><br><span class="line">        &lt;name&gt;sungm&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age&gt;25&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className&gt;Class One&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">    &lt;student id&#x3D;&quot;2&quot;&gt;</span><br><span class="line">        &lt;name&gt;sunhw&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age&gt;1&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className&gt;Class Two&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">&lt;&#x2F;class&gt;</span><br></pre></td></tr></table></figure>
-
-
-]]></content>
-      <tags>
-        <tag>Java</tag>
-        <tag>XML</tag>
       </tags>
   </entry>
 </search>
