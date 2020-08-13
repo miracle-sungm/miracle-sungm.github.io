@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+<!--Description-->
+
+
+
+    <meta name="description" content="一个Java线程就像一个可以执行你的Java代码的虚拟CPU。
+当Java虚拟机创建的主线程开始执行main方法时，你的Java应用程序启动，在你的Java应用程序里面你可以创建和开始你自定义的线程。
+Java 线程都是对象，就像其他的Java对象一样，线程对象都是 java.lang.Tread "/>
+
+
+<!--Author-->
+
+    <meta name="author" content="sungm"/>
+
+
+<!--Open Graph Title-->
+
+    <meta property="og:title" content="[Java 并发编程] 6. 创建和开始Java线程"/>
+
+
+<!--Open Graph Description-->
+
+    <meta property="og:description" content="一个Java线程就像一个可以执行你的Java代码的虚拟CPU。
+当Java虚拟机创建的主线程开始执行main方法时，你的Java应用程序启动，在你的Java应用程序里面你可以创建和开始你自定义的线程。
+Java 线程都是对象，就像其他的Java对象一样，线程对象都是 java.lang.Tread "/>
+
+
+<!--Open Graph Site Name-->
+    <meta property="og:site_name" content="Miracle&#39;s Blog"/>
+
+<!--Type page-->
+
+    <meta property="og:type" content="article"/>
+
+
+<!--Page Cover-->
+
+
+    <meta property="og:image" content="http://yoursite.com/img/home-bg.jpg"/>
+
+
+<meta name="twitter:card" content="summary_large_image"/>
+
+
+
+
+    <meta name="twitter:image" content="http://yoursite.com/img/home-bg.jpg"/>
+
+
+<!-- Title -->
+
+<title>[Java 并发编程] 6. 创建和开始Java线程 - Miracle&#39;s Blog</title>
+
+<!-- Bootstrap Core CSS -->
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+
+<!-- Custom CSS -->
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<!-- Custom Fonts -->
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.0/css/all.min.css" />
+<link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css"/>
+<link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css"/>
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+<!-- Gallery -->
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/featherlight@1.4.0/src/featherlight.css" integrity="sha256-30DV/STftlyQ6v8yaOWlabammvCYtRJERLj/m0b3zno=" crossorigin="anonymous">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/lightgallery@1.6.11/dist/css/lightgallery.min.css">
+
+<!-- favicon -->
+
+<link rel="icon" href="/img/favicon.png"/>
+
+
+
+    <!-- Google Analytics -->
+    
+
+
+<meta name="generator" content="Hexo 4.2.1"><link rel="alternate" href="/atom.xml" title="Miracle's Blog" type="application/atom+xml">
+</head>
+<!-- Head tag -->
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top bg-transparent position-absolute w-100 p-0" id="nav">
+    <div class="container pl-0 pr-0">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <a class="navbar-brand text-white p-1 pl-3" href="/">Miracle's Blog</a>
+        </div>
+        <div class="navbar-nav float-right">
+            <button class="btn btn-link search-btn navbar-item" data-toggle="modal" data-target="#searchModal">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    </div>
+    <!-- /.container -->
+</nav>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 text-center">
+                <div class="post-heading text-white">
+                    <h1>[Java 并发编程] 6. 创建和开始Java线程</h1>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Main Content -->
+            <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
+                
+                    <span class="meta d-inline-block">
+    
+    
+    <!-- Date -->
+    
+        <span class="post-meta-split">&nbsp;|&nbsp;</span>
+        <i class="far fa-calendar-check fa-fw"></i>
+        2020-08-12
+    
+    <!-- word count and read count -->
+    
+
+    
+
+    
+</span>  
+                
+                <p>一个Java线程就像一个可以执行你的Java代码的虚拟CPU。</p>
+<p>当Java虚拟机创建的主线程开始执行main方法时，你的Java应用程序启动，在你的Java应用程序里面你可以创建和开始你自定义的线程。</p>
+<p>Java 线程都是对象，就像其他的Java对象一样，线程对象都是 java.lang.Tread 的实例或者其子类的实例。</p>
+<h3 id="1-创建和开始线程"><a href="#1-创建和开始线程" class="headerlink" title="1 创建和开始线程"></a>1 创建和开始线程</h3><p>你可以像这样创建一个线程对象</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Thread myThread &#x3D; new Thread();</span><br></pre></td></tr></table></figure>
+
+<p>你可以像这样开始一个线程</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">myThread.start();</span><br></pre></td></tr></table></figure>
+
+<p>创建线程的几种方式：</p>
+<blockquote>
+<ul>
+<li>继承 java.lang.Thread 类并重写 run() 方法。</li>
+<li>实现 java.lang.Runnable 接口并重写 run() 方法。</li>
+<li>实现 java.util.concurrent.Callable 接口并重写 call() 方法。（备注：这种实现方式后面有 JUC 专题）</li>
+</ul>
+</blockquote>
+<hr>
+<h3 id="2-Thread-子类"><a href="#2-Thread-子类" class="headerlink" title="2 Thread 子类"></a>2 Thread 子类</h3><p>继承 java.lang.Thread 类并重写 run() 方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public class MyThread extends Thread &#123;</span><br><span class="line"></span><br><span class="line">  public void run()&#123;</span><br><span class="line">     System.out.println(&quot;MyThread running&quot;);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>main方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args)&#123;</span><br><span class="line">    MyThread myThread &#x3D; new MyThread();</span><br><span class="line">    myThread.start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>start() 方法不会等线程执行完 run()方法，run() 方法将会由其他不同的CPU执行。</p>
+<hr>
+<h3 id="3-实现-Runnable-接口"><a href="#3-实现-Runnable-接口" class="headerlink" title="3 实现 Runnable 接口"></a>3 实现 Runnable 接口</h3><p>第二种创建线程的方式是实现 java.lang.Runnable 接口并重写该接口的 run() 方法。一个 Java 对象实现 Runnable 接口 可以被Java Thread 类执行。</p>
+<p>Runnable 接口由 JDK 提供，仅有一个 run 方法，是一个函数式接口。源码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">@FunctionalInterface</span><br><span class="line">public interface Callable&lt;V&gt; &#123;</span><br><span class="line">    &#x2F;**</span><br><span class="line">     * Computes a result, or throws an exception if unable to do so.</span><br><span class="line">     *</span><br><span class="line">     * @return computed result</span><br><span class="line">     * @throws Exception if unable to compute a result</span><br><span class="line">     *&#x2F;</span><br><span class="line">    V call() throws Exception;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>实现 Runnable 的方式有3种：</p>
+<blockquote>
+<ol>
+<li>创建一个 Java 类实现 Runnable 接口</li>
+<li>创建一个 Java 匿名类实现 Runnable 接口</li>
+<li>使用 Java 8 Lambda 表达式实现 Runnable 接口</li>
+</ol>
+</blockquote>
+<h5 id="3-1-创建一个-Java-类实现-Runnable-接口"><a href="#3-1-创建一个-Java-类实现-Runnable-接口" class="headerlink" title="3.1 创建一个 Java 类实现 Runnable 接口"></a>3.1 创建一个 Java 类实现 Runnable 接口</h5><p>例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public class MyRunnable implements Runnable &#123;</span><br><span class="line"></span><br><span class="line">  public void run()&#123;</span><br><span class="line">     System.out.println(&quot;MyRunnable running&quot;);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="3-2-创建一个-Java-匿名类实现-Runnable-接口"><a href="#3-2-创建一个-Java-匿名类实现-Runnable-接口" class="headerlink" title="3.2 创建一个 Java 匿名类实现 Runnable 接口"></a>3.2 创建一个 Java 匿名类实现 Runnable 接口</h5><p>例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Runnable myRunnable &#x3D; new Runnable()&#123;</span><br><span class="line"></span><br><span class="line">    public void run()&#123;</span><br><span class="line">        System.out.println(&quot;Runnable running&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="3-3-使用-Java-8-Lambda-表达式实现-Runnable-接口"><a href="#3-3-使用-Java-8-Lambda-表达式实现-Runnable-接口" class="headerlink" title="3.3 使用 Java 8 Lambda 表达式实现 Runnable 接口"></a>3.3 使用 Java 8 Lambda 表达式实现 Runnable 接口</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Runnable runnable &#x3D; () -&gt; &#123; System.out.println(&quot;Lambda Runnable running&quot;); &#125;;</span><br></pre></td></tr></table></figure>
+
+<h5 id="3-4-开启一个实现了-Runnable-接口的线程"><a href="#3-4-开启一个实现了-Runnable-接口的线程" class="headerlink" title="3.4 开启一个实现了 Runnable 接口的线程"></a>3.4 开启一个实现了 Runnable 接口的线程</h5><p>java.lang.Thread的包含传入一个Runnable接口的构造函数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    &#x2F;&#x2F;or an anonymous class, or lambda...</span><br><span class="line">    Runnable runnable &#x3D; new MyRunnable();</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;executed by a thread</span><br><span class="line">    Thread thread &#x3D; new Thread(runnable);</span><br><span class="line">    thread.start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="4-使用哪种方式创建线程更好"><a href="#4-使用哪种方式创建线程更好" class="headerlink" title="4. 使用哪种方式创建线程更好 ?"></a>4. 使用哪种方式创建线程更好 ?</h3><p>关于继承Thread和实现Runnable接口，没有明确的规定用哪种方式创建线程更好，两种方式都可以让线程运行。我更倾向于使用实现Runnable接口的方式，后面我还们会了解到另外一种创建线程的方式，通过线程池创建线程的方式更加合理。</p>
+<h3 id="5-常见陷阱：调用-run-代替-start"><a href="#5-常见陷阱：调用-run-代替-start" class="headerlink" title="5. 常见陷阱：调用 run() 代替 start()"></a>5. 常见陷阱：调用 run() 代替 start()</h3><p>通过调用start()，程序会告诉 CPU 线程已准备就绪，等待CPU执行 run() 方法。若直接调用 run() 方法则不会开启一个新的线程去执行 run() 方法，而是在原来的线程中去执行 run() 方法，所以当我们需要一个新的线程去执行 run() 方法中的代码时，应该调用 start() 方法启动一个线程，而不是直接调用 run() 方法。</p>
+<h3 id="6-线程名（Thread-Names）"><a href="#6-线程名（Thread-Names）" class="headerlink" title="6. 线程名（Thread Names）"></a>6. 线程名（Thread Names）</h3><p>创建线程的时候可以指定线程名称，详见 java.lang.Thread API</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    Runnable myRunnable &#x3D; () -&gt; System.out.println(&quot;Thread name is &quot; + Thread.currantThread().getName());</span><br><span class="line">    </span><br><span class="line">    new Thread(myRunnable, &quot;Thread One&quot;).start();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">console out: Thread name is Thread One</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-Thread-currentThread"><a href="#7-Thread-currentThread" class="headerlink" title="7. Thread.currentThread()"></a>7. Thread.currentThread()</h3><p>通过 Thread.currentThread() 获取当前正在执行的线程对象。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Thread currentThread &#x3D; Thread.currentThread();</span><br></pre></td></tr></table></figure>
+
+<h3 id="8-暂停线程"><a href="#8-暂停线程" class="headerlink" title="8. 暂停线程"></a>8. 暂停线程</h3><p>可以通过 Thread.sheep() 让线程睡眠指定毫秒数。这里不建议使用 thread.suspend() 方法，该方法和 Thread 类的 resume()、stop()、destroy() 都是 JDK 标注废弃方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">try &#123;</span><br><span class="line">    Thread.sleep(1000L);</span><br><span class="line">&#125; catch (InterruptedException e) &#123;</span><br><span class="line">    e.printStackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意： Thread.sheep() 方法不会释放CPU资源，如果设置锁的话也不会释放锁资源，只是让线程睡眠指定毫秒数。与 Object 类的 wait() 方法不同， wait() 方法主要用于线程通信，且 wait() 方法会释放锁资源。</p>
+<h3 id="9-停止一个线程"><a href="#9-停止一个线程" class="headerlink" title="9. 停止一个线程"></a>9. 停止一个线程</h3><p>不建议使用 Thread 类提供的 stop() 方法去停止一个线程，stop() 方法会暴力停止一个线程，对程序不友好，可以通过更友好的方式停止一个线程。</p>
+<p>请看示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">public class MyRunnable implements Runnable &#123;</span><br><span class="line"></span><br><span class="line">    private boolean doStop &#x3D; false;</span><br><span class="line"></span><br><span class="line">    public synchronized void doStop() &#123;</span><br><span class="line">        this.doStop &#x3D; true;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private synchronized boolean keepRunning() &#123;</span><br><span class="line">        return this.doStop &#x3D;&#x3D; false;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        while(keepRunning()) &#123;</span><br><span class="line">            &#x2F;&#x2F; keep doing what this thread should do.</span><br><span class="line">            System.out.println(&quot;Running&quot;);</span><br><span class="line"></span><br><span class="line">            try &#123;</span><br><span class="line">                Thread.sleep(3L * 1000L);</span><br><span class="line">            &#125; catch (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>请注意 doStop() 方法和 keepRunning() 方法使用了 synchronized 关键字，后面会详细讲解 synchronized 关键字的作用，这里不做过多描述。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">public class MyRunnableMain &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        MyRunnable myRunnable &#x3D; new MyRunnable();</span><br><span class="line"></span><br><span class="line">        Thread thread &#x3D; new Thread(myRunnable);</span><br><span class="line"></span><br><span class="line">        thread.start();</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            Thread.sleep(10L * 1000L);</span><br><span class="line">        &#125; catch (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        myRunnable.doStop();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面示例通过设置一个标识，主线程里面启动子线程，然后主线程睡眠10秒钟后调用 doStop() 方法，实现在主线程中停止子线程的运行。</p>
+
+            </div>
+
+            <!-- Post information -->
+            
+    <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 post-tags">
+        
+            <i class="fas fa-tag" style="vertical-align: middle;font-size: .8rem;"></i>
+            tags:&nbsp;
+            
+            
+        
+            <a href="/tags/Java/">#Java</a> <a href="/tags/Java并发编程/">#Java并发编程</a>
+        
+    </div>
+
+            
+    <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
+        <ul class="pagination d-block text-center">
+            
+                <li class="previous page-item d-inline"><a href="/2020/08/12/%E7%AB%9E%E4%BA%89%E6%9D%A1%E4%BB%B6%E5%92%8C%E4%B8%B4%E7%95%8C%E5%8C%BA/" class="page-link float-left">&larr;  下一页</a></li>
+            
+            
+                <li class="next page-item d-inline"><a href="/2020/08/11/%E5%B9%B6%E5%8F%91%E5%92%8C%E5%B9%B6%E8%A1%8C/" class="page-link float-right">上一页  &rarr;</a></li>
+            
+        </ul>
+    </div>
+
+
+            
+                <!-- Comments -->
+                
+
+                
+
+            
+
+        </div>
+    </div>
+</article> 
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+    <style>
+        #toc-content .toc-link::before {
+            background-color: transparent;
+            max-height: 25px;
+        }
+
+        #toc-content .toc-link.is-active-link::before {
+            background-color: #404040;
+        }
+    </style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    <div class="ui-toc dropup scrollspy-body pull-right" style="right: 3%;">
+        <button type="button" class="toc-btn btn btn-light" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
+            <i class="fas fa-list"></i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right p-2"  aria-labelledby="tocLabel">
+            <div class="toc-widget">
+                <div id="toc-content" class="text-truncate">
+                </div>
+            </div>
+            <div class="toc-menu pt-3 pl-4">
+                <a class="expand-toggle d-block py-1" href="#"><span class="expand-text">全部展开</span><span class="close-text" style="display: none;">全部收起</span></a>
+                <a class="back-to-top d-block py-1" href="#">回到顶部</a>
+                <a class="go-to-bottom d-block py-1" href="#">移至底部</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        tocbot.init({
+            // Where to render the table of contents.
+            tocSelector: '#toc-content',
+            // Where to grab the headings to build the table of contents.
+            contentSelector: 'article',
+            // Which headings to grab inside of the contentSelector element.
+            headingSelector: 'h1, h2, h3',
+            // For headings inside relative or absolute positioned containers within content.
+            hasInnerContainers: true,
+        });
+    </script>
+
+
+    
+
+
+    <!-- Footer -->
+    <hr />
+
+<!-- Footer -->
+<footer id="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 text-center">
+                <ul class="list-inline">
+                    
+
+                    
+
+                    
+
+                    
+
+                    
+
+                    
+                </ul>
+                <ul class="copyright footer-menu list-inline">
+                    
+                    
+                        <li class="list-inline-item">
+                            
+                            
+                            <a href="/">
+                                
+                                    Home
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/archives">
+                                
+                                    Archives
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/tags">
+                                
+                                    Tags
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/categories">
+                                
+                                    Categories
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/about">
+                                
+                                    About
+                                
+                            </a>
+                        </li>
+                    
+                </ul>
+                <p class="copyright footer-author">
+                    &copy; -2020 
+                    <a rel="external" class="copyright-link" href="" target="_blank">sungm</a><br/>
+                    Powered by <a rel="external" class="copyright-link" href="https://hexo.io/" target="_blank">Hexo</a>  
+                    <span class="copyright-split">&nbsp;|&nbsp;&nbsp;</span>
+                    Theme <a rel="external" class="copyright-link" href="https://github.com/luswdev/hexo-theme-clean.git" target="_blank">Clean</a>
+                    
+                    
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    <!-- After footer scripts -->
+    <!-- jQuery -->
+<script src="//cdn.jsdelivr.net/npm/jquery@2.1.4/dist/jquery.min.js"></script>
+
+<!-- For drop down -->
+<script src="//cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="//cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
+<!-- Gallery -->
+<script src="//cdn.jsdelivr.net/npm/lightgallery@1.6.11/dist/js/lightgallery-all.min.js"></script>
+<!-- Busuanzi -->
+
+
+<!-- Search script -->
+<script src="/js/search.js"></script>
+<script type="text/javascript">
+    $(function () {
+        searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+    });
+</script>
+
+
+<script src="/js/main.js"></script>
+
+
+    <!-- Search Modal -->
+    <!-- Modal -->
+<div class="modal fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+        <div class="modal-content overflow-auto">
+            <div class="modal-header">
+                <input type="text" class="form-control" placeholder="搜索关键词..." id="searchInput">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div id="searchResult">
+                    <div class="search-empty text-center text-muted p-5">
+                        <i class="far fa-meh"></i>
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

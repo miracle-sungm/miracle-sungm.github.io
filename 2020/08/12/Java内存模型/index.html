@@ -9,10 +9,8 @@
 
 
 
-    <meta name="description" content="从单线程应用程序到多线程应用程序不仅仅需要考虑多线程应用程序更加高效，我们还需要考虑使用多线程的成本。使用多线程技术时不要仅仅因为你会使用多线程技术，你应该有一个更好的想法，比如更好的处理线程安全问题，以及多线程使用成本。尽可能的去测试多线程应用程序的性能以及响应速度，而不是靠猜想。
-成本
-
-更复杂"/>
+    <meta name="description" content="Java Memory Model(JMM: Java内存模型)提到 Java Virtual Machine(JVM: Java虚拟机) 如何与计算机内存工作。JVM是整个计算机模型，所以它包含JMM。
+如果你想要设计出正确的并发程序，那么理解JMM是非常重要的。Java内存模型会提到一个线程怎样"/>
 
 
 <!--Author-->
@@ -22,15 +20,13 @@
 
 <!--Open Graph Title-->
 
-    <meta property="og:title" content="[Java 并发编程] 2. 使用多线程的成本"/>
+    <meta property="og:title" content="[Java 并发编程] 10. Java内存模型"/>
 
 
 <!--Open Graph Description-->
 
-    <meta property="og:description" content="从单线程应用程序到多线程应用程序不仅仅需要考虑多线程应用程序更加高效，我们还需要考虑使用多线程的成本。使用多线程技术时不要仅仅因为你会使用多线程技术，你应该有一个更好的想法，比如更好的处理线程安全问题，以及多线程使用成本。尽可能的去测试多线程应用程序的性能以及响应速度，而不是靠猜想。
-成本
-
-更复杂"/>
+    <meta property="og:description" content="Java Memory Model(JMM: Java内存模型)提到 Java Virtual Machine(JVM: Java虚拟机) 如何与计算机内存工作。JVM是整个计算机模型，所以它包含JMM。
+如果你想要设计出正确的并发程序，那么理解JMM是非常重要的。Java内存模型会提到一个线程怎样"/>
 
 
 <!--Open Graph Site Name-->
@@ -57,7 +53,7 @@
 
 <!-- Title -->
 
-<title>[Java 并发编程] 2. 使用多线程的成本 - Miracle&#39;s Blog</title>
+<title>[Java 并发编程] 10. Java内存模型 - Miracle&#39;s Blog</title>
 
 <!-- Bootstrap Core CSS -->
 <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
@@ -125,7 +121,7 @@
         <div class="row">
             <div class="col-lg-12 col-md-12 text-center">
                 <div class="post-heading text-white">
-                    <h1>[Java 并发编程] 2. 使用多线程的成本</h1>
+                    <h1>[Java 并发编程] 10. Java内存模型</h1>
                     
                 </div>
             </div>
@@ -147,7 +143,7 @@
     
         <span class="post-meta-split">&nbsp;|&nbsp;</span>
         <i class="far fa-calendar-check fa-fw"></i>
-        2020-08-09
+        2020-08-12
     
     <!-- word count and read count -->
     
@@ -157,36 +153,53 @@
     
 </span>  
                 
-                <p>从单线程应用程序到多线程应用程序不仅仅需要考虑多线程应用程序更加高效，我们还需要考虑使用多线程的成本。使用多线程技术时不要仅仅因为你会使用多线程技术，你应该有一个更好的想法，比如更好的处理线程安全问题，以及多线程使用成本。尽可能的去测试多线程应用程序的性能以及响应速度，而不是靠猜想。</p>
-<h3 id="成本"><a href="#成本" class="headerlink" title="成本"></a>成本</h3><blockquote>
-<ul>
-<li>更复杂的程序设计</li>
-<li>上下文切换的开销</li>
-</ul>
-</blockquote>
-<p><strong>更复杂的程序设计</strong> </p>
-<blockquote>
-<ul>
-<li>在某些情况下，一个多线程应用程序比单线程应用程序更加简单，但是在某些特殊情况下要更加复杂。</li>
-<li>在多个线程引用了同一个共享变量的情况下，多线程应用程序比单线程应用程序使用起来更加复杂，因为需要考虑线程安全问题，不正确的线程同步问题出现的问题往往防不胜防。</li>
-</ul>
-</blockquote>
-<p><strong>上下文切换的开销</strong> </p>
-<blockquote>
-<ul>
-<li>当一个CPU从当前线程切换的执行另外一个线程时，CPU需要保存当前线程的本地数据以及程序指针等等，再有另外一个线程切换到当前线程时，需要重新读取本地数据和程序指针等，这个交换的执行过程叫做上下文切换。</li>
-<li>上下文切换的成本并不便宜。</li>
-</ul>
-</blockquote>
-<p><strong>减少上下文切换</strong></p>
-<blockquote>
-<ul>
-<li>无锁并发编程：多线程竞争锁时，会引起上下文切换，所以多线程处理数据时，可以用一些方法来避免使用锁。</li>
-<li>CAS算法：Java的atomic包使用CAS算法来更新数据，而不需要加锁。</li>
-<li>使用最少线程：避免创建不需要的线程。</li>
-<li>协程：在单线程里实现多任务的调度，并在单线程里维持多个任务间的切换。</li>
-</ul>
-</blockquote>
+                <p>Java Memory Model(JMM: Java内存模型)提到 Java Virtual Machine(JVM: Java虚拟机) 如何与计算机内存工作。JVM是整个计算机模型，所以它包含JMM。</p>
+<p>如果你想要设计出正确的并发程序，那么理解JMM是非常重要的。Java内存模型会提到一个线程怎样获取被别的线程修改后的共享变量的值；也会提到当有必要的时候，怎样让多个线程顺序的访问共享变量。</p>
+<p>注意：原来的Java内存模型进行过修订，从Java 1.5 到 Java 14+，这个版本的内存模型仍然适用。</p>
+<h3 id="1-Java-Memory-Model"><a href="#1-Java-Memory-Model" class="headerlink" title="1. Java Memory Model"></a>1. Java Memory Model</h3><p>在JVM中，JMM包含两种内存模型：Thread Stacks(线程栈)、Heap(堆内存)。如图所示</p>
+<p><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-1.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-1.png" alt></div></p>
+<p><strong>内存模型</strong></p>
+<ol>
+<li>每个在JVM中运行的线程都有自己的线程栈。这个线程栈包含线程中调用的方法信息和程序计数器（当前程序所执行的字节码的行号指示器）。</li>
+<li>在开始执行某个方法的时候，会在线程栈中存储方法内所有的local variable(局部变量)，局部变量只对创建它的线程可见，其他线程无法访问。即使两个线程同时执行同一个方法，这两个线程都会创建局部变量保存至属于自己的线程栈中，线程只能访问自己线程栈中的数据。</li>
+<li>所有基本数据类型（byte、short、int、long、float、double、char、boolean）的局部变量都保存在线程栈中，并且对其他线程不可见。一个线程可能拷贝一个基本数据类型变量给其他线程，但不会共享原始的局部变量（这里是值传递）。</li>
+<li>堆内存中包含Java应用程序中所有对象的创建，不论哪个线程创建的对象都存储在堆内存中，并且包含基础数据类型的包装类也存储于堆内存中。对象的创建不管是作为局部变量、还是作为对象的成员，都始终保存于堆内存中。</li>
+</ol>
+<p>如下图所示：</p>
+<p><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-2.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-2.png" alt></div></p>
+<ol>
+<li>一个本地变量可能是一个基本数据类型，这种情况下本地变量将完全保存在线程栈中。</li>
+<li>一个本地变量可能引用一个对象，这种情况下对象的引用保存在线程栈中，对象保存在堆内存中。</li>
+<li>一个对象可能包含一些方法，方法包含一些本地变量。本地变量保存在线程栈中，方法保存随对象保存在堆内存中。</li>
+<li>一个对象的成员变量随对象保存在堆内存中，不论这个成员变量是基本数据类型还是引用其他对象，成员变量都保存在堆内存中。</li>
+<li>静态变量随 class(类) 保存在堆内存中。</li>
+</ol>
+<p>堆内存的对象可以被任何具有该对象引用的线程访问。</p>
+<hr>
+<h3 id="2-计算机硬件内存结构"><a href="#2-计算机硬件内存结构" class="headerlink" title="2. 计算机硬件内存结构"></a>2. 计算机硬件内存结构</h3><p>现代硬件内存结构与Java内存模型有些不同，为了更好的理解Java内存模型，了解硬件内存结果是很重要的。</p>
+<p>通常的硬件内存结构。如下图<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-4.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-4.png" alt></div></p>
+<p>现代计算机通常拥有2个以上的CPU，有些CPU有多个内核。重点是多CPU计算机可以同时执行多个线程。当你的Java应用程序是多线程应用程序，在你的应用程序中可能同时出现每个CPU都在执行线程的情况。</p>
+<ol>
+<li>每个CPU有一组（注意是一组，多个）CPU寄存器，CPU操作寄存器的速度比操作主内存更快，这也意味着CPU访问寄存器的速度比访问内存更快。</li>
+<li>每个CPU也可能有一个CPU缓存（CPU Cache Memory），事实上，每个CPU可能有一定数量的CPU缓存。CPU访问CPU缓存的速度比访问内存的速度快，通常情况下CPU访问CPU缓存的速度没有访问寄存器的速度快。因此你可以认为CPU访问内存的顺序依次是：寄存器 &gt; CPU缓存 &gt; 主内存。另外，一些CPU可能会有多级CPU缓存（L1,L2,L3等）。</li>
+<li>每个计算机都包含一个主内存，主内存的容量比CPU缓存的容量更大。</li>
+<li>通常情况下，CPU访问内存会读取主内存中的一些数据拷贝至CPU缓存，甚至拷贝至CPU内部的寄存器，然后可以在CPU缓存或者寄存器操作数据。当CPU需要写回数据至主内存中时，它首先会将寄存器中的结果值提交至CPU缓存中，然后再将CPU缓存的值提交至主内存中。</li>
+<li>当CPU需要将CPU缓存的数据提交至主内存中时，CPU缓存的数据将会被写回主内存中。</li>
+</ol>
+<h5 id="2-1-桥接Java内存模型和计算机硬件内存结构"><a href="#2-1-桥接Java内存模型和计算机硬件内存结构" class="headerlink" title="2.1 桥接Java内存模型和计算机硬件内存结构"></a>2.1 桥接Java内存模型和计算机硬件内存结构</h5><p>如您所知，Java内存模型与现代计算机硬件内存结构不同，硬件内存结构没有区分线程栈内存和堆内存。也就是说：线程栈内存和堆内存可以都存在于硬件的主内存、CPU高速缓存、寄存器中。<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-5.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-5.png" alt></div></p>
+<p>当Java对象和变量可以保存在不同的计算机内存区域中，这就可能会导致一些问题的发生。主要的两个问题是：</p>
+<ol>
+<li>当线程更新共享数据时，共享数据在多个线程中的可见性。</li>
+<li>当多个线程读、写、检查共享数据时，产生竞争条件。</li>
+</ol>
+<p>下面我们来解释这2个问题</p>
+<h5 id="2-2-共享数据的可见性"><a href="#2-2-共享数据的可见性" class="headerlink" title="2.2. 共享数据的可见性"></a>2.2. 共享数据的可见性</h5><p>如果多个线程共享一个对象，并且代码中没有使用 volatile 关键字和 synchronized 同步代码块。当一个线程更新这个共享对象后，修改后的对象的值可能对其他线程不可见。</p>
+<p>想象一下，当一个共享对象保存在主内存中时，一个CPU正在执行某个线程时把主内存中共享对象缓存至CPU高速缓存上，另外一个CPU也把共享对象缓存到CPU高速缓存中，其中一个CPU在CPU高速缓存中更新了共享数据并把共享数据写回到主内存中，此时另外一个CPU的CPU高速缓存还是旧的共享资源数据。</p>
+<p>下图中解释了上面这种场景。下图左边的正在执行某个线程的CPU将 obj.count 加载到CPU高速缓存中，同时将 obj.count 的值改为 2。左边这个线程对 obj.count 的值进行修改后，对执行其他线程的CPU并不可见。<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-6.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-6.png" alt></div></p>
+<p>解决这个问题我们可以使用 Java 提供的 volatile 关键字。这个关键字用于修饰某个成员变量，当线程要读取这个变量的值时，会从读取主内存中读取变量的值，并且每次修改变量的值时都会重新写回到主内存中。（后面会有文章详细介绍 volatile 关键字）</p>
+<h5 id="竞争条件"><a href="#竞争条件" class="headerlink" title="竞争条件"></a>竞争条件</h5><p>如果多个线程共享一个对象，并且有多个线程修改共享变量，可能产生竞争条件。</p>
+<p>想象一下，如果一个线程A从主内存中读取共享变量 obj.count 并写入CPU高速缓存中，同时线程B也从主内存中读取共享变量 obj.count 并写入CPU高速缓存中，线程A和线程B同时对 obj.count 做自增操作，也就是说 obj.count 同时被自增2次，在每个CPU里面自增一次。如果变量 obj.count 的同步执行递增2次，那么这个变量写回主内存时值应该是 obj.count + 2，然而这2次递增没有同步执行，实际上是在线程A和线程B并行执行，最终线程A和线程B把 obj.count 的值写回数据到主内存后，实际值变成了 obj.count + 1。如下图<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-7.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-7.png" alt></div></p>
+<p>解决这个问题我们可以使用 Java 提供的 synchronized 锁。synchronized 可以分别用于 代码块、普通方法、静态方法。后面有文章介绍 synchronized，这里不做过多描述。</p>
 
             </div>
 
@@ -207,10 +220,8 @@
     <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
         <ul class="pagination d-block text-center">
             
-                <li class="previous page-item d-inline"><a href="/2020/08/09/%E5%B9%B6%E5%8F%91%E6%A8%A1%E5%9E%8B/" class="page-link float-left">&larr;  下一页</a></li>
             
-            
-                <li class="next page-item d-inline"><a href="/2020/08/09/Java-Concurrency-and-Multithreading/" class="page-link float-right">上一页  &rarr;</a></li>
+                <li class="next page-item d-inline"><a href="/2020/08/12/%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E5%92%8C%E4%B8%8D%E5%8F%98%E6%80%A7/" class="page-link float-right">上一页  &rarr;</a></li>
             
         </ul>
     </div>

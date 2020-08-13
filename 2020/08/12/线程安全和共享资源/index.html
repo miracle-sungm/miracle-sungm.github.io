@@ -9,10 +9,8 @@
 
 
 
-    <meta name="description" content="从单线程应用程序到多线程应用程序不仅仅需要考虑多线程应用程序更加高效，我们还需要考虑使用多线程的成本。使用多线程技术时不要仅仅因为你会使用多线程技术，你应该有一个更好的想法，比如更好的处理线程安全问题，以及多线程使用成本。尽可能的去测试多线程应用程序的性能以及响应速度，而不是靠猜想。
-成本
-
-更复杂"/>
+    <meta name="description" content="线程安全：代码同时被多个线程安全地调用。如果一段代码是安全的，那它不包含竞争条件。竞争条件只发生在多个线程更新共享资源的时候，因此当Java线程执行的时候，知道哪些资源是线程共享资源是非常重要的。
+1. Local variables (本地变量/局部变量)局部变量保存在每个线程独有的线程栈中，因此"/>
 
 
 <!--Author-->
@@ -22,15 +20,13 @@
 
 <!--Open Graph Title-->
 
-    <meta property="og:title" content="[Java 并发编程] 2. 使用多线程的成本"/>
+    <meta property="og:title" content="[Java 并发编程] 8. 线程安全和共享资源"/>
 
 
 <!--Open Graph Description-->
 
-    <meta property="og:description" content="从单线程应用程序到多线程应用程序不仅仅需要考虑多线程应用程序更加高效，我们还需要考虑使用多线程的成本。使用多线程技术时不要仅仅因为你会使用多线程技术，你应该有一个更好的想法，比如更好的处理线程安全问题，以及多线程使用成本。尽可能的去测试多线程应用程序的性能以及响应速度，而不是靠猜想。
-成本
-
-更复杂"/>
+    <meta property="og:description" content="线程安全：代码同时被多个线程安全地调用。如果一段代码是安全的，那它不包含竞争条件。竞争条件只发生在多个线程更新共享资源的时候，因此当Java线程执行的时候，知道哪些资源是线程共享资源是非常重要的。
+1. Local variables (本地变量/局部变量)局部变量保存在每个线程独有的线程栈中，因此"/>
 
 
 <!--Open Graph Site Name-->
@@ -57,7 +53,7 @@
 
 <!-- Title -->
 
-<title>[Java 并发编程] 2. 使用多线程的成本 - Miracle&#39;s Blog</title>
+<title>[Java 并发编程] 8. 线程安全和共享资源 - Miracle&#39;s Blog</title>
 
 <!-- Bootstrap Core CSS -->
 <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
@@ -125,7 +121,7 @@
         <div class="row">
             <div class="col-lg-12 col-md-12 text-center">
                 <div class="post-heading text-white">
-                    <h1>[Java 并发编程] 2. 使用多线程的成本</h1>
+                    <h1>[Java 并发编程] 8. 线程安全和共享资源</h1>
                     
                 </div>
             </div>
@@ -147,7 +143,7 @@
     
         <span class="post-meta-split">&nbsp;|&nbsp;</span>
         <i class="far fa-calendar-check fa-fw"></i>
-        2020-08-09
+        2020-08-12
     
     <!-- word count and read count -->
     
@@ -157,35 +153,30 @@
     
 </span>  
                 
-                <p>从单线程应用程序到多线程应用程序不仅仅需要考虑多线程应用程序更加高效，我们还需要考虑使用多线程的成本。使用多线程技术时不要仅仅因为你会使用多线程技术，你应该有一个更好的想法，比如更好的处理线程安全问题，以及多线程使用成本。尽可能的去测试多线程应用程序的性能以及响应速度，而不是靠猜想。</p>
-<h3 id="成本"><a href="#成本" class="headerlink" title="成本"></a>成本</h3><blockquote>
-<ul>
-<li>更复杂的程序设计</li>
-<li>上下文切换的开销</li>
-</ul>
-</blockquote>
-<p><strong>更复杂的程序设计</strong> </p>
+                <p>线程安全：代码同时被多个线程安全地调用。如果一段代码是安全的，那它不包含竞争条件。竞争条件只发生在多个线程更新共享资源的时候，因此当Java线程执行的时候，知道哪些资源是线程共享资源是非常重要的。</p>
+<h3 id="1-Local-variables-本地变量-局部变量"><a href="#1-Local-variables-本地变量-局部变量" class="headerlink" title="1. Local variables (本地变量/局部变量)"></a>1. Local variables (本地变量/局部变量)</h3><p>局部变量保存在每个线程独有的线程栈中，因此局部变量在线程之间是不共享的。也就是说所有的局部变量都是线程安全的。举例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public void someMethod()&#123;</span><br><span class="line">    long threadSafeInt &#x3D; 0;</span><br><span class="line">    threadSafeInt++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="2-Local-Object-References-本地对象引用-局部对象引用"><a href="#2-Local-Object-References-本地对象引用-局部对象引用" class="headerlink" title="2. Local Object References (本地对象引用/局部对象引用)"></a>2. Local Object References (本地对象引用/局部对象引用)</h3><p>本地对象引用有所不同，引用本身是不共享的，同样也是保存在线程独有的线程栈中，线程之间不共享引用。但是引用的对象不是保存在线程栈中，而是保存在主内存堆中，理论上讲所有的线程都能够访问内存堆中存储的对象（但是要有对象的引用）。</p>
+<p>如果一个对象创建之后没有离开创建它的方法，那么是线程安全的。事实上传递这个对象的引用给其他的方法，只要这个对象的引用没有传递给其他的线程，那么这个对象都不会成为共享对象，始终是线程安全的。示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public void methodOne()&#123;</span><br><span class="line">  LocalObject localObject &#x3D; new LocalObject();</span><br><span class="line">  methodTwo(localObject);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public void methodTwo(LocalObject localObject)&#123;</span><br><span class="line">  localObject.setValue(&quot;value&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>示例中：对象 localObject 在 methodOne() 方法中被创建，然后传递给 methodTwo()，localObject 没有传递给其他线程; 每个线程执行 methodOne() 时会都创建一个新的 LocalObject 对象，且 LocalObject 对象的引用都保存在各自的线程栈中，因此是 methodOne() 线程安全的，尽管 LocalObject 存在多个实例对象，但使用它们是线程安全的。</p>
+<p><strong>但有一种场景例外：</strong> 当某个方法将 localObject 对象的引用作为参数传递给了其他线程，那么可能会造成线程不安全。</p>
+<h3 id="3-Object-Member-Variables-对象成员变量"><a href="#3-Object-Member-Variables-对象成员变量" class="headerlink" title="3. Object Member Variables (对象成员变量)"></a>3. Object Member Variables (对象成员变量)</h3><p>对象成员变量随对象保存在堆内存中。因此当两个线程调用了某个方法，这个方法引用了同一个对象并修改了这个对象的成员变量时，那么这个方法时线程不安全的。示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public class NotThreadSafe&#123;</span><br><span class="line">    StringBuilder builder &#x3D; new StringBuilder();</span><br><span class="line"></span><br><span class="line">    public add(String text)&#123;</span><br><span class="line">        this.builder.append(text);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当多个线程同时调用同一个 NotThreadSafe 对象的 add() 方法时，会导致竞争条件发生。 示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">NotThreadSafe sharedInstance &#x3D; new NotThreadSafe();</span><br><span class="line"></span><br><span class="line">new Thread(new MyRunnable(sharedInstance)).start();</span><br><span class="line">new Thread(new MyRunnable(sharedInstance)).start();</span><br><span class="line"></span><br><span class="line">public class MyRunnable implements Runnable&#123;</span><br><span class="line">  NotThreadSafe instance &#x3D; null;</span><br><span class="line"></span><br><span class="line">  public MyRunnable(NotThreadSafe instance)&#123;</span><br><span class="line">    this.instance &#x3D; instance;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public void run()&#123;</span><br><span class="line">    this.instance.add(&quot;some text&quot;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>请注意有 2 个 MyRunnable 对象共享了 sharedInstance 对象，因此当他们同时调用 sharedInstance.add() 方法时，会发生竞争条件。</p>
+<p>然而，当 2 个线程同时调用不对对象的 add() 方法时，不会产生竞争条件。示例</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">new Thread(new MyRunnable(new NotThreadSafe())).start();</span><br><span class="line">new Thread(new MyRunnable(new NotThreadSafe())).start();</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-线程安全规则"><a href="#4-线程安全规则" class="headerlink" title="4. 线程安全规则"></a>4. 线程安全规则</h3><p>当你想确认你的代码访问某些资源的时候是否是线程安全的，你可以使用下面这个规则：</p>
 <blockquote>
-<ul>
-<li>在某些情况下，一个多线程应用程序比单线程应用程序更加简单，但是在某些特殊情况下要更加复杂。</li>
-<li>在多个线程引用了同一个共享变量的情况下，多线程应用程序比单线程应用程序使用起来更加复杂，因为需要考虑线程安全问题，不正确的线程同步问题出现的问题往往防不胜防。</li>
-</ul>
-</blockquote>
-<p><strong>上下文切换的开销</strong> </p>
-<blockquote>
-<ul>
-<li>当一个CPU从当前线程切换的执行另外一个线程时，CPU需要保存当前线程的本地数据以及程序指针等等，再有另外一个线程切换到当前线程时，需要重新读取本地数据和程序指针等，这个交换的执行过程叫做上下文切换。</li>
-<li>上下文切换的成本并不便宜。</li>
-</ul>
-</blockquote>
-<p><strong>减少上下文切换</strong></p>
-<blockquote>
-<ul>
-<li>无锁并发编程：多线程竞争锁时，会引起上下文切换，所以多线程处理数据时，可以用一些方法来避免使用锁。</li>
-<li>CAS算法：Java的atomic包使用CAS算法来更新数据，而不需要加锁。</li>
-<li>使用最少线程：避免创建不需要的线程。</li>
-<li>协程：在单线程里实现多任务的调度，并在单线程里维持多个任务间的切换。</li>
-</ul>
+<p><strong>如果资源的创建、使用和销毁都没有离开某个方法，并且没有分享给其他线程，那么使用这个资源是线程安全的。</strong></p>
 </blockquote>
 
             </div>
@@ -207,10 +198,10 @@
     <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
         <ul class="pagination d-block text-center">
             
-                <li class="previous page-item d-inline"><a href="/2020/08/09/%E5%B9%B6%E5%8F%91%E6%A8%A1%E5%9E%8B/" class="page-link float-left">&larr;  下一页</a></li>
+                <li class="previous page-item d-inline"><a href="/2020/08/12/%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E5%92%8C%E4%B8%8D%E5%8F%98%E6%80%A7/" class="page-link float-left">&larr;  下一页</a></li>
             
             
-                <li class="next page-item d-inline"><a href="/2020/08/09/Java-Concurrency-and-Multithreading/" class="page-link float-right">上一页  &rarr;</a></li>
+                <li class="next page-item d-inline"><a href="/2020/08/12/%E7%AB%9E%E4%BA%89%E6%9D%A1%E4%BB%B6%E5%92%8C%E4%B8%B4%E7%95%8C%E5%8C%BA/" class="page-link float-right">上一页  &rarr;</a></li>
             
         </ul>
     </div>

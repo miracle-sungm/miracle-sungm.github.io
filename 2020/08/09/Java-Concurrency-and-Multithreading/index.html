@@ -9,20 +9,10 @@
 
 
 
-    <meta name="description" content="1. 并发和多线程并发编程
-
-并发编程涵盖了多线程技术在内，指并发执行任务时可能出现的问题，使用的多线程技术，以及解决方案。
-
-多线程：
-
-同一个应用程序中，多个线程同时执行。
-
-多线程应用程序:
-
-多线程应用程序是一个多 CPU 同时执行不同的线程的应用程序。如图
-
-
-一个线程不等于一个CPU，通"/>
+    <meta name="description" content="1. 并发和多线程并发编程并发编程涵盖了多线程技术在内，指并发执行任务时可能出现的问题，使用的多线程技术，以及解决方案。
+多线程：同一个应用程序中，多个线程同时执行。
+多线程应用程序:多线程应用程序是一个多 CPU 同时执行不同的线程的应用程序。如图
+一个线程不等于一个CPU，通常情况下一个CPU在"/>
 
 
 <!--Author-->
@@ -37,20 +27,10 @@
 
 <!--Open Graph Description-->
 
-    <meta property="og:description" content="1. 并发和多线程并发编程
-
-并发编程涵盖了多线程技术在内，指并发执行任务时可能出现的问题，使用的多线程技术，以及解决方案。
-
-多线程：
-
-同一个应用程序中，多个线程同时执行。
-
-多线程应用程序:
-
-多线程应用程序是一个多 CPU 同时执行不同的线程的应用程序。如图
-
-
-一个线程不等于一个CPU，通"/>
+    <meta property="og:description" content="1. 并发和多线程并发编程并发编程涵盖了多线程技术在内，指并发执行任务时可能出现的问题，使用的多线程技术，以及解决方案。
+多线程：同一个应用程序中，多个线程同时执行。
+多线程应用程序:多线程应用程序是一个多 CPU 同时执行不同的线程的应用程序。如图
+一个线程不等于一个CPU，通常情况下一个CPU在"/>
 
 
 <!--Open Graph Site Name-->
@@ -177,21 +157,10 @@
     
 </span>  
                 
-                <h3 id="1-并发和多线程"><a href="#1-并发和多线程" class="headerlink" title="1. 并发和多线程"></a>1. 并发和多线程</h3><p><strong>并发编程</strong></p>
-<blockquote>
-<p>并发编程涵盖了多线程技术在内，指并发执行任务时可能出现的问题，使用的多线程技术，以及解决方案。</p>
-</blockquote>
-<p><strong>多线程：</strong></p>
-<blockquote>
-<p>同一个应用程序中，多个线程同时执行。</p>
-</blockquote>
-<p><strong>多线程应用程序:</strong></p>
-<blockquote>
-<p>多线程应用程序是一个多 CPU 同时执行不同的线程的应用程序。如图<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/introduction-1.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/introduction-1.png" alt></div></p>
-</blockquote>
-<blockquote>
+                <h3 id="1-并发和多线程"><a href="#1-并发和多线程" class="headerlink" title="1. 并发和多线程"></a>1. 并发和多线程</h3><p><strong>并发编程</strong><br>并发编程涵盖了多线程技术在内，指并发执行任务时可能出现的问题，使用的多线程技术，以及解决方案。</p>
+<p><strong>多线程：</strong><br>同一个应用程序中，多个线程同时执行。</p>
+<p><strong>多线程应用程序:</strong><br>多线程应用程序是一个多 CPU 同时执行不同的线程的应用程序。如图<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/introduction-1.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/introduction-1.png" alt></div></p>
 <p>一个线程不等于一个CPU，通常情况下一个CPU在不同时间段交换执行不同的线程，不同的CPU同时执行不同的线程。如图：<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/introduction-2.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/introduction-2.png" alt></div></p>
-</blockquote>
 <hr>
 <h3 id="2-为什么使用多线程"><a href="#2-为什么使用多线程" class="headerlink" title="2. 为什么使用多线程"></a>2. 为什么使用多线程</h3><blockquote>
 <ul>
@@ -201,26 +170,12 @@
 <li>更公平的响应-提高用户体验</li>
 </ul>
 </blockquote>
-<p><strong>更好的利用单 CPU 资源</strong></p>
-<blockquote>
-<p>单个CPU通过分配CPU时间片达到交换地执行不同线程的目的，让我们感觉多个线程是同时执行的，时间片一般是几十毫秒。</p>
-</blockquote>
-<p><strong>更好的利用多 CPU 或 CPU 内核</strong></p>
-<blockquote>
-<p>创建多个线程，充分地利用多个CPU同时执行不同的线程，加快程序执行速度，充分利用多CPU资源。</p>
-</blockquote>
-<p><strong>更快速的响应-提高用户体验</strong></p>
-<blockquote>
-<p>充分的利用单CPU资源和多CPU资源都能够加快程序的执行速度，以提高用户体验</p>
-</blockquote>
-<p><strong>更公平的响应-提高用户体验</strong></p>
-<blockquote>
-<p>不同的线程在单CPU中分配CPU时间片交换执行，在某些特定情况下以一种更加公平的方式执行不同的线程。比如某个线程需要调用网络资源或者其他的操作需要长时间占用CPU，导致许多线程需要等待CPU去执行，造成阻塞。</p>
-</blockquote>
+<p><strong>更好的利用单 CPU 资源</strong><br>单个CPU通过分配CPU时间片达到交换地执行不同线程的目的，让我们感觉多个线程是同时执行的，时间片一般是几十毫秒。</p>
+<p><strong>更好的利用多 CPU 或 CPU 内核</strong><br>创建多个线程，充分地利用多个CPU同时执行不同的线程，加快程序执行速度，充分利用多CPU资源。</p>
+<p><strong>更快速的响应-提高用户体验</strong><br>充分的利用单CPU资源和多CPU资源都能够加快程序的执行速度，以提高用户体验</p>
+<p><strong>更公平的响应-提高用户体验</strong><br>不同的线程在单CPU中分配CPU时间片交换执行，在某些特定情况下以一种更加公平的方式执行不同的线程。比如某个线程需要调用网络资源或者其他的操作需要长时间占用CPU，导致许多线程需要等待CPU去执行，造成阻塞。</p>
 <hr>
-<h3 id="3-使用多线程不一定更快"><a href="#3-使用多线程不一定更快" class="headerlink" title="3. 使用多线程不一定更快"></a>3. 使用多线程不一定更快</h3><blockquote>
-<p>由于线程的创建和上下文的切换的开销，多线程的执行效率不一定比单线程的执行效率更好。</p>
-</blockquote>
+<h3 id="3-使用多线程不一定更快"><a href="#3-使用多线程不一定更快" class="headerlink" title="3. 使用多线程不一定更快"></a>3. 使用多线程不一定更快</h3><p>由于线程的创建和上下文的切换的开销，多线程的执行效率不一定比单线程的执行效率更好。</p>
 <p><strong>线程创建的方式</strong></p>
 <blockquote>
 <ul>
@@ -229,26 +184,12 @@
 <li>实现Callable接口，重写 call() 方法</li>
 </ul>
 </blockquote>
-<p><strong>上下文切换</strong></p>
-<blockquote>
-<p>单核处理器也支持多线程执行代码，CPU 通过给每个线程分配CPU时间片来实现这个机制。当前任务执行一个时间片后会切换到下一个任务。但是切换前会保存上一个任务的状态，以便于下次切换到该任务时，可以再加载这个任务的状态。任务从保存到再加载的过程就是一次上下文切换。</p>
-</blockquote>
+<p><strong>上下文切换</strong><br>单核处理器也支持多线程执行代码，CPU 通过给每个线程分配CPU时间片来实现这个机制。当前任务执行一个时间片后会切换到下一个任务。但是切换前会保存上一个任务的状态，以便于下次切换到该任务时，可以再加载这个任务的状态。任务从保存到再加载的过程就是一次上下文切换。</p>
 <hr>
-<h3 id="4-多线程-vs-多任务"><a href="#4-多线程-vs-多任务" class="headerlink" title="4. 多线程 vs. 多任务"></a>4. 多线程 vs. 多任务</h3><p><strong>多任务</strong></p>
-<blockquote>
-<p>不同CPU同时执行不同的应用程序的不同线程。</p>
-</blockquote>
-<p><strong>多线程</strong></p>
-<blockquote>
-<p>不同CPU同时执行相同的应用程序的不同线程。</p>
-</blockquote>
-<p><strong>多线程技术更难实现</strong></p>
-<blockquote>
-<p>多线程技术可以以一种很好的方式提高某些类型的应用程序的性能。但是多线程技术比多任务技术要面临更多的技术挑战。不同的线程在同一个应用程序中同时执行，它们可能存在一个线程在读取共享内存的数据，另外一个线程在写入数据至共享内存，造成线程不安全的问题发生，以至于产生了单线程技术通常情况下不会发生的错误。</p>
-</blockquote>
-<blockquote>
+<h3 id="4-多线程-vs-多任务"><a href="#4-多线程-vs-多任务" class="headerlink" title="4. 多线程 vs. 多任务"></a>4. 多线程 vs. 多任务</h3><p><strong>多任务</strong><br>不同CPU同时执行不同的应用程序的不同线程。</p>
+<p><strong>多线程</strong><br>不同CPU同时执行相同的应用程序的不同线程。</p>
+<p><strong>多线程技术更难实现</strong><br>多线程技术可以以一种很好的方式提高某些类型的应用程序的性能。但是多线程技术比多任务技术要面临更多的技术挑战。不同的线程在同一个应用程序中同时执行，它们可能存在一个线程在读取共享内存的数据，另外一个线程在写入数据至共享内存，造成线程不安全的问题发生，以至于产生了单线程技术通常情况下不会发生的错误。</p>
 <p>现代计算机通常拥有多个CPU或者多个CPU内核，这意味着不同的线程可以被不同的CPU同时执行。如图<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/java-concurrency-tutorial-introduction-1.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/java-concurrency-tutorial-introduction-1.png" alt></div></p>
-</blockquote>
 <hr>
 <h3 id="5-Java-中的并发和多线程"><a href="#5-Java-中的并发和多线程" class="headerlink" title="5. Java 中的并发和多线程"></a>5. Java 中的并发和多线程</h3><p><strong>并发模型</strong></p>
 <blockquote>
@@ -257,14 +198,8 @@
 <li>隔离状态并发模型（separate state concurrency model）</li>
 </ul>
 </blockquote>
-<p><strong>共享状态并发模型</strong></p>
-<blockquote>
-<p>同一个应用程序中的不同的线程使用了同一个共享对象（或变量）。在共享状态并发模型中存在很多问题，这些问题难以完美地解决。</p>
-</blockquote>
-<p><strong>隔离状态并发模型</strong></p>
-<blockquote>
-<p>同一个应用程序中的不同的线程不共享任何对象（或变量）。</p>
-</blockquote>
+<p><strong>共享状态并发模型</strong><br>同一个应用程序中的不同的线程使用了同一个共享对象（或变量）。在共享状态并发模型中存在很多问题，这些问题难以完美地解决。</p>
+<p><strong>隔离状态并发模型</strong><br>同一个应用程序中的不同的线程不共享任何对象（或变量）。</p>
 <hr>
 <h3 id="Java-并发学习指南"><a href="#Java-并发学习指南" class="headerlink" title="Java 并发学习指南"></a>Java 并发学习指南</h3><p><strong>并发和多线程理论知识</strong></p>
 <blockquote>

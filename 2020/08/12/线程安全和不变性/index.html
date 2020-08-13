@@ -9,10 +9,9 @@
 
 
 
-    <meta name="description" content="从单线程应用程序到多线程应用程序不仅仅需要考虑多线程应用程序更加高效，我们还需要考虑使用多线程的成本。使用多线程技术时不要仅仅因为你会使用多线程技术，你应该有一个更好的想法，比如更好的处理线程安全问题，以及多线程使用成本。尽可能的去测试多线程应用程序的性能以及响应速度，而不是靠猜想。
-成本
-
-更复杂"/>
+    <meta name="description" content="竞争条件只发生在多个线程同时访问相同资源，并且存在一个或多个线程修改了共享资源，如果多个线程只读共享资源那么不会产生竞争条件。
+下面我们通过一个实例来说明当一个共享资源被多个线程访问，但没有线程修改共享资源时不会产生竞争条件。
+123456789101112public class Immutabl"/>
 
 
 <!--Author-->
@@ -22,15 +21,14 @@
 
 <!--Open Graph Title-->
 
-    <meta property="og:title" content="[Java 并发编程] 2. 使用多线程的成本"/>
+    <meta property="og:title" content="[Java 并发编程] 9. 线程安全和不变性"/>
 
 
 <!--Open Graph Description-->
 
-    <meta property="og:description" content="从单线程应用程序到多线程应用程序不仅仅需要考虑多线程应用程序更加高效，我们还需要考虑使用多线程的成本。使用多线程技术时不要仅仅因为你会使用多线程技术，你应该有一个更好的想法，比如更好的处理线程安全问题，以及多线程使用成本。尽可能的去测试多线程应用程序的性能以及响应速度，而不是靠猜想。
-成本
-
-更复杂"/>
+    <meta property="og:description" content="竞争条件只发生在多个线程同时访问相同资源，并且存在一个或多个线程修改了共享资源，如果多个线程只读共享资源那么不会产生竞争条件。
+下面我们通过一个实例来说明当一个共享资源被多个线程访问，但没有线程修改共享资源时不会产生竞争条件。
+123456789101112public class Immutabl"/>
 
 
 <!--Open Graph Site Name-->
@@ -57,7 +55,7 @@
 
 <!-- Title -->
 
-<title>[Java 并发编程] 2. 使用多线程的成本 - Miracle&#39;s Blog</title>
+<title>[Java 并发编程] 9. 线程安全和不变性 - Miracle&#39;s Blog</title>
 
 <!-- Bootstrap Core CSS -->
 <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
@@ -125,7 +123,7 @@
         <div class="row">
             <div class="col-lg-12 col-md-12 text-center">
                 <div class="post-heading text-white">
-                    <h1>[Java 并发编程] 2. 使用多线程的成本</h1>
+                    <h1>[Java 并发编程] 9. 线程安全和不变性</h1>
                     
                 </div>
             </div>
@@ -147,7 +145,7 @@
     
         <span class="post-meta-split">&nbsp;|&nbsp;</span>
         <i class="far fa-calendar-check fa-fw"></i>
-        2020-08-09
+        2020-08-12
     
     <!-- word count and read count -->
     
@@ -157,36 +155,13 @@
     
 </span>  
                 
-                <p>从单线程应用程序到多线程应用程序不仅仅需要考虑多线程应用程序更加高效，我们还需要考虑使用多线程的成本。使用多线程技术时不要仅仅因为你会使用多线程技术，你应该有一个更好的想法，比如更好的处理线程安全问题，以及多线程使用成本。尽可能的去测试多线程应用程序的性能以及响应速度，而不是靠猜想。</p>
-<h3 id="成本"><a href="#成本" class="headerlink" title="成本"></a>成本</h3><blockquote>
-<ul>
-<li>更复杂的程序设计</li>
-<li>上下文切换的开销</li>
-</ul>
-</blockquote>
-<p><strong>更复杂的程序设计</strong> </p>
-<blockquote>
-<ul>
-<li>在某些情况下，一个多线程应用程序比单线程应用程序更加简单，但是在某些特殊情况下要更加复杂。</li>
-<li>在多个线程引用了同一个共享变量的情况下，多线程应用程序比单线程应用程序使用起来更加复杂，因为需要考虑线程安全问题，不正确的线程同步问题出现的问题往往防不胜防。</li>
-</ul>
-</blockquote>
-<p><strong>上下文切换的开销</strong> </p>
-<blockquote>
-<ul>
-<li>当一个CPU从当前线程切换的执行另外一个线程时，CPU需要保存当前线程的本地数据以及程序指针等等，再有另外一个线程切换到当前线程时，需要重新读取本地数据和程序指针等，这个交换的执行过程叫做上下文切换。</li>
-<li>上下文切换的成本并不便宜。</li>
-</ul>
-</blockquote>
-<p><strong>减少上下文切换</strong></p>
-<blockquote>
-<ul>
-<li>无锁并发编程：多线程竞争锁时，会引起上下文切换，所以多线程处理数据时，可以用一些方法来避免使用锁。</li>
-<li>CAS算法：Java的atomic包使用CAS算法来更新数据，而不需要加锁。</li>
-<li>使用最少线程：避免创建不需要的线程。</li>
-<li>协程：在单线程里实现多任务的调度，并在单线程里维持多个任务间的切换。</li>
-</ul>
-</blockquote>
+                <p>竞争条件只发生在多个线程同时访问相同资源，并且存在一个或多个线程修改了共享资源，如果多个线程只读共享资源那么不会产生竞争条件。</p>
+<p>下面我们通过一个实例来说明当一个共享资源被多个线程访问，但没有线程修改共享资源时不会产生竞争条件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public class ImmutableValue&#123;</span><br><span class="line"></span><br><span class="line">  private int value &#x3D; 0;</span><br><span class="line"></span><br><span class="line">  public ImmutableValue(int value)&#123;</span><br><span class="line">    this.value &#x3D; value;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public int getValue()&#123;</span><br><span class="line">    return this.value;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>请注意 ImmutableValue 提供了一个传入指定 value 的构造函数，一旦对象被创建，该对象没有提供任何修改value值的方法，所以value的值无法被修改。</p>
+<h3 id="特别注意：对象引用不是线程安全的"><a href="#特别注意：对象引用不是线程安全的" class="headerlink" title="特别注意：对象引用不是线程安全的"></a>特别注意：对象引用不是线程安全的</h3><p>需要注意的是，当一个对象不可变时对象本身是线程安全的，但是对象的引用可能不是线程安全的。举例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">public class Calculator&#123;</span><br><span class="line">  private ImmutableValue currentValue &#x3D; null;</span><br><span class="line"></span><br><span class="line">  public ImmutableValue getImmutableValue()&#123;</span><br><span class="line">    return currentValue;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public void setImmutableValue(ImmutableValue newValue)&#123;</span><br><span class="line">    this.currentValue &#x3D; newValue;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public void add(int newValue)&#123;</span><br><span class="line">    this.currentValue &#x3D; new ImmutableValue(currentValue.getValue() + newValue);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Calculator 类引用了一个 ImmutableValue 对象，请注意它可以通过 setImmutableValue() 方法和 add() 方法改变了 ImmutableValue 对象的引用。换句话说，即使 ImmutableValue 对象是不可变的，但它也是非线程安全的。ImmutableValue 类是线程安全的，但对象的引用是非线程安全的。<strong>所以特别注意：对象的引用可能是非线程安全的。</strong> 可以通过给 setImmutableValue() 方法和 add() 方法加锁（使用 synchronized 关键字等）保证线程安全。</p>
 
             </div>
 
@@ -207,10 +182,10 @@
     <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
         <ul class="pagination d-block text-center">
             
-                <li class="previous page-item d-inline"><a href="/2020/08/09/%E5%B9%B6%E5%8F%91%E6%A8%A1%E5%9E%8B/" class="page-link float-left">&larr;  下一页</a></li>
+                <li class="previous page-item d-inline"><a href="/2020/08/12/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" class="page-link float-left">&larr;  下一页</a></li>
             
             
-                <li class="next page-item d-inline"><a href="/2020/08/09/Java-Concurrency-and-Multithreading/" class="page-link float-right">上一页  &rarr;</a></li>
+                <li class="next page-item d-inline"><a href="/2020/08/12/%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E5%92%8C%E5%85%B1%E4%BA%AB%E8%B5%84%E6%BA%90/" class="page-link float-right">上一页  &rarr;</a></li>
             
         </ul>
     </div>
