@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+<!--Description-->
+
+
+
+    <meta name="description" content="Java Happen Before Guarantee 是JVM(Java虚拟机)与CPU为了提高性能允许指令重排的一组管理规则。Happen Before Guarantee 主要包含访问 volatile 变量或访问 synchronized 代码块中的变量。
+1. 指令重排现代计算机有能力并"/>
+
+
+<!--Author-->
+
+    <meta name="author" content="sungm"/>
+
+
+<!--Open Graph Title-->
+
+    <meta property="og:title" content="[Java 并发编程] 11. Java Happen Before Guarantee"/>
+
+
+<!--Open Graph Description-->
+
+    <meta property="og:description" content="Java Happen Before Guarantee 是JVM(Java虚拟机)与CPU为了提高性能允许指令重排的一组管理规则。Happen Before Guarantee 主要包含访问 volatile 变量或访问 synchronized 代码块中的变量。
+1. 指令重排现代计算机有能力并"/>
+
+
+<!--Open Graph Site Name-->
+    <meta property="og:site_name" content="Miracle&#39;s Blog"/>
+
+<!--Type page-->
+
+    <meta property="og:type" content="article"/>
+
+
+<!--Page Cover-->
+
+
+    <meta property="og:image" content="http://yoursite.com/img/home-bg.jpg"/>
+
+
+<meta name="twitter:card" content="summary_large_image"/>
+
+
+
+
+    <meta name="twitter:image" content="http://yoursite.com/img/home-bg.jpg"/>
+
+
+<!-- Title -->
+
+<title>[Java 并发编程] 11. Java Happen Before Guarantee - Miracle&#39;s Blog</title>
+
+<!-- Bootstrap Core CSS -->
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+
+<!-- Custom CSS -->
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<!-- Custom Fonts -->
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.0/css/all.min.css" />
+<link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css"/>
+<link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css"/>
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+<!-- Gallery -->
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/featherlight@1.4.0/src/featherlight.css" integrity="sha256-30DV/STftlyQ6v8yaOWlabammvCYtRJERLj/m0b3zno=" crossorigin="anonymous">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/lightgallery@1.6.11/dist/css/lightgallery.min.css">
+
+<!-- favicon -->
+
+<link rel="icon" href="/img/favicon.png"/>
+
+
+
+    <!-- Google Analytics -->
+    
+
+
+<meta name="generator" content="Hexo 4.2.1"><link rel="alternate" href="/atom.xml" title="Miracle's Blog" type="application/atom+xml">
+</head>
+<!-- Head tag -->
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top bg-transparent position-absolute w-100 p-0" id="nav">
+    <div class="container pl-0 pr-0">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <a class="navbar-brand text-white p-1 pl-3" href="/">Miracle's Blog</a>
+        </div>
+        <div class="navbar-nav float-right">
+            <button class="btn btn-link search-btn navbar-item" data-toggle="modal" data-target="#searchModal">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    </div>
+    <!-- /.container -->
+</nav>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 text-center">
+                <div class="post-heading text-white">
+                    <h1>[Java 并发编程] 11. Java Happen Before Guarantee</h1>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Main Content -->
+            <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
+                
+                    <span class="meta d-inline-block">
+    
+    
+    <!-- Date -->
+    
+        <span class="post-meta-split">&nbsp;|&nbsp;</span>
+        <i class="far fa-calendar-check fa-fw"></i>
+        2020-08-14
+    
+    <!-- word count and read count -->
+    
+
+    
+
+    
+</span>  
+                
+                <p>Java Happen Before Guarantee 是JVM(Java虚拟机)与CPU为了提高性能允许指令重排的一组管理规则。Happen Before Guarantee 主要包含访问 volatile 变量或访问 synchronized 代码块中的变量。</p>
+<h3 id="1-指令重排"><a href="#1-指令重排" class="headerlink" title="1. 指令重排"></a>1. 指令重排</h3><p>现代计算机有能力并行执行指令，当一个指令不依赖其他指令时，可能发生指令重排。如下所示：两个指令不相互依赖，计算机可以并行执行这两个指令。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">a &#x3D; b + c;</span><br><span class="line">d &#x3D; e + f;</span><br></pre></td></tr></table></figure>
+<p>下面这2个指令不会发生指令重排，因为第二个指令依赖第一个指令产生的结果。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">a &#x3D; b + c;</span><br><span class="line">d &#x3D; a + e;</span><br></pre></td></tr></table></figure>
+<p>指令重排的结果可以让指令在CPU中并行执行，以提高性能。指令重排在JVM和CPU中是被允许的，前提是程序中的语句没有发生改变。指令重排后程序执行的结果必须与没有指令重排时程序执行的结果保持一致。</p>
+<h3 id="2-指令重排在多CPU计算机中的问题"><a href="#2-指令重排在多CPU计算机中的问题" class="headerlink" title="2. 指令重排在多CPU计算机中的问题"></a>2. 指令重排在多CPU计算机中的问题</h3><p>指令重排在多线程、多CPU系统中存在一些挑战。请看下面示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">private static int a &#x3D; 0;</span><br><span class="line">private static int b &#x3D; 0;</span><br><span class="line"></span><br><span class="line">new Thread(() -&gt; &#123;</span><br><span class="line">    a &#x3D; 1;</span><br><span class="line">    b &#x3D; 1;</span><br><span class="line">&#125;).start();</span><br><span class="line"></span><br><span class="line">new Thread(() -&gt; &#123;</span><br><span class="line">    if (a &#x3D;&#x3D; 0 &amp;&amp; b &#x3D;&#x3D; 1) &#123;</span><br><span class="line">        System.out.println(&quot;有点意思&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;).start();</span><br></pre></td></tr></table></figure>
+<p>在第一个线程中，a = 1 与 b = 1 两个指令不相互影响，CPU为了提高执行性能，可能并行执行这两个指令，这种情况下， b = 1 指令可能在 a = 1 前面执行，若执行 b = 1 后（假定 a = 1 指令还未执行，此时 a 的值为初始值 0），此时第二个线程正在执行判断条件 a == 0 &amp;&amp; b == 1，那么将会打印数据 ‘有点意思’。为了验证这个问题，我们来循环执行这段代码。如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 测试指令重排</span><br><span class="line"> *</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @date : 2020-08-13 15:14</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class Main &#123;</span><br><span class="line"></span><br><span class="line">    private static int a &#x3D; 0;</span><br><span class="line">    private static int b &#x3D; 0;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws InterruptedException &#123;</span><br><span class="line">        while (true) &#123;</span><br><span class="line">            Thread t1 &#x3D; new Thread(() -&gt; &#123;</span><br><span class="line">                a &#x3D; 1;</span><br><span class="line">                b &#x3D; 1;</span><br><span class="line">            &#125;);</span><br><span class="line">            Thread t2 &#x3D; new Thread(() -&gt; &#123;</span><br><span class="line">                if (a &#x3D;&#x3D; 0 &amp;&amp; b &#x3D;&#x3D; 1) &#123;</span><br><span class="line">                    System.out.println(&quot;有点意思&quot;);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">            t1.start();</span><br><span class="line">            t2.start();</span><br><span class="line">            t1.join();</span><br><span class="line">            t2.join();</span><br><span class="line">            a &#x3D; 0;</span><br><span class="line">            b &#x3D; 0;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果你觉得这段代码有意思，不妨自己试一试。多等待一会，你会发现控制台输出了“有点意思”。</p>
+<h3 id="3-volatile-可见性保证"><a href="#3-volatile-可见性保证" class="headerlink" title="3. volatile 可见性保证"></a>3. volatile 可见性保证</h3><p>Java volatile 关键字提供了读写的可见性保证，当线程读volatile变量时会从主内存中读取数据，当线程修改volatile变量时会将变量的值写回到主内存中。这种同步到主内存的机制保证了变量的值对其他线程可见，这就是volatile可见性保证。</p>
+<h5 id="3-1-volatile-修改数据可见性保证"><a href="#3-1-volatile-修改数据可见性保证" class="headerlink" title="3.1 volatile 修改数据可见性保证"></a>3.1 volatile 修改数据可见性保证</h5><p>当线程修改volatile变量的值时，修改后的值会被同步到主内存中。另外，<strong>线程里包含的所有变量都会随volatile变量写回到主内存中。（请注意这句话，线程所有的变量都会随volatile变量写回到主内存中，不只是volatile变量写回到主内存中）</strong></p>
+<p>请看示例：<br>(1) 首先我们用简单的代码证明使用 volatile 定义的变量的值被某个线程修改后对其他线程可见。：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">class MyRunnable implements Runnable &#123;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;注意这里没有使用volatile关键字</span><br><span class="line">    private boolean keepRunning &#x3D; false;</span><br><span class="line"></span><br><span class="line">    public boolean isKeepRunning() &#123;</span><br><span class="line">        return keepRunning;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            Thread.sleep(100L);</span><br><span class="line">        &#125; catch (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F;子线程把keepRunning的值改为true</span><br><span class="line">        keepRunning &#x3D; true;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;主方法</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    MyRunnable myRunnable &#x3D; new MyRunnable();</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;启动子线程</span><br><span class="line">    new Thread(myRunnable).start();</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;主线程中循环尝试获取子线程修改后的keepRunning的值，如果获取到，输出有点意思</span><br><span class="line">    while (true) &#123;</span><br><span class="line">        if (myRunnable.isKeepRunning()) &#123;</span><br><span class="line">            System.out.println(&quot;有点意思&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果你亲手运行了这段代码，你会发现这个程序永远不会输出“有点意思”。现在我们使用volatile定义keepRunning属性，其他代码不变。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;使用volatile定义</span><br><span class="line">private volatile boolean keepRunning &#x3D; false;</span><br></pre></td></tr></table></figure>
+<p>使用volatile关键字后，程序循环输出“有点意思”。</p>
+<p><strong>因此我们可以得出结论：volatile 定义的变量的值被某个线程修改后对其他线程可见。</strong></p>
+<p>(2) 现在我们来证明下我们前面说的：<strong>线程里包含的所有变量都会随 volatile 变量写回到主内存中。</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">class MyRunnable implements Runnable &#123;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;使用了 volatile 关键字的属性</span><br><span class="line">    private volatile boolean keepRunning &#x3D; false;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;未使用 volatile 关键字的属性</span><br><span class="line">    private String strA &#x3D; &quot;A&quot;;</span><br><span class="line">    private String strB &#x3D; &quot;B&quot;;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            Thread.sleep(100L);</span><br><span class="line">        &#125; catch (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        keepRunning &#x3D; true;</span><br><span class="line">        strA &#x3D; &quot;a&quot;;</span><br><span class="line">        strB &#x3D; &quot;b&quot;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;MyRunnable&#123;&quot; +</span><br><span class="line">                &quot;keepRunning&#x3D;&quot; + keepRunning +</span><br><span class="line">                &quot;, strA&#x3D;&#39;&quot; + strA + &#39;\&#39;&#39; +</span><br><span class="line">                &quot;, strB&#x3D;&#39;&quot; + strB + &#39;\&#39;&#39; +</span><br><span class="line">                &#39;&#125;&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;主方法</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    MyRunnable myRunnable &#x3D; new MyRunnable();</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;启动子线程</span><br><span class="line">    new Thread(myRunnable).start();</span><br><span class="line"></span><br><span class="line">    try &#123;</span><br><span class="line">        Thread.sleep(200L);</span><br><span class="line">    &#125; catch (InterruptedException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    System.out.println(myRunnable.toString());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>程序最终输出：MyRunnable{keepRunning=true, strA=’a’, strB=’b’}</p>
+<p>这个结果我们不难看出：子线程修改了keepRunning、strA和strB的值（strA和strB未使用volatile关键字），主线程不仅读取到了keepRunning更新后的值，还读取到了strA和strB更新后的值。所以请记住：<strong>线程里包含的所有变量都会随volatile变量写回到主内存中。</strong></p>
+<h5 id="3-2-volatile-读取数据可见性保证"><a href="#3-2-volatile-读取数据可见性保证" class="headerlink" title="3.2 volatile 读取数据可见性保证"></a>3.2 volatile 读取数据可见性保证</h5><p>当线程读取被 volatile 关键字修饰的变量时，会从主内存中读取。<strong>另外：线程里所有的变量都会随着 volatile 变量读取到CPU缓存或者寄存器中。</strong></p>
+<p>比如下面三个变量，当线程读取strA的值时，会重定向到主内存中读取strA的值，如果strB，strC同样在线程中，也会从主内存中读取strB，strC的值。我们本章3.1节的例子同样能证明此特性。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">valatile String strA &#x3D; &quot;A&quot;;</span><br><span class="line">String strB &#x3D; &quot;B&quot;;</span><br><span class="line">String strC &#x3D; &quot;B&quot;;</span><br></pre></td></tr></table></figure>
+
+<h5 id="3-3-volatile-happens-before-保证"><a href="#3-3-volatile-happens-before-保证" class="headerlink" title="3.3 volatile happens-before 保证"></a>3.3 volatile happens-before 保证</h5><p>volatile happens-before 保证设置了一些关于volatile变量指令重排的限制（规定）。</p>
+
+            </div>
+
+            <!-- Post information -->
+            
+    <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 post-tags">
+        
+            <i class="fas fa-tag" style="vertical-align: middle;font-size: .8rem;"></i>
+            tags:&nbsp;
+            
+            
+        
+            <a href="/tags/Java/">#Java</a> <a href="/tags/Java并发编程/">#Java并发编程</a>
+        
+    </div>
+
+            
+    <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
+        <ul class="pagination d-block text-center">
+            
+            
+                <li class="next page-item d-inline"><a href="/2020/08/12/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" class="page-link float-right">上一页  &rarr;</a></li>
+            
+        </ul>
+    </div>
+
+
+            
+                <!-- Comments -->
+                
+
+                
+
+            
+
+        </div>
+    </div>
+</article> 
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+    <style>
+        #toc-content .toc-link::before {
+            background-color: transparent;
+            max-height: 25px;
+        }
+
+        #toc-content .toc-link.is-active-link::before {
+            background-color: #404040;
+        }
+    </style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    <div class="ui-toc dropup scrollspy-body pull-right" style="right: 3%;">
+        <button type="button" class="toc-btn btn btn-light" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
+            <i class="fas fa-list"></i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right p-2"  aria-labelledby="tocLabel">
+            <div class="toc-widget">
+                <div id="toc-content" class="text-truncate">
+                </div>
+            </div>
+            <div class="toc-menu pt-3 pl-4">
+                <a class="expand-toggle d-block py-1" href="#"><span class="expand-text">全部展开</span><span class="close-text" style="display: none;">全部收起</span></a>
+                <a class="back-to-top d-block py-1" href="#">回到顶部</a>
+                <a class="go-to-bottom d-block py-1" href="#">移至底部</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        tocbot.init({
+            // Where to render the table of contents.
+            tocSelector: '#toc-content',
+            // Where to grab the headings to build the table of contents.
+            contentSelector: 'article',
+            // Which headings to grab inside of the contentSelector element.
+            headingSelector: 'h1, h2, h3',
+            // For headings inside relative or absolute positioned containers within content.
+            hasInnerContainers: true,
+        });
+    </script>
+
+
+    
+
+
+    <!-- Footer -->
+    <hr />
+
+<!-- Footer -->
+<footer id="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 text-center">
+                <ul class="list-inline">
+                    
+
+                    
+
+                    
+
+                    
+
+                    
+
+                    
+                </ul>
+                <ul class="copyright footer-menu list-inline">
+                    
+                    
+                        <li class="list-inline-item">
+                            
+                            
+                            <a href="/">
+                                
+                                    Home
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/archives">
+                                
+                                    Archives
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/tags">
+                                
+                                    Tags
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/categories">
+                                
+                                    Categories
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/about">
+                                
+                                    About
+                                
+                            </a>
+                        </li>
+                    
+                </ul>
+                <p class="copyright footer-author">
+                    &copy; -2020 
+                    <a rel="external" class="copyright-link" href="" target="_blank">sungm</a><br/>
+                    Powered by <a rel="external" class="copyright-link" href="https://hexo.io/" target="_blank">Hexo</a>  
+                    <span class="copyright-split">&nbsp;|&nbsp;&nbsp;</span>
+                    Theme <a rel="external" class="copyright-link" href="https://github.com/luswdev/hexo-theme-clean.git" target="_blank">Clean</a>
+                    
+                    
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    <!-- After footer scripts -->
+    <!-- jQuery -->
+<script src="//cdn.jsdelivr.net/npm/jquery@2.1.4/dist/jquery.min.js"></script>
+
+<!-- For drop down -->
+<script src="//cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="//cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
+<!-- Gallery -->
+<script src="//cdn.jsdelivr.net/npm/lightgallery@1.6.11/dist/js/lightgallery-all.min.js"></script>
+<!-- Busuanzi -->
+
+
+<!-- Search script -->
+<script src="/js/search.js"></script>
+<script type="text/javascript">
+    $(function () {
+        searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+    });
+</script>
+
+
+<script src="/js/main.js"></script>
+
+
+    <!-- Search Modal -->
+    <!-- Modal -->
+<div class="modal fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+        <div class="modal-content overflow-auto">
+            <div class="modal-header">
+                <input type="text" class="form-control" placeholder="搜索关键词..." id="searchInput">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div id="searchResult">
+                    <div class="search-empty text-center text-muted p-5">
+                        <i class="far fa-meh"></i>
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>
