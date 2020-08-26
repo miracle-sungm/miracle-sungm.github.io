@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+<!--Description-->
+
+
+
+    <meta name="description" content="1. synchronized 同步机制synchronized 同步机制是 Java 第一个多线程同步访问共享对象（数据）的机制。显然刚开始的时候Java 同步机制不是很好，因此在 jdk 1.5 提出了一些并发工具类帮助开发者实现比synchronized同步机制更好的并发控制。随着 jdk 版"/>
+
+
+<!--Author-->
+
+    <meta name="author" content="sungm"/>
+
+
+<!--Open Graph Title-->
+
+    <meta property="og:title" content="[Java 并发编程] 12. synchronized关键字"/>
+
+
+<!--Open Graph Description-->
+
+    <meta property="og:description" content="1. synchronized 同步机制synchronized 同步机制是 Java 第一个多线程同步访问共享对象（数据）的机制。显然刚开始的时候Java 同步机制不是很好，因此在 jdk 1.5 提出了一些并发工具类帮助开发者实现比synchronized同步机制更好的并发控制。随着 jdk 版"/>
+
+
+<!--Open Graph Site Name-->
+    <meta property="og:site_name" content="Miracle&#39;s Blog"/>
+
+<!--Type page-->
+
+    <meta property="og:type" content="article"/>
+
+
+<!--Page Cover-->
+
+
+    <meta property="og:image" content="http://yoursite.com/img/home-bg.jpg"/>
+
+
+<meta name="twitter:card" content="summary_large_image"/>
+
+
+
+
+    <meta name="twitter:image" content="http://yoursite.com/img/home-bg.jpg"/>
+
+
+<!-- Title -->
+
+<title>[Java 并发编程] 12. synchronized关键字 - Miracle&#39;s Blog</title>
+
+<!-- Bootstrap Core CSS -->
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+
+<!-- Custom CSS -->
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<!-- Custom Fonts -->
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.0/css/all.min.css" />
+<link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css"/>
+<link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css"/>
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+<!-- Gallery -->
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/featherlight@1.4.0/src/featherlight.css" integrity="sha256-30DV/STftlyQ6v8yaOWlabammvCYtRJERLj/m0b3zno=" crossorigin="anonymous">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/lightgallery@1.6.11/dist/css/lightgallery.min.css">
+
+<!-- favicon -->
+
+<link rel="icon" href="/img/favicon.png"/>
+
+
+
+    <!-- Google Analytics -->
+    
+
+
+<meta name="generator" content="Hexo 4.2.1"><link rel="alternate" href="/atom.xml" title="Miracle's Blog" type="application/atom+xml">
+</head>
+<!-- Head tag -->
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top bg-transparent position-absolute w-100 p-0" id="nav">
+    <div class="container pl-0 pr-0">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <a class="navbar-brand text-white p-1 pl-3" href="/">Miracle's Blog</a>
+        </div>
+        <div class="navbar-nav float-right">
+            <button class="btn btn-link search-btn navbar-item" data-toggle="modal" data-target="#searchModal">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    </div>
+    <!-- /.container -->
+</nav>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 text-center">
+                <div class="post-heading text-white">
+                    <h1>[Java 并发编程] 12. synchronized关键字</h1>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Main Content -->
+            <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
+                
+                    <span class="meta d-inline-block">
+    
+    
+    <!-- Date -->
+    
+        <span class="post-meta-split">&nbsp;|&nbsp;</span>
+        <i class="far fa-calendar-check fa-fw"></i>
+        2020-08-16
+    
+    <!-- word count and read count -->
+    
+
+    
+
+    
+</span>  
+                
+                <h3 id="1-synchronized-同步机制"><a href="#1-synchronized-同步机制" class="headerlink" title="1. synchronized 同步机制"></a>1. synchronized 同步机制</h3><p>synchronized 同步机制是 Java 第一个多线程同步访问共享对象（数据）的机制。显然刚开始的时候Java 同步机制不是很好，因此在 jdk 1.5 提出了一些并发工具类帮助开发者实现比synchronized同步机制更好的并发控制。随着 jdk 版本的不断更新发布，synchronized 关键的性能已经做了很多的优化，在多数情况下，使用 synchronized 关键字能够满足并发控制。</p>
+<hr>
+<h3 id="2-synchronized-关键字"><a href="#2-synchronized-关键字" class="headerlink" title="2. synchronized 关键字"></a>2. synchronized 关键字</h3><p>通过 synchronized 关键字标记 synchronized 代码块。Java 中 synchronized 代码块是在某个对象上做同步（这个对象我们称为锁），所有作用在某个对象的同步代码块同时只能被一个执行，其他线程尝试执行同步代码块时必须等待正在执行同步代码块的线程退出之后才能进入同步代码块。</p>
+<p>synchronized 关键字三种用法：</p>
+<ul>
+<li>作用于实例方法（普通方法）</li>
+<li>作用于静态方法</li>
+<li>作用于代码块</li>
+</ul>
+<p>建议：在需要使用synchronized 关键字时，首先考虑作用于代码块，其次是普通方法，最后是静态方法（代码块 &gt; 普通方法 &gt; 静态方法）。</p>
+<h5 id="2-1-作用于普通方法"><a href="#2-1-作用于普通方法" class="headerlink" title="2.1 作用于普通方法"></a>2.1 作用于普通方法</h5><p>通过使用 synchronized 关键字声明一个同步的普通方法。</p>
+<p>示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public class MyCounter &#123;</span><br><span class="line"></span><br><span class="line">  private int count &#x3D; 0;</span><br><span class="line"></span><br><span class="line">  public synchronized void add(int value)&#123;</span><br><span class="line">      this.count +&#x3D; value;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>示例中通过使用  声明 add() 方法，告诉 JVM 这个 add() 方法是同步的。</p>
+<p><strong>synchronized 同步实例方法：给当前实例对象加锁，当某个线程进入执行synchronized实例方法时需要获取当前实例对象的锁。因此当synchronized作用于普通方法时，每个实例的同步方法只作用于自己的实例对象。</strong></p>
+<p><strong>只有一个线程可以执行实例同步方法。如果存在多个线程，那么只有一个线程能够同时执行实例同步方法，其他线程必须等待正在执行同步方法的线程执行完毕同步方法，获取到实例锁之后才能执行同步方法。</strong></p>
+<h5 id="2-2-作用于静态方法"><a href="#2-2-作用于静态方法" class="headerlink" title="2.2 作用于静态方法"></a>2.2 作用于静态方法</h5><p>通过使用 synchronized 关键字声明一个同步的静态方法，与普通方法不同的是，静态方法需要通过 static 关键字声明。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public static MyStaticCounter&#123;</span><br><span class="line"></span><br><span class="line">  private static int count &#x3D; 0;</span><br><span class="line"></span><br><span class="line">  public static synchronized void add(int value)&#123;</span><br><span class="line">      count +&#x3D; value;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>示例中通过使用 synchronized 声明 add() 方法，告诉 JVM 这个 add() 方法是同步的。</p>
+<p><strong>synchronized 同步静态方法：给当前类的 class 对象加锁，当某个线程进入synchronized静态方法时需要获取当前类的class对象的锁。</strong></p>
+<p><strong>因为JVM中每个类只有一个class对象，因此只有一个线程能够同时执行静态同步方法。</strong></p>
+<p>如果一个类声明了多个静态同步方法，只有一个线程可以同时执行这些方法。示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public static MyStaticCounter&#123;</span><br><span class="line"></span><br><span class="line">  private static int count &#x3D; 0;</span><br><span class="line"></span><br><span class="line">  public static synchronized void add(int value)&#123;</span><br><span class="line">    count +&#x3D; value;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public static synchronized void subtract(int value)&#123;</span><br><span class="line">    count -&#x3D; value;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由于静态同步方法的锁作用于当前类的class对象，所以当多个线程需要执行同一个类中声明的不同的静态同步方法时，同一时间只有一个线程能拿到类的class对象锁，因此只有一个线程能在给定的时间内执行某个静态方法。</p>
+<p>上例中声明了2个静态同步方法，分别是add()方法和subtract()方法，当某个线程执行add()方法时，其他线程只能等待正在执行add()方法执行完毕，并释放类的class对象锁后，才能获取到锁并执行对应的静态同步方法。</p>
+<h5 id="2-3-作用于代码块"><a href="#2-3-作用于代码块" class="headerlink" title="2.3 作用于代码块"></a>2.3 作用于代码块</h5><p>通常情况下，我们不需要同步整个方法，可以在方法内部声明同步代码块，当多个线程执行到同步代码时，使线程的变得同步执行。如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">synchronized (object) &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>说明：object 表示接收某个对象作为锁，可以是任意对象，也可以是class对象。</strong> </p>
+<p>示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public void add(int value)&#123;</span><br><span class="line">    synchronized(this)&#123;</span><br><span class="line">       this.count +&#x3D; value;   </span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>上例中通过使用synchronized标记这段代码块是同步的，当多个线程需要执行这段代码时，线程会变得同步执行。</p>
+<p>synchronized代码块接收一个对象作为同步锁，只有获取到同步锁才能执行同步代码，这个对象可以是我们自定义的任意对象，包括class对象。通常包括下面三种情况：</p>
+<blockquote>
+<ul>
+<li>this 对象</li>
+<li>class 对象</li>
+<li>其他自定义对象</li>
+</ul>
+</blockquote>
+<h6 id="2-3-1-this对象作为synchronized同步代码块的锁"><a href="#2-3-1-this对象作为synchronized同步代码块的锁" class="headerlink" title="2.3.1 this对象作为synchronized同步代码块的锁"></a>2.3.1 this对象作为synchronized同步代码块的锁</h6><p>当以this对象（表示当前实例对象）作为同步代码块的锁时，只有获取到当前实例对象锁的线程才能执行相应的同步代码。</p>
+<p>示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public class MyClass &#123;</span><br><span class="line"></span><br><span class="line">    public synchronized void log1(String msg1, String msg2) &#123;</span><br><span class="line">         log.writeln(msg1);</span><br><span class="line">           log.writeln(msg2);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    public void log2(String msg1, String msg2) &#123;</span><br><span class="line">         synchronized (this) &#123;</span><br><span class="line">            log.writeln(msg1);</span><br><span class="line">            log.writeln(msg2);  </span><br><span class="line">         &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上例中：如果某个线程正在执行log2()方法中的同步代码块，那么会阻塞其他线程执行log1()方法和log2()方法中的同步代码块（log1方法是普通同步方法，也是以当前实例对象作为锁）。</p>
+<p>以this为对象锁的同步代码块，和普通同步方法的锁对象相同，都是某个实例对象作为同步锁。这种情况下，我们要考虑多线程竞争锁对象时造成的不必要的损耗。</p>
+<h6 id="2-3-2-class对象作为synchronized同步代码块的锁"><a href="#2-3-2-class对象作为synchronized同步代码块的锁" class="headerlink" title="2.3.2 class对象作为synchronized同步代码块的锁"></a>2.3.2 class对象作为synchronized同步代码块的锁</h6><p>当以class对象作为同步代码块的锁时，只有获取到class对象锁的线程才能执行相应的同步代码。</p>
+<p>示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public class MyClass &#123;</span><br><span class="line"></span><br><span class="line">    public static synchronized void log1(String msg1, String msg2) &#123;</span><br><span class="line">         log.writeln(msg1);</span><br><span class="line">           log.writeln(msg2);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    public static void log2(String msg1, String msg2) &#123;</span><br><span class="line">         synchronized (MyClass.class) &#123;</span><br><span class="line">            log.writeln(msg1);</span><br><span class="line">            log.writeln(msg2);  </span><br><span class="line">         &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上例中：当某个线程正在执行log1()方法中的同步代码块或者log2()方法时，会阻塞其他线程执行这两个方法中的任意一个方法。</p>
+<p>以class为对象锁的同步代码块，和静态同步方法的锁对象相同，都是某个类的class对象作为同步锁。这种情况下，我们也要考虑多线程竞争锁对象时造成的不必要的损耗。</p>
+<h6 id="2-3-2-其他对象作为synchronized同步代码块的锁"><a href="#2-3-2-其他对象作为synchronized同步代码块的锁" class="headerlink" title="2.3.2 其他对象作为synchronized同步代码块的锁"></a>2.3.2 其他对象作为synchronized同步代码块的锁</h6><p>可以指定任意对象作为同步代码块的对象锁，通常情况下我们使用共享资源对象作为指定的对象锁。备注：如果存在多个共享资源，那么一定要注意锁的顺序，有效防止死锁。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public class MyClass &#123;</span><br><span class="line"></span><br><span class="line">    private String lock &#x3D; &quot;lock&quot;;</span><br><span class="line">    </span><br><span class="line">    public static void log2(String msg1, String msg2) &#123;</span><br><span class="line">         synchronized (lock) &#123;</span><br><span class="line">            log.writeln(msg1);</span><br><span class="line">            log.writeln(msg2);  </span><br><span class="line">         &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以任意自定义对象作为锁时，似乎要比以this对象和class对象作为synchronized同步锁要灵活的多，不过也要根据场景来使用不同的对象作为同步锁。</p>
+<h6 id="2-3-3-Lambda-表达式中的同步代码块"><a href="#2-3-3-Lambda-表达式中的同步代码块" class="headerlink" title="2.3.3 Lambda 表达式中的同步代码块"></a>2.3.3 Lambda 表达式中的同步代码块</h6><p>我们可以在Lambda表达式中声明synchronized同步代码块，其使用方式跟我们上面提到的知识点是一样的。</p>
+<p>示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public class MyClass &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        String lock &#x3D; &quot;lock&quot;;</span><br><span class="line">        Consumer&lt;String&gt; consumer &#x3D; s -&gt; &#123;</span><br><span class="line">            synchronized (lock) &#123;</span><br><span class="line">                &#x2F;&#x2F;do something...</span><br><span class="line">            &#125;            </span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="3-synchronized-数据可见性"><a href="#3-synchronized-数据可见性" class="headerlink" title="3. synchronized 数据可见性"></a>3. synchronized 数据可见性</h3><p>上一篇博客我们讲<a href="https://miracle-sungm.github.io/2020/08/14/Guarantee/" target="_blank" rel="noopener">《Java Happens Before Guarantee》</a> 时提到过 volatile 关键字和 synchronize 关键字的数据可见性保证。</p>
+<p>这里我们简单回忆一下：没有使用 volatile 关键字或 synchronized 关键字时，当某个线程改变了共享资源的值时对其他线程不可见，原因是不会保证存储于CPU寄存器或者CPU高速缓存的数据重新写回主内存中。</p>
+<p>synchronized 数据可见性：<strong>通过使用synchronized关键字声明同步方法或者同步代码块时，某个线程进入synchronized代码块时，会从主内存中读取最新的数据保存至CPU高速缓存或者CPU寄存器中；当某个线程退出synchronized代码块时，会将CPU寄存器中最新的数据刷回到CPU高速缓存中，再将CPU高速缓存中的最新数据刷新到主内存中，以此保证数据可见性。</strong></p>
+<hr>
+<h3 id="4-synchronized-和指令重排"><a href="#4-synchronized-和指令重排" class="headerlink" title="4. synchronized 和指令重排"></a>4. synchronized 和指令重排</h3><p>上一篇博客中提到过： synchronized 在一定程度上限制了指令重排。</p>
+<p>JVM 和 CPU 为了让程序更快的执行，允许指令重排，通过指令重排让指令并行执行。（前提条件是并行执行的指令没有依赖关系，也就是重排的指令之间不存在依赖关系）</p>
+<p>指令重排在多线程中可能会产生一些问题，比如synchronized同步代码块中写一个变量的代码被重排到synchronized外面。为了防止这种问题产生，synchronized 关键字限制了一些指令重排的发生（与volatile关键字限制指令重排相似）。</p>
+<p>最终的结果是：你可以确定你的代码正确的工作 ———— synchronized限制了指令重排的发生。</p>
+<hr>
+<h3 id="5-什么对象用来做同步对象锁？"><a href="#5-什么对象用来做同步对象锁？" class="headerlink" title="5. 什么对象用来做同步对象锁？"></a>5. 什么对象用来做同步对象锁？</h3><p>正如我们前面多次提到的一样，synchronized 关键字必须作用于某个对象上做同步（通常情况下我们称这个对象为同步对象锁）。</p>
+<p>你可以使用任意对象作为同步对象锁，但是不建议你使用某些String类型的对象和原始基本数据类型的包装类对象作为同步对象锁。因为编译器会优化它们，最终的结果是当你使用他们在不同的同步代码块中作为对象锁时，你以为你使用了不同的对象作为对象锁，实际上只使用了同一个对象作为对象锁。</p>
+<p>出于安全考虑，使用 this 对象或者 new Object() 作为同步对象锁，这种情况下不会被Java编译器或JVM缓存。</p>
+<hr>
+<h3 id="6-synchronized-代码块的限制和替代品"><a href="#6-synchronized-代码块的限制和替代品" class="headerlink" title="6. synchronized 代码块的限制和替代品"></a>6. synchronized 代码块的限制和替代品</h3><p>Java 中的 synchronized代码块存在一些限制，比如同一时间只允许一个线程进入同步代码块。如果多个线程只读取共享数据，不更新共享数据，这是线程安全的，这种情况下我们可以使用 Read / Write Lock 代替 synchronized 代码块。</p>
+<p>你想要多个线程进入同步代码块还是只是一个线程进入同步代码块？我们可以通过使用 Semaphore（计数信号量：限流的作用） 来实现指定数量的线程进入同步代码块(这个点说的同步代码块不是指synchronized代码块)，后面的博客我们来讲解这种实现方式。</p>
+<p>synchronized代码块不会保证等待线程按顺序执行同步代码块。如果我们需要线程按顺序执行同步代码块，可以通过实现 Fairness（公平锁） 来达到这个目的。</p>
+<p>如果只有一个线程修改共享变量，其他的线程只读取共享变量的值，我们可以使用 volatile 关键字，不需要任何同步代码块。</p>
+<hr>
+<h3 id="7-synchronized-性能消耗"><a href="#7-synchronized-性能消耗" class="headerlink" title="7. synchronized 性能消耗"></a>7. synchronized 性能消耗</h3><p>当线程进入和退出 synchronized 代码块时存在一些性能消耗。随着 JDK 版本的发布，性能的消耗变得越来越小，但是使用synchronized代码块还是不可避免地需要付出一些代价。</p>
+<p>如果在循环内不断地进入和退出同步代码块，无疑会让放大性能的损耗。</p>
+<p>尽量避免大的同步代码块，换句话说，只把真正需要的同步操作的代码放进同步代码块，避免其他线程执行不需要同步操作的代码时造成阻塞，同时也能提高执行代码的性能。</p>
+<hr>
+<h3 id="8-synchronized-锁重入"><a href="#8-synchronized-锁重入" class="headerlink" title="8. synchronized 锁重入"></a>8. synchronized 锁重入</h3><p>锁重入：当一个线程进入某个同步代码块时，线程持有同步代码块的同步锁，若同步代码块还调用了具有相同同步锁的同步代码块，线程不需要再次获取锁，可以直接进入相同同步锁的其他同步代码块。</p>
+<p>synchronized 支持锁重入。</p>
+<p>备注：设计多重同步代码块时，需要合理的设计，错误的实现容易导致死锁产生，保持同步代码的锁的顺序一致是一种设计方案。</p>
+<hr>
+<h3 id="9-集群中的-synchronized-代码块"><a href="#9-集群中的-synchronized-代码块" class="headerlink" title="9. 集群中的 synchronized 代码块"></a>9. 集群中的 synchronized 代码块</h3><p>请记住：synchronized 代码块只针对于同一个 JVM 中不同的线程能起到同步作用，如果你拥有相同的 Java 应用程序在多个 JVM 上面运行 ———— 集群，可能导致每个JVM都有一个线程在同时访问共享资源。 </p>
+<p>如果你需要所有的JVM同步访问共享资源，可以使用其他的同步机制，而不是使用 synchronized 代码块。</p>
+
+            </div>
+
+            <!-- Post information -->
+            
+    <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 post-tags">
+        
+            <i class="fas fa-tag" style="vertical-align: middle;font-size: .8rem;"></i>
+            tags:&nbsp;
+            
+            
+        
+            <a href="/tags/Java-并发编程/">#Java 并发编程</a>
+        
+    </div>
+
+            
+    <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
+        <ul class="pagination d-block text-center">
+            
+                <li class="previous page-item d-inline"><a href="/2020/08/19/volatile%E5%85%B3%E9%94%AE%E5%AD%97/" class="page-link float-left">&larr;  下一页</a></li>
+            
+            
+                <li class="next page-item d-inline"><a href="/2020/08/14/Guarantee/" class="page-link float-right">上一页  &rarr;</a></li>
+            
+        </ul>
+    </div>
+
+
+            
+                <!-- Comments -->
+                
+
+                
+
+            
+
+        </div>
+    </div>
+</article> 
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+    <style>
+        #toc-content .toc-link::before {
+            background-color: transparent;
+            max-height: 25px;
+        }
+
+        #toc-content .toc-link.is-active-link::before {
+            background-color: #404040;
+        }
+    </style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    <div class="ui-toc dropup scrollspy-body pull-right" style="right: 3%;">
+        <button type="button" class="toc-btn btn btn-light" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
+            <i class="fas fa-list"></i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right p-2"  aria-labelledby="tocLabel">
+            <div class="toc-widget">
+                <div id="toc-content" class="text-truncate">
+                </div>
+            </div>
+            <div class="toc-menu pt-3 pl-4">
+                <a class="expand-toggle d-block py-1" href="#"><span class="expand-text">全部展开</span><span class="close-text" style="display: none;">全部收起</span></a>
+                <a class="back-to-top d-block py-1" href="#">回到顶部</a>
+                <a class="go-to-bottom d-block py-1" href="#">移至底部</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        tocbot.init({
+            // Where to render the table of contents.
+            tocSelector: '#toc-content',
+            // Where to grab the headings to build the table of contents.
+            contentSelector: 'article',
+            // Which headings to grab inside of the contentSelector element.
+            headingSelector: 'h1, h2, h3',
+            // For headings inside relative or absolute positioned containers within content.
+            hasInnerContainers: true,
+        });
+    </script>
+
+
+    
+
+
+    <!-- Footer -->
+    <hr />
+
+<!-- Footer -->
+<footer id="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 text-center">
+                <ul class="list-inline">
+                    
+
+                    
+
+                    
+
+                    
+
+                    
+
+                    
+                </ul>
+                <ul class="copyright footer-menu list-inline">
+                    
+                    
+                        <li class="list-inline-item">
+                            
+                            
+                            <a href="/">
+                                
+                                    Home
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/archives">
+                                
+                                    Archives
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/tags">
+                                
+                                    Tags
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/categories">
+                                
+                                    Categories
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/about">
+                                
+                                    About
+                                
+                            </a>
+                        </li>
+                    
+                </ul>
+                <p class="copyright footer-author">
+                    &copy; -2020 
+                    <a rel="external" class="copyright-link" href="" target="_blank">sungm</a><br/>
+                    Powered by <a rel="external" class="copyright-link" href="https://hexo.io/" target="_blank">Hexo</a>  
+                    <span class="copyright-split">&nbsp;|&nbsp;&nbsp;</span>
+                    Theme <a rel="external" class="copyright-link" href="https://github.com/luswdev/hexo-theme-clean.git" target="_blank">Clean</a>
+                    
+                    
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    <!-- After footer scripts -->
+    <!-- jQuery -->
+<script src="//cdn.jsdelivr.net/npm/jquery@2.1.4/dist/jquery.min.js"></script>
+
+<!-- For drop down -->
+<script src="//cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="//cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
+<!-- Gallery -->
+<script src="//cdn.jsdelivr.net/npm/lightgallery@1.6.11/dist/js/lightgallery-all.min.js"></script>
+<!-- Busuanzi -->
+
+
+<!-- Search script -->
+<script src="/js/search.js"></script>
+<script type="text/javascript">
+    $(function () {
+        searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+    });
+</script>
+
+
+<script src="/js/main.js"></script>
+
+
+    <!-- Search Modal -->
+    <!-- Modal -->
+<div class="modal fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+        <div class="modal-content overflow-auto">
+            <div class="modal-header">
+                <input type="text" class="form-control" placeholder="搜索关键词..." id="searchInput">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div id="searchResult">
+                    <div class="search-empty text-center text-muted p-5">
+                        <i class="far fa-meh"></i>
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

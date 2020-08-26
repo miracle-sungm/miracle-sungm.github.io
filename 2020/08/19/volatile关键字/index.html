@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+<!--Description-->
+
+
+
+    <meta name="description" content="volatile 关键字用来标记一个 Java 变量被保存至主内存中。更确切的说：每次读取 volatile 变量时会从主内存中读取，而不是从CPU高速缓存中读取；每次写 volatile 变量时会把数据写回主内存中，而不是CPU高速缓存中。
+实际上，自 Java 5 起，volatile 关键字不"/>
+
+
+<!--Author-->
+
+    <meta name="author" content="sungm"/>
+
+
+<!--Open Graph Title-->
+
+    <meta property="og:title" content="[Java 并发编程] 13. volatile关键字"/>
+
+
+<!--Open Graph Description-->
+
+    <meta property="og:description" content="volatile 关键字用来标记一个 Java 变量被保存至主内存中。更确切的说：每次读取 volatile 变量时会从主内存中读取，而不是从CPU高速缓存中读取；每次写 volatile 变量时会把数据写回主内存中，而不是CPU高速缓存中。
+实际上，自 Java 5 起，volatile 关键字不"/>
+
+
+<!--Open Graph Site Name-->
+    <meta property="og:site_name" content="Miracle&#39;s Blog"/>
+
+<!--Type page-->
+
+    <meta property="og:type" content="article"/>
+
+
+<!--Page Cover-->
+
+
+    <meta property="og:image" content="http://yoursite.com/img/home-bg.jpg"/>
+
+
+<meta name="twitter:card" content="summary_large_image"/>
+
+
+
+
+    <meta name="twitter:image" content="http://yoursite.com/img/home-bg.jpg"/>
+
+
+<!-- Title -->
+
+<title>[Java 并发编程] 13. volatile关键字 - Miracle&#39;s Blog</title>
+
+<!-- Bootstrap Core CSS -->
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+
+<!-- Custom CSS -->
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<!-- Custom Fonts -->
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.0/css/all.min.css" />
+<link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css"/>
+<link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css"/>
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+<!-- Gallery -->
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/featherlight@1.4.0/src/featherlight.css" integrity="sha256-30DV/STftlyQ6v8yaOWlabammvCYtRJERLj/m0b3zno=" crossorigin="anonymous">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/lightgallery@1.6.11/dist/css/lightgallery.min.css">
+
+<!-- favicon -->
+
+<link rel="icon" href="/img/favicon.png"/>
+
+
+
+    <!-- Google Analytics -->
+    
+
+
+<meta name="generator" content="Hexo 4.2.1"><link rel="alternate" href="/atom.xml" title="Miracle's Blog" type="application/atom+xml">
+</head>
+<!-- Head tag -->
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top bg-transparent position-absolute w-100 p-0" id="nav">
+    <div class="container pl-0 pr-0">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <a class="navbar-brand text-white p-1 pl-3" href="/">Miracle's Blog</a>
+        </div>
+        <div class="navbar-nav float-right">
+            <button class="btn btn-link search-btn navbar-item" data-toggle="modal" data-target="#searchModal">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    </div>
+    <!-- /.container -->
+</nav>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 text-center">
+                <div class="post-heading text-white">
+                    <h1>[Java 并发编程] 13. volatile关键字</h1>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Main Content -->
+            <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
+                
+                    <span class="meta d-inline-block">
+    
+    
+    <!-- Date -->
+    
+        <span class="post-meta-split">&nbsp;|&nbsp;</span>
+        <i class="far fa-calendar-check fa-fw"></i>
+        2020-08-19
+    
+    <!-- word count and read count -->
+    
+
+    
+
+    
+</span>  
+                
+                <p>volatile 关键字用来标记一个 Java 变量被保存至主内存中。更确切的说：每次读取 volatile 变量时会从主内存中读取，而不是从CPU高速缓存中读取；每次写 volatile 变量时会把数据写回主内存中，而不是CPU高速缓存中。</p>
+<p>实际上，自 Java 5 起，volatile 关键字不仅仅保证从主内存中读取数据或者写回数据至主内存中。下面一起来探索下 volatile 关键字的作用吧。</p>
+<h3 id="1-volatile-可见性问题"><a href="#1-volatile-可见性问题" class="headerlink" title="1. volatile 可见性问题"></a>1. volatile 可见性问题</h3><p>volatile 关键字保证了当某个线程改变了 volatile 变量的值时对其他线程可见。</p>
+<p>在多线程应用系统中，线程操作 non-volatile 变量时，每个线程会拷贝 non-volatile 变量（拷贝引用）至CPU高速缓存中。如果你的计算机包含多个CPU，每个线程在不同的CPU上运行时，这就意味着每个线程拷贝这些变量至不同的CPU的CPU高速缓存中，如下图所示：</p>
+<p><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/java-volatile-1.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/java-volatile-1.png" alt></div></p>
+<p>对于 non-volatile 变量，JVM每次读取变量数据时不会保证从主内存中拷贝至CPU高速缓存中，或者每次写数据时不会保证把CPU高速缓存的数据写回至主内存中。</p>
+<p>下面我们来看个示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public class ShareObject &#123;</span><br><span class="line">    public int count &#x3D; 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>想象一下，有2个线程，第一个线程对 count 的值做修改，第二个的线程能读取到 count 被修改后的值吗？？？</p>
+<p>由于这个 count 变量没有被 volatile 关键字声明，当2个CPU运行的2个线程分别读取 count 的值时，会从主内存中将count的值拷贝至各自的CPU高速缓存中，其中一个线程修改count的值，由于它没有被volatile声明，因此不会保证被修改后的值写回至主内存中。请看下图：</p>
+<p><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/java-volatile-2.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/java-volatile-2.png" alt></div></p>
+<p>由于count变量值被修改后没有写回主内存中，并且线程每次读取count变量值也没有保证从主内存中读取，这个问题被称为数据可见性问题，我们可以通过使用volatile关键字解决数据可见性问题，也可以使用其他方式解决。</p>
+<hr>
+<h3 id="2-volatile-可见性保证"><a href="#2-volatile-可见性保证" class="headerlink" title="2. volatile 可见性保证"></a>2. volatile 可见性保证</h3><p>volatile 关键字解决了数据可见性问题。通过使用 volatile 关键字声明变量是一个volatile变量，保证了每次读取变量数据时从主内存读取，写数据时把数据写回主内存中。</p>
+<p>通过 volatile 声明变量：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public class ShareObject &#123;</span><br><span class="line">    public volatile int count &#x3D; 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面提到的这种情况，当线程一修改了count的值，线程二没有修改count的值，只读取了count的值，这种情况下，使用volatile关键字声明count变量足够保证数据的线程二读取到的是最新的数据。</p>
+<p><strong>注意：当存在多个线程对同一个共享变量做修改操作时，使用volatile是远远不够的，volatile关键字只能保证数据可见性，并不能保证数据操作是原子性的，我们可以使用synchronized关键字或者Java提供的JUC工具包。</strong></p>
+<h5 id="2-1-所有变量可见性保证"><a href="#2-1-所有变量可见性保证" class="headerlink" title="2.1 所有变量可见性保证"></a>2.1 所有变量可见性保证</h5><p>实际上，volatile 关键字的作用超越了 volatile 变量本身，有更多的作用。包括：</p>
+<blockquote>
+<ul>
+<li>当某个线程写回volatile变量的值至主内存时，这个<strong>线程可见的所有变量的值</strong>都会写回至主内存中</li>
+<li>当某个线程从主内存中读取volatile变量的值时，这个<strong>线程可见的所有变量的值</strong>都会重新从主内存中读取</li>
+</ul>
+</blockquote>
+<p>上面提到的这些内容我们在博客<a href="https://miracle-sungm.github.io/2020/08/14/Guarantee/" target="_blank" rel="noopener">[Java 并发编程] 11. Java Happen Before Guarantee</a>提到过，这里不再举例证明。</p>
+<hr>
+<h3 id="3-指令重排挑战"><a href="#3-指令重排挑战" class="headerlink" title="3. 指令重排挑战"></a>3. 指令重排挑战</h3><p>JVM和CPU为了提升性能允许指令重排，只要满足语义不变（单线程情况下执行结果不变）即可指令重排。</p>
+<p>请看下面示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">int a &#x3D; 1;</span><br><span class="line">int b &#x3D; 2;</span><br><span class="line"></span><br><span class="line">a++;</span><br><span class="line">b++;</span><br></pre></td></tr></table></figure>
+
+<p>指令重排后：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">int a &#x3D; 1;</span><br><span class="line">a++;</span><br><span class="line"></span><br><span class="line">int b &#x3D; 2;</span><br><span class="line">b++;</span><br></pre></td></tr></table></figure>
+
+<p>然而，当一个变量被volatile修饰时，存在一些指令重排的挑战。请看示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public class MyClass &#123;</span><br><span class="line">    private int years;</span><br><span class="line">    private int months</span><br><span class="line">    private volatile int days;</span><br><span class="line"></span><br><span class="line">    public void update(int years, int months, int days)&#123;</span><br><span class="line">        this.years  &#x3D; years;</span><br><span class="line">        this.months &#x3D; months;</span><br><span class="line">        this.days   &#x3D; days;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>一旦执行上面的update()方法，执行到修改days的指令时，years和months修改后的值也会被写回到主内存中。但是如果发生了指令重排，如下所示</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public void update(int years, int months, int days)&#123;</span><br><span class="line">    this.days   &#x3D; days;</span><br><span class="line">    this.years  &#x3D; years;</span><br><span class="line">    this.months &#x3D; months;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>同样执行到days修改的指令时，years和months的值也会被写回到主内存中，但此时years和months的值未被修改（指令重排导致years和months修改的指令在days指令下面），写回数据至主内存的操作发生在years和months修改指令的前面，当执行完years和months的修改指令后，不会同步数据至主内存，因此years和months的新值对其他线程不可见（未使用volatile关键字），这样的指令重排导致程序的语义发生了改变。</p>
+<p>Java 有解决这个问题，让我们看下一章节。</p>
+<h3 id="4-volatile-happens-before-保证"><a href="#4-volatile-happens-before-保证" class="headerlink" title="4. volatile happens-before 保证"></a>4. volatile happens-before 保证</h3><p>为了解决指令重排可能产生的问题，java volatile 关键字除了提供可见性保证之外，还提供提供了happens-before保证，如下：</p>
+<blockquote>
+<ul>
+<li>当其他变量的读写指令原本就在volatile写指令前面时，那么其他变量的读写指令不会被重排序到 volatile 写指令后面。（请注意：这里只提出了原本在volatile变量写指令前面的指令，不会被重排序到volatile指令后面，原本在volatile写指令前面的指令之间可以发生指令重排。）</li>
+<li>当其他变量的读写指令原本就在volatile读指令后面时，那么其他变量的读写指令不会被重排序到 volatile 读指令前面。（同样：原本在 volatile 读指令后面的指令之间可以发生指令重排）</li>
+</ul>
+</blockquote>
+<h3 id="5-volatile-不足"><a href="#5-volatile-不足" class="headerlink" title="5. volatile 不足"></a>5. volatile 不足</h3><p>即使 volatile 关键字保证了线程每次读取 volatile 变量时从主内存中读取数据，每次写数据时把数据写回主内存中，但在一些情况下，声明volatile变量是不够的。</p>
+<p>上面我们提到过当一个线程修改volatile变量时，能保证其他线程可以读取到volatile变量的最新值。</p>
+<p>事实上，在多个线程修改volatile变量的情况下，也能确保最新值被写回到主内存中。但这样可能会存在一些问题，示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">private volatile int totalPrice &#x3D; 0;</span><br><span class="line"></span><br><span class="line">public int addPrice(int price) &#123;</span><br><span class="line">    totalPrice +&#x3D; price;</span><br><span class="line">    return totalPrice;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public void initTotalPrice() &#123;</span><br><span class="line">    totalPrice &#x3D; 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当线程一、线程二分别在执行addPrice()方法和initTotalPrice()方法时，线程一执行完totalPrice += price指令后，把totalPrice的最新值刷回到主内存中，若此时线程二正巧执行完initTotalPrice()方法，totalPrice的值被重新刷回0，当线程一再读取totalPrice值并返回，导致最终返回的值是0，这可能不是我们程序最终想要的结果。（备注：当然我们不会去写这种程序代码，这个示例我只用来说明问题，并没有实际测试过这种场景。）</p>
+<p>上例其实就是为了说明一个问题：<strong>volatile 只是保证了数据的可见性，并没有保证原子性，如果要执行原子性操作，使用volatile关键字是远远不够的。这里顺便提一下，synchronized关键字不仅保证了数据可见性，同时也保证了原子性。</strong></p>
+<p>再来看下一个示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;声明volatile变量</span><br><span class="line">volatile int i &#x3D; 0;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;自增</span><br><span class="line">i++;</span><br></pre></td></tr></table></figure>
+<p>当2个线程同时对变量 i 做自增操作，当他们同时把 i 的值写回到主内存中时，最终写回的值时1，实际上i做了2次自增。</p>
+<p>因此：在多个线程同时存在修改共享数据的情况时，仅仅使用volatile变量是不够的。请记住：volatile 关键字只保证了数据可见性，并不保证原子性。</p>
+<h3 id="6-什么时候使用-volatile"><a href="#6-什么时候使用-volatile" class="headerlink" title="6. 什么时候使用 volatile ?"></a>6. 什么时候使用 volatile ?</h3><p>正如前面提到的，如果多个线程同时对共享数据进行读写操作，这种情况下使用volatile关键字是不够的。我们需要使用synchronized关键字保证数据读写的可见性和原子性。</p>
+<p>除了使用synchronized关键字之外，我们还可以使用 java.util.concurrent 包提供的各种工具类，比如 AtomicLong 、 AtomicReference 等等。</p>
+<p>当只有一个线程会对共享变量的值进行修改，其他的线程只读取共享变量的值时，我们使用volatile关键字是足够的。</p>
+<p>另外: volatile 关键字工作在32位或者64位的变量上。</p>
+<h3 id="7-volatile-性能考虑"><a href="#7-volatile-性能考虑" class="headerlink" title="7. volatile 性能考虑"></a>7. volatile 性能考虑</h3><p>我们都知道，CPU操作CPU高速缓存的速度远远快于操作主内存的速度。CPU每次操作volatile关键字都会操作主内存会带来额外的性能开销。另外，volatile 关键字防止指令重排是正常性能增强技术。在条件允许的情况下，使用volatile关键字代替synchronized代码块能节省性能开销。</p>
+
+            </div>
+
+            <!-- Post information -->
+            
+    <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 post-tags">
+        
+            <i class="fas fa-tag" style="vertical-align: middle;font-size: .8rem;"></i>
+            tags:&nbsp;
+            
+            
+        
+            <a href="/tags/Java-并发编程/">#Java 并发编程</a>
+        
+    </div>
+
+            
+    <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
+        <ul class="pagination d-block text-center">
+            
+                <li class="previous page-item d-inline"><a href="/2020/08/21/ThreadLocal/" class="page-link float-left">&larr;  下一页</a></li>
+            
+            
+                <li class="next page-item d-inline"><a href="/2020/08/16/synchronized%E5%85%B3%E9%94%AE%E5%AD%97/" class="page-link float-right">上一页  &rarr;</a></li>
+            
+        </ul>
+    </div>
+
+
+            
+                <!-- Comments -->
+                
+
+                
+
+            
+
+        </div>
+    </div>
+</article> 
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+    <style>
+        #toc-content .toc-link::before {
+            background-color: transparent;
+            max-height: 25px;
+        }
+
+        #toc-content .toc-link.is-active-link::before {
+            background-color: #404040;
+        }
+    </style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    <div class="ui-toc dropup scrollspy-body pull-right" style="right: 3%;">
+        <button type="button" class="toc-btn btn btn-light" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
+            <i class="fas fa-list"></i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right p-2"  aria-labelledby="tocLabel">
+            <div class="toc-widget">
+                <div id="toc-content" class="text-truncate">
+                </div>
+            </div>
+            <div class="toc-menu pt-3 pl-4">
+                <a class="expand-toggle d-block py-1" href="#"><span class="expand-text">全部展开</span><span class="close-text" style="display: none;">全部收起</span></a>
+                <a class="back-to-top d-block py-1" href="#">回到顶部</a>
+                <a class="go-to-bottom d-block py-1" href="#">移至底部</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        tocbot.init({
+            // Where to render the table of contents.
+            tocSelector: '#toc-content',
+            // Where to grab the headings to build the table of contents.
+            contentSelector: 'article',
+            // Which headings to grab inside of the contentSelector element.
+            headingSelector: 'h1, h2, h3',
+            // For headings inside relative or absolute positioned containers within content.
+            hasInnerContainers: true,
+        });
+    </script>
+
+
+    
+
+
+    <!-- Footer -->
+    <hr />
+
+<!-- Footer -->
+<footer id="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 text-center">
+                <ul class="list-inline">
+                    
+
+                    
+
+                    
+
+                    
+
+                    
+
+                    
+                </ul>
+                <ul class="copyright footer-menu list-inline">
+                    
+                    
+                        <li class="list-inline-item">
+                            
+                            
+                            <a href="/">
+                                
+                                    Home
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/archives">
+                                
+                                    Archives
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/tags">
+                                
+                                    Tags
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/categories">
+                                
+                                    Categories
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/about">
+                                
+                                    About
+                                
+                            </a>
+                        </li>
+                    
+                </ul>
+                <p class="copyright footer-author">
+                    &copy; -2020 
+                    <a rel="external" class="copyright-link" href="" target="_blank">sungm</a><br/>
+                    Powered by <a rel="external" class="copyright-link" href="https://hexo.io/" target="_blank">Hexo</a>  
+                    <span class="copyright-split">&nbsp;|&nbsp;&nbsp;</span>
+                    Theme <a rel="external" class="copyright-link" href="https://github.com/luswdev/hexo-theme-clean.git" target="_blank">Clean</a>
+                    
+                    
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    <!-- After footer scripts -->
+    <!-- jQuery -->
+<script src="//cdn.jsdelivr.net/npm/jquery@2.1.4/dist/jquery.min.js"></script>
+
+<!-- For drop down -->
+<script src="//cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="//cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
+<!-- Gallery -->
+<script src="//cdn.jsdelivr.net/npm/lightgallery@1.6.11/dist/js/lightgallery-all.min.js"></script>
+<!-- Busuanzi -->
+
+
+<!-- Search script -->
+<script src="/js/search.js"></script>
+<script type="text/javascript">
+    $(function () {
+        searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+    });
+</script>
+
+
+<script src="/js/main.js"></script>
+
+
+    <!-- Search Modal -->
+    <!-- Modal -->
+<div class="modal fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+        <div class="modal-content overflow-auto">
+            <div class="modal-header">
+                <input type="text" class="form-control" placeholder="搜索关键词..." id="searchInput">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div id="searchResult">
+                    <div class="search-empty text-center text-muted p-5">
+                        <i class="far fa-meh"></i>
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

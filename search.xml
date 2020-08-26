@@ -1,6 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Check工具类</title>
+    <url>/2020/06/15/Check%E5%B7%A5%E5%85%B7%E7%B1%BB/</url>
+    <content><![CDATA[<blockquote>
+<p>直接上代码</p>
+</blockquote>
+<blockquote>
+<p>定义Check注解</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import java.lang.annotation.ElementType;</span><br><span class="line">import java.lang.annotation.Retention;</span><br><span class="line">import java.lang.annotation.RetentionPolicy;</span><br><span class="line">import java.lang.annotation.Target;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since  : 2020-06-15</span><br><span class="line"> *&#x2F;</span><br><span class="line">@Target(ElementType.FIELD)</span><br><span class="line">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="line">public @interface Check &#123;</span><br><span class="line"></span><br><span class="line">    boolean notNull() default false;</span><br><span class="line"></span><br><span class="line">    boolean notEmpty() default false;</span><br><span class="line"></span><br><span class="line">    boolean notBlank() default false;</span><br><span class="line"></span><br><span class="line">    String regex() default &quot;&quot;;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>校验工具类</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import demo.annotations.Check;</span><br><span class="line"></span><br><span class="line">import java.lang.reflect.Field;</span><br><span class="line">import java.util.Objects;</span><br><span class="line">import java.util.regex.Pattern;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2020-06-15 16:01</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class CheckUtils &#123;</span><br><span class="line"></span><br><span class="line">    private static final String EMPTY &#x3D; &quot;&quot;;</span><br><span class="line"></span><br><span class="line">    public static &lt;T&gt; void check(T t) throws Exception &#123;</span><br><span class="line">        Class clazz &#x3D; t.getClass();</span><br><span class="line">        Field[] fields &#x3D; clazz.getDeclaredFields();</span><br><span class="line">        if (fields.length &#x3D;&#x3D; 0) &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        for (Field field : fields) &#123;</span><br><span class="line">            field.setAccessible(true);</span><br><span class="line">            check(field.get(t), field);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void check(Object value, Field field) throws Exception &#123;</span><br><span class="line">        Check check &#x3D; field.getAnnotation(Check.class);</span><br><span class="line">        if (Objects.isNull(check)) &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if (check.notNull() &amp;&amp; Objects.isNull(value)) &#123;</span><br><span class="line">            throw new Exception(&quot;Field (&quot; + field.getName() + &quot;) cannot be null.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        if (check.notEmpty() &amp;&amp; (Objects.isNull(value) || EMPTY.equals(value.toString()))) &#123;</span><br><span class="line">            throw new Exception(&quot;Field (&quot; + field.getName() + &quot;) cannot be empty.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        if (check.notBlank() &amp;&amp; (Objects.isNull(value) || EMPTY.equals(value.toString().trim()))) &#123;</span><br><span class="line">            throw new Exception(&quot;Field (&quot; + field.getName() + &quot;) cannot be blank.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        checkRegex(field, value, check.regex());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void checkRegex(Field field, Object value, String regex) throws Exception &#123;</span><br><span class="line">        if (EMPTY.equals(regex) || Objects.isNull(value)) &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if (!Pattern.matches(regex, value.toString())) &#123;</span><br><span class="line">            throw new Exception(&quot;Wrong data format : Field (&quot; + field.getName() + &quot;), value  is : &quot; + &quot; value&quot; + &quot;, regex is : &quot; + regex);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p>DTO 数据传输层</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class PersonDto &#123;</span><br><span class="line"></span><br><span class="line">    @Check(notBlank &#x3D; true)</span><br><span class="line">    private String name;</span><br><span class="line">    @Check(notNull &#x3D; true, regex &#x3D; &quot;\\d\\d&quot;)</span><br><span class="line">    private Integer age;</span><br><span class="line">    @Check(notBlank &#x3D; true, regex &#x3D; &quot;男|女&quot;)</span><br><span class="line">    private String sex;</span><br><span class="line">    private String idCard;</span><br><span class="line">    private String accessNumber;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;省略了getter、setter方法</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>程序入口</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2020-06-15 17:50</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class Main &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        PersonDto personDto &#x3D; new PersonDto();</span><br><span class="line">        personDto.setIdCard(&quot;0001&quot;);</span><br><span class="line">        personDto.setName(&quot;孙广明&quot;);</span><br><span class="line">        personDto.setSex(&quot;男&quot;);</span><br><span class="line">        personDto.setAge(25);</span><br><span class="line">        CheckUtils.check(personDto);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+      <tags>
+        <tag>Java</tag>
+        <tag>工具类</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[Java 并发编程] 11. Java Happen Before Guarantee</title>
     <url>/2020/08/14/Guarantee/</url>
     <content><![CDATA[<p>Java Happen Before Guarantee 是JVM(Java虚拟机)与CPU为了提高性能允许指令重排的一组管理规则。Happen Before Guarantee 主要包含访问 volatile 变量或访问 synchronized 代码块中的变量。</p>
@@ -81,77 +112,7 @@
 <p><strong>总结 synchronized happens-before时，我总感觉把它总结的太复杂了，你可以简单的理解为 synchronized 不与其他指令发生指令重排，因为 synchronized happens-before 保证了线程在读取数据和写回数据时都会限制指令重排的发生。</strong></p>
 ]]></content>
       <tags>
-        <tag>Java</tag>
-        <tag>Java并发编程</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Java NIO 概述</title>
-    <url>/2020/06/13/Java-NIO-%E6%A6%82%E8%BF%B0/</url>
-    <content><![CDATA[<h2 id="1-什么是NIO？"><a href="#1-什么是NIO？" class="headerlink" title="1.  什么是NIO？"></a>1.  什么是NIO？</h2><blockquote>
-<p>java.nio 全称 java non-blocking IO，是指 JDK1.4 及以上版本里提供的新 API（New IO） ，为所有的原始类型（ boolean 类型除外）提供<a href="https://baike.baidu.com/item/%E7%BC%93%E5%AD%98/100710" target="_blank" rel="noopener">缓存</a>支持的数据容器，使用它可以提供非阻塞式的高伸缩性网络。【百度百科】 </p>
-</blockquote>
-<a id="more"></a>
-
-<hr>
-<p>优点：NIO 比 AIO（异步I/O） 更加强大，处理数据更快。它可以大大的提高IO吞吐量，常用在高性能服务器上面。</p>
-<h2 id="2-NIO原理"><a href="#2-NIO原理" class="headerlink" title="2. NIO原理"></a>2. NIO原理</h2><blockquote>
-<p>使用较少的线程执行更多的任务。</p>
-</blockquote>
-<blockquote>
-<p>如下图所示，使用较少的线程，通过 Selector 选择器来执行不同 Channel 通道中的任务，执行任务再结合 AIO（异步I/O）就能发挥服务器的最大性能，更大程度上提升服务器的运行效率。</p>
-</blockquote>
-<p><div class="img-item" data-src="https://upload-images.jianshu.io/upload_images/11864885-0a82f84999ea3e77.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-sub-html=".caption"><img src="https://upload-images.jianshu.io/upload_images/11864885-0a82f84999ea3e77.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="原理图"><div class="img-caption d-block text-center"><span class="center-caption text-muted border-bottom">原理图</span></div></div></p>
-<hr>
-<h2 id="3-与常规-I-O-的区别"><a href="#3-与常规-I-O-的区别" class="headerlink" title="3. 与常规 I/O 的区别"></a>3. 与常规 I/O 的区别</h2><blockquote>
-<p>常规 I/O （如 InputStream 和 OutputStream）存在很大的缺点，就是他们是阻塞的，而 NIO 解决的就是常规 I/O 执行效率低的问题，即采用非阻塞高性能运行的方式来避免以前以前“笨拙” I/O 带来的低效率问题。NIO在大文件操作上相比常规 I/O 更加优秀，对常规 I/O 使用的 byte[] 和 char[] 进行封装，采用 ByteBuffer 类来操作数据，再结合针对 File 或者 Socket 技术的 Channel，采用同步非阻塞技术实现高性能处理。</p>
-</blockquote>
-<hr>
-<h2 id="4-缓冲区介绍"><a href="#4-缓冲区介绍" class="headerlink" title="4. 缓冲区介绍"></a>4. 缓冲区介绍</h2><blockquote>
-<p>在使用传统的I/O流API时，如 InputStream 和 OutputStream ，以及Reader和Writer联合使用时，常常把字节流中的数据放入byte[]字节数组中，或把字符流中的数据放入char[]字符数组中，也可以从 byte[] 或 char[] 数组中获取数据来实现功能上的需求，但由于在 Java 语言中对 array 数组自身进行操作的 API 非常少，常用的操作仅仅是 length 属性和下标[x]了，在 JDK 中也没有提供更加方便操作数组中数据的 API，如果对数组中的数据进行高级处理，需要程序员自己写代码进行实现，处理的方式是比较原始的，这个问题可以使用 NIO 技术中的缓冲区Buffer类来解决，它提供了很多工具方法，大大提高了程序开发的效率。</p>
-</blockquote>
-<hr>
-<p>推荐书籍：</p>
-<ul>
-<li>[高洪岩]《Java多线程编程核心技术》</li>
-<li>[高洪岩]《Java并发编程：核心方法与框架》</li>
-<li>[高洪岩]《NIO与Socket编程技术指南》</li>
-</ul>
-]]></content>
-      <tags>
-        <tag>Java</tag>
-        <tag>Java NIO</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Check工具类</title>
-    <url>/2020/06/15/Check%E5%B7%A5%E5%85%B7%E7%B1%BB/</url>
-    <content><![CDATA[<blockquote>
-<p>直接上代码</p>
-</blockquote>
-<blockquote>
-<p>定义Check注解</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import java.lang.annotation.ElementType;</span><br><span class="line">import java.lang.annotation.Retention;</span><br><span class="line">import java.lang.annotation.RetentionPolicy;</span><br><span class="line">import java.lang.annotation.Target;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since  : 2020-06-15</span><br><span class="line"> *&#x2F;</span><br><span class="line">@Target(ElementType.FIELD)</span><br><span class="line">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="line">public @interface Check &#123;</span><br><span class="line"></span><br><span class="line">    boolean notNull() default false;</span><br><span class="line"></span><br><span class="line">    boolean notEmpty() default false;</span><br><span class="line"></span><br><span class="line">    boolean notBlank() default false;</span><br><span class="line"></span><br><span class="line">    String regex() default &quot;&quot;;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>校验工具类</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import demo.annotations.Check;</span><br><span class="line"></span><br><span class="line">import java.lang.reflect.Field;</span><br><span class="line">import java.util.Objects;</span><br><span class="line">import java.util.regex.Pattern;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2020-06-15 16:01</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class CheckUtils &#123;</span><br><span class="line"></span><br><span class="line">    private static final String EMPTY &#x3D; &quot;&quot;;</span><br><span class="line"></span><br><span class="line">    public static &lt;T&gt; void check(T t) throws Exception &#123;</span><br><span class="line">        Class clazz &#x3D; t.getClass();</span><br><span class="line">        Field[] fields &#x3D; clazz.getDeclaredFields();</span><br><span class="line">        if (fields.length &#x3D;&#x3D; 0) &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        for (Field field : fields) &#123;</span><br><span class="line">            field.setAccessible(true);</span><br><span class="line">            check(field.get(t), field);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void check(Object value, Field field) throws Exception &#123;</span><br><span class="line">        Check check &#x3D; field.getAnnotation(Check.class);</span><br><span class="line">        if (Objects.isNull(check)) &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if (check.notNull() &amp;&amp; Objects.isNull(value)) &#123;</span><br><span class="line">            throw new Exception(&quot;Field (&quot; + field.getName() + &quot;) cannot be null.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        if (check.notEmpty() &amp;&amp; (Objects.isNull(value) || EMPTY.equals(value.toString()))) &#123;</span><br><span class="line">            throw new Exception(&quot;Field (&quot; + field.getName() + &quot;) cannot be empty.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        if (check.notBlank() &amp;&amp; (Objects.isNull(value) || EMPTY.equals(value.toString().trim()))) &#123;</span><br><span class="line">            throw new Exception(&quot;Field (&quot; + field.getName() + &quot;) cannot be blank.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        checkRegex(field, value, check.regex());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void checkRegex(Field field, Object value, String regex) throws Exception &#123;</span><br><span class="line">        if (EMPTY.equals(regex) || Objects.isNull(value)) &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if (!Pattern.matches(regex, value.toString())) &#123;</span><br><span class="line">            throw new Exception(&quot;Wrong data format : Field (&quot; + field.getName() + &quot;), value  is : &quot; + &quot; value&quot; + &quot;, regex is : &quot; + regex);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-<blockquote>
-<p>DTO 数据传输层</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class PersonDto &#123;</span><br><span class="line"></span><br><span class="line">    @Check(notBlank &#x3D; true)</span><br><span class="line">    private String name;</span><br><span class="line">    @Check(notNull &#x3D; true, regex &#x3D; &quot;\\d\\d&quot;)</span><br><span class="line">    private Integer age;</span><br><span class="line">    @Check(notBlank &#x3D; true, regex &#x3D; &quot;男|女&quot;)</span><br><span class="line">    private String sex;</span><br><span class="line">    private String idCard;</span><br><span class="line">    private String accessNumber;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;省略了getter、setter方法</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>程序入口</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @since : 2020-06-15 17:50</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class Main &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        PersonDto personDto &#x3D; new PersonDto();</span><br><span class="line">        personDto.setIdCard(&quot;0001&quot;);</span><br><span class="line">        personDto.setName(&quot;孙广明&quot;);</span><br><span class="line">        personDto.setSex(&quot;男&quot;);</span><br><span class="line">        personDto.setAge(25);</span><br><span class="line">        CheckUtils.check(personDto);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
-      <tags>
-        <tag>Java</tag>
-        <tag>工具类</tag>
+        <tag>Java 并发编程</tag>
       </tags>
   </entry>
   <entry>
@@ -363,6 +324,99 @@
       </tags>
   </entry>
   <entry>
+    <title>Java NIO 概述</title>
+    <url>/2020/06/13/Java-NIO-%E6%A6%82%E8%BF%B0/</url>
+    <content><![CDATA[<h2 id="1-什么是NIO？"><a href="#1-什么是NIO？" class="headerlink" title="1.  什么是NIO？"></a>1.  什么是NIO？</h2><blockquote>
+<p>java.nio 全称 java non-blocking IO，是指 JDK1.4 及以上版本里提供的新 API（New IO） ，为所有的原始类型（ boolean 类型除外）提供<a href="https://baike.baidu.com/item/%E7%BC%93%E5%AD%98/100710" target="_blank" rel="noopener">缓存</a>支持的数据容器，使用它可以提供非阻塞式的高伸缩性网络。【百度百科】 </p>
+</blockquote>
+<a id="more"></a>
+
+<hr>
+<p>优点：NIO 比 AIO（异步I/O） 更加强大，处理数据更快。它可以大大的提高IO吞吐量，常用在高性能服务器上面。</p>
+<h2 id="2-NIO原理"><a href="#2-NIO原理" class="headerlink" title="2. NIO原理"></a>2. NIO原理</h2><blockquote>
+<p>使用较少的线程执行更多的任务。</p>
+</blockquote>
+<blockquote>
+<p>如下图所示，使用较少的线程，通过 Selector 选择器来执行不同 Channel 通道中的任务，执行任务再结合 AIO（异步I/O）就能发挥服务器的最大性能，更大程度上提升服务器的运行效率。</p>
+</blockquote>
+<p><div class="img-item" data-src="https://upload-images.jianshu.io/upload_images/11864885-0a82f84999ea3e77.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-sub-html=".caption"><img src="https://upload-images.jianshu.io/upload_images/11864885-0a82f84999ea3e77.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="原理图"><div class="img-caption d-block text-center"><span class="center-caption text-muted border-bottom">原理图</span></div></div></p>
+<hr>
+<h2 id="3-与常规-I-O-的区别"><a href="#3-与常规-I-O-的区别" class="headerlink" title="3. 与常规 I/O 的区别"></a>3. 与常规 I/O 的区别</h2><blockquote>
+<p>常规 I/O （如 InputStream 和 OutputStream）存在很大的缺点，就是他们是阻塞的，而 NIO 解决的就是常规 I/O 执行效率低的问题，即采用非阻塞高性能运行的方式来避免以前以前“笨拙” I/O 带来的低效率问题。NIO在大文件操作上相比常规 I/O 更加优秀，对常规 I/O 使用的 byte[] 和 char[] 进行封装，采用 ByteBuffer 类来操作数据，再结合针对 File 或者 Socket 技术的 Channel，采用同步非阻塞技术实现高性能处理。</p>
+</blockquote>
+<hr>
+<h2 id="4-缓冲区介绍"><a href="#4-缓冲区介绍" class="headerlink" title="4. 缓冲区介绍"></a>4. 缓冲区介绍</h2><blockquote>
+<p>在使用传统的I/O流API时，如 InputStream 和 OutputStream ，以及Reader和Writer联合使用时，常常把字节流中的数据放入byte[]字节数组中，或把字符流中的数据放入char[]字符数组中，也可以从 byte[] 或 char[] 数组中获取数据来实现功能上的需求，但由于在 Java 语言中对 array 数组自身进行操作的 API 非常少，常用的操作仅仅是 length 属性和下标[x]了，在 JDK 中也没有提供更加方便操作数组中数据的 API，如果对数组中的数据进行高级处理，需要程序员自己写代码进行实现，处理的方式是比较原始的，这个问题可以使用 NIO 技术中的缓冲区Buffer类来解决，它提供了很多工具方法，大大提高了程序开发的效率。</p>
+</blockquote>
+<hr>
+<p>推荐书籍：</p>
+<ul>
+<li>[高洪岩]《Java多线程编程核心技术》</li>
+<li>[高洪岩]《Java并发编程：核心方法与框架》</li>
+<li>[高洪岩]《NIO与Socket编程技术指南》</li>
+</ul>
+]]></content>
+      <tags>
+        <tag>Java</tag>
+        <tag>Java NIO</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Java 并发编程] 10. Java内存模型</title>
+    <url>/2020/08/12/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/</url>
+    <content><![CDATA[<p>Java Memory Model(JMM: Java内存模型)提到 Java Virtual Machine(JVM: Java虚拟机) 如何与计算机内存工作。JVM是整个计算机模型，所以它包含JMM。</p>
+<p>如果你想要设计出正确的并发程序，那么理解JMM是非常重要的。Java内存模型会提到一个线程怎样获取被别的线程修改后的共享变量的值；也会提到当有必要的时候，怎样让多个线程顺序的访问共享变量。</p>
+<p>注意：原来的Java内存模型进行过修订，从Java 1.5 到 Java 14+，这个版本的内存模型仍然适用。</p>
+<h3 id="1-Java-Memory-Model"><a href="#1-Java-Memory-Model" class="headerlink" title="1. Java Memory Model"></a>1. Java Memory Model</h3><p>在JVM中，JMM包含两种内存模型：Thread Stacks(线程栈)、Heap(堆内存)。如图所示</p>
+<p><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-1.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-1.png" alt></div></p>
+<p><strong>内存模型</strong></p>
+<ol>
+<li>每个在JVM中运行的线程都有自己的线程栈。这个线程栈包含线程中调用的方法信息和程序计数器（当前程序所执行的字节码的行号指示器）。</li>
+<li>在开始执行某个方法的时候，会在线程栈中存储方法内所有的local variable(局部变量)，局部变量只对创建它的线程可见，其他线程无法访问。即使两个线程同时执行同一个方法，这两个线程都会创建局部变量保存至属于自己的线程栈中，线程只能访问自己线程栈中的数据。</li>
+<li>所有基本数据类型（byte、short、int、long、float、double、char、boolean）的局部变量都保存在线程栈中，并且对其他线程不可见。一个线程可能拷贝一个基本数据类型变量给其他线程，但不会共享原始的局部变量（这里是值传递）。</li>
+<li>堆内存中包含Java应用程序中所有对象的创建，不论哪个线程创建的对象都存储在堆内存中，并且包含基础数据类型的包装类也存储于堆内存中。对象的创建不管是作为局部变量、还是作为对象的成员，都始终保存于堆内存中。</li>
+</ol>
+<p>如下图所示：</p>
+<p><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-2.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-2.png" alt></div></p>
+<ol>
+<li>一个本地变量可能是一个基本数据类型，这种情况下本地变量将完全保存在线程栈中。</li>
+<li>一个本地变量可能引用一个对象，这种情况下对象的引用保存在线程栈中，对象保存在堆内存中。</li>
+<li>一个对象可能包含一些方法，方法包含一些本地变量。本地变量保存在线程栈中，方法保存随对象保存在堆内存中。</li>
+<li>一个对象的成员变量随对象保存在堆内存中，不论这个成员变量是基本数据类型还是引用其他对象，成员变量都保存在堆内存中。</li>
+<li>静态变量随 class(类) 保存在堆内存中。</li>
+</ol>
+<p>堆内存的对象可以被任何具有该对象引用的线程访问。</p>
+<hr>
+<h3 id="2-计算机硬件内存结构"><a href="#2-计算机硬件内存结构" class="headerlink" title="2. 计算机硬件内存结构"></a>2. 计算机硬件内存结构</h3><p>现代硬件内存结构与Java内存模型有些不同，为了更好的理解Java内存模型，了解硬件内存结果是很重要的。</p>
+<p>通常的硬件内存结构。如下图<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-4.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-4.png" alt></div></p>
+<p>现代计算机通常拥有2个以上的CPU，有些CPU有多个内核。重点是多CPU计算机可以同时执行多个线程。当你的Java应用程序是多线程应用程序，在你的应用程序中可能同时出现每个CPU都在执行线程的情况。</p>
+<ol>
+<li>每个CPU有一组（注意是一组，多个）CPU寄存器，CPU操作寄存器的速度比操作主内存更快，这也意味着CPU访问寄存器的速度比访问内存更快。</li>
+<li>每个CPU也可能有一个CPU缓存（CPU Cache Memory），事实上，每个CPU可能有一定数量的CPU缓存。CPU访问CPU缓存的速度比访问内存的速度快，通常情况下CPU访问CPU缓存的速度没有访问寄存器的速度快。因此你可以认为CPU访问内存的顺序依次是：寄存器 &gt; CPU缓存 &gt; 主内存。另外，一些CPU可能会有多级CPU缓存（L1,L2,L3等）。</li>
+<li>每个计算机都包含一个主内存，主内存的容量比CPU缓存的容量更大。</li>
+<li>通常情况下，CPU访问内存会读取主内存中的一些数据拷贝至CPU缓存，甚至拷贝至CPU内部的寄存器，然后可以在CPU缓存或者寄存器操作数据。当CPU需要写回数据至主内存中时，它首先会将寄存器中的结果值提交至CPU缓存中，然后再将CPU缓存的值提交至主内存中。</li>
+<li>当CPU需要将CPU缓存的数据提交至主内存中时，CPU缓存的数据将会被写回主内存中。</li>
+</ol>
+<h5 id="2-1-桥接Java内存模型和计算机硬件内存结构"><a href="#2-1-桥接Java内存模型和计算机硬件内存结构" class="headerlink" title="2.1 桥接Java内存模型和计算机硬件内存结构"></a>2.1 桥接Java内存模型和计算机硬件内存结构</h5><p>如您所知，Java内存模型与现代计算机硬件内存结构不同，硬件内存结构没有区分线程栈内存和堆内存。也就是说：线程栈内存和堆内存可以都存在于硬件的主内存、CPU高速缓存、寄存器中。<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-5.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-5.png" alt></div></p>
+<p>当Java对象和变量可以保存在不同的计算机内存区域中，这就可能会导致一些问题的发生。主要的两个问题是：</p>
+<ol>
+<li>当线程更新共享数据时，共享数据在多个线程中的可见性。</li>
+<li>当多个线程读、写、检查共享数据时，产生竞争条件。</li>
+</ol>
+<p>下面我们来解释这2个问题</p>
+<h5 id="2-2-共享数据的可见性"><a href="#2-2-共享数据的可见性" class="headerlink" title="2.2. 共享数据的可见性"></a>2.2. 共享数据的可见性</h5><p>如果多个线程共享一个对象，并且代码中没有使用 volatile 关键字和 synchronized 同步代码块。当一个线程更新这个共享对象后，修改后的对象的值可能对其他线程不可见。</p>
+<p>想象一下，当一个共享对象保存在主内存中时，一个CPU正在执行某个线程时把主内存中共享对象缓存至CPU高速缓存上，另外一个CPU也把共享对象缓存到CPU高速缓存中，其中一个CPU在CPU高速缓存中更新了共享数据并把共享数据写回到主内存中，此时另外一个CPU的CPU高速缓存还是旧的共享资源数据。</p>
+<p>下图中解释了上面这种场景。下图左边的正在执行某个线程的CPU将 obj.count 加载到CPU高速缓存中，同时将 obj.count 的值改为 2。左边这个线程对 obj.count 的值进行修改后，对执行其他线程的CPU并不可见。<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-6.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-6.png" alt></div></p>
+<p>解决这个问题我们可以使用 Java 提供的 volatile 关键字。这个关键字用于修饰某个成员变量，当线程要读取这个变量的值时，会从读取主内存中读取变量的值，并且每次修改变量的值时都会重新写回到主内存中。（后面会有文章详细介绍 volatile 关键字）</p>
+<h5 id="竞争条件"><a href="#竞争条件" class="headerlink" title="竞争条件"></a>竞争条件</h5><p>如果多个线程共享一个对象，并且有多个线程修改共享变量，可能产生竞争条件。</p>
+<p>想象一下，如果一个线程A从主内存中读取共享变量 obj.count 并写入CPU高速缓存中，同时线程B也从主内存中读取共享变量 obj.count 并写入CPU高速缓存中，线程A和线程B同时对 obj.count 做自增操作，也就是说 obj.count 同时被自增2次，在每个CPU里面自增一次。如果变量 obj.count 的同步执行递增2次，那么这个变量写回主内存时值应该是 obj.count + 2，然而这2次递增没有同步执行，实际上是在线程A和线程B并行执行，最终线程A和线程B把 obj.count 的值写回数据到主内存后，实际值变成了 obj.count + 1。如下图<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-7.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-7.png" alt></div></p>
+<p>解决这个问题我们可以使用 Java 提供的 synchronized 锁。synchronized 可以分别用于 代码块、普通方法、静态方法。后面有文章介绍 synchronized，这里不做过多描述。</p>
+]]></content>
+      <tags>
+        <tag>Java 并发编程</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[Java 并发编程] 1. 并发和多线程</title>
     <url>/2020/08/09/Java-Concurrency-and-Multithreading/</url>
     <content><![CDATA[<h3 id="1-并发和多线程"><a href="#1-并发和多线程" class="headerlink" title="1. 并发和多线程"></a>1. 并发和多线程</h3><p><strong>并发编程</strong><br>并发编程涵盖了多线程技术在内，指并发执行任务时可能出现的问题，使用的多线程技术，以及解决方案。</p>
@@ -463,8 +517,7 @@
 </blockquote>
 ]]></content>
       <tags>
-        <tag>Java</tag>
-        <tag>Java并发编程</tag>
+        <tag>Java 并发编程</tag>
       </tags>
   </entry>
   <entry>
@@ -588,119 +641,77 @@
       </tags>
   </entry>
   <entry>
-    <title>XML基础</title>
-    <url>/2020/06/16/XML%E5%9F%BA%E7%A1%80/</url>
-    <content><![CDATA[<h2 id="1-XML概述"><a href="#1-XML概述" class="headerlink" title="1. XML概述"></a>1. XML概述</h2><p>XML : 可拓展标记语言（Extensible Markup Language, XML）。 是一个非常有用的、用来描述结构化信息的技术。</p>
-<h3 id="1-1-XML文档头"><a href="#1-1-XML文档头" class="headerlink" title="1.1 XML文档头"></a>1.1 XML文档头</h3><p>XML 文档应当以一个文档头开始，严格来说，文档头是可选的，但是强烈建议使用文档头。文档类型定义的是确保文档正确的一个重要机制。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br></pre></td></tr></table></figure>
-
-<h3 id="1-2-XML元素"><a href="#1-2-XML元素" class="headerlink" title="1.2 XML元素"></a>1.2 XML元素</h3><p>XML 文档的正文包含根元素，根元素包含其他元素。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;config&gt;</span><br><span class="line">    &lt;title&gt;miracle&#39;s blog&lt;&#x2F;title&gt;</span><br><span class="line">    &lt;content&gt;XML基础与解析&lt;&#x2F;content&gt;</span><br><span class="line">&lt;&#x2F;config&gt;</span><br></pre></td></tr></table></figure>
-<p>注意：</p>
-<blockquote>
-<p>元素可以有子元素、文本或两者兼有。在设计XML文档时，对元素的设计的最好的方式是：要么全部使用元素，要么全部使用文本，这样做的目的是方便解析。</p>
-</blockquote>
-<p>我们应该避免下面这种设计:</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;!-- 不推荐：元素config既包含文本、又包含元素 --&gt;</span><br><span class="line">&lt;config&gt;</span><br><span class="line">    miracle&#39;s blog</span><br><span class="line">    &lt;content&gt;XML基础与解析&lt;&#x2F;content&gt;</span><br><span class="line">&lt;&#x2F;config&gt;</span><br></pre></td></tr></table></figure>
-
-<h3 id="1-3-XML属性"><a href="#1-3-XML属性" class="headerlink" title="1.3 XML属性"></a>1.3 XML属性</h3><p>XML 元素可以包含属性，例如：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;config version&#x3D;&quot;1.0&quot;&gt;&lt;&#x2F;config&gt;</span><br></pre></td></tr></table></figure>
-
-<p>问题：什么时候使用属性，什么时候使用元素？</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">文档一：</span><br><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;config version&#x3D;&quot;1.0&quot;&gt;&lt;&#x2F;config&gt;</span><br><span class="line"></span><br><span class="line">文档二：</span><br><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;config&gt;</span><br><span class="line">    &lt;version&gt;1.0&lt;&#x2F;version&gt;</span><br><span class="line">&lt;&#x2F;config&gt;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>从上面示例来看，文档一似乎比文档二要更简单一些。然而，属性的灵活性要比元素差很多，通常情况下属性只应该用来作为值的解释，而不是用来作为值。</p>
-</blockquote>
-<p>结论：</p>
-<blockquote>
-<p>优先使用元素，通常情况下属性只应该用来作为值的解释，而不是用来作为值。</p>
-</blockquote>
-<p>注意：</p>
-<blockquote>
-<p>在HTML中，所有的属性都不会展示在HTML中。</p>
-</blockquote>
+    <title>[Java 并发编程] 14. ThreadLocal</title>
+    <url>/2020/08/21/ThreadLocal/</url>
+    <content><![CDATA[<p>Java的ThreadLocal类能够让我们创建各个线程独有的线程变量，这个线程变量只有创建它的线程可以对它做读写操作。即使两个线程执行同一段代码，并且这个代码引用了同一个ThreadLocal变量，这两个线程也不能访问彼此的ThreadLocal变量。因此，Java 的 ThreadLocal 类以一种非常简单的方式确保了线程安全。</p>
+<p>建议: 看这篇博客的同时，阅读一遍 java.lang.ThreadLocal 的源码，相信您从源码中获取的知识点会更多一些。</p>
+<h3 id="1-创建一个线程变量"><a href="#1-创建一个线程变量" class="headerlink" title="1. 创建一个线程变量"></a>1. 创建一个线程变量</h3><p>我们可以通过下面这种方式创建一个ThreadLocal对象，我们还可以给它指定泛型类型，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">private ThreadLocal&lt;String&gt; threadLocal &#x3D; new ThreadLocal&lt;&gt;();</span><br></pre></td></tr></table></figure>
+<p>这个代码只需要执行一次。然后线程就可以对它设置值（set）或者读取值（get），每个线程只能获取到它们自己设置的值。</p>
 <hr>
-<h2 id="2-XML与属性文件（property-file）的区别"><a href="#2-XML与属性文件（property-file）的区别" class="headerlink" title="2. XML与属性文件（property file）的区别"></a>2. XML与属性文件（property file）的区别</h2><p>属性文件包含了各种键值对，例如：</p>
-<blockquote>
-<p>name=sungm</p>
-</blockquote>
-<p>区别：</p>
-<blockquote>
-<ol>
-<li>属性文件结构更加简洁，在要描述的信息更加复杂的场景下，属性文件不能更好的处理它，XML文件可以处理更加复杂的结构化信息。</li>
-<li>属性文件采用的是单一的平面结构，XML文件采用的是层次结构，也可以说是树型结构，更加清晰。</li>
-<li>属性文件中key是不能重复的，XML文件可以存在重复的元素。</li>
-</ol>
-</blockquote>
-<p>结论：</p>
-<blockquote>
-<p>在处理不复杂的结构化信息时优先考虑使用属性文件，在处理复杂的结构化信息时考虑使用XML文件</p>
-</blockquote>
+<h3 id="2-设置-ThreadLocal-的值"><a href="#2-设置-ThreadLocal-的值" class="headerlink" title="2. 设置 ThreadLocal 的值"></a>2. 设置 ThreadLocal 的值</h3><p>一旦创建了ThreadLocal对象，就可以设置ThreadLocal的值，我们通过set()方法设置：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">threadLocal.set(&quot;A thread local value&quot;);</span><br></pre></td></tr></table></figure>
+
 <hr>
-<h2 id="3-XML与HTML的区别"><a href="#3-XML与HTML的区别" class="headerlink" title="3. XML与HTML的区别"></a>3. XML与HTML的区别</h2><p>HTML : 超文本标记语言（Hyper Text Markup Language）</p>
-<p>区别：</p>
-<blockquote>
-<ol>
-<li>HTML对大小写不敏感；XML对大小写敏感</li>
-<li>在HTML中，如果从上下文中可以分清哪里是段落或者列表项的结尾，那么结束标签可以省略；XML不可省略结束标签</li>
-<li>在XML中，只有单个标签而没有对应的结束标签的元素必须以 / 结尾。</li>
-<li>在XML中，属性值必须用引号括起来；在HTML中，引号可有可无</li>
-<li>在HTML中，属性可以没有值；在XML中，属性必须都有属性值</li>
-</ol>
-</blockquote>
-<h2 id="4-良好的XML文档格式"><a href="#4-良好的XML文档格式" class="headerlink" title="4. 良好的XML文档格式"></a>4. 良好的XML文档格式</h2><blockquote>
-<ul>
-<li>XML文档必须有根元素，且只能有1个根元素</li>
-<li>XML文档必须有关闭标签</li>
-<li>XML文档对大小写敏感</li>
-<li>XML对大小写敏感</li>
-<li>XML元素必须被正确的嵌套</li>
-<li>XML属性必须加引号</li>
-</ul>
-</blockquote>
+<h3 id="2-获取-ThreadLocal-的值"><a href="#2-获取-ThreadLocal-的值" class="headerlink" title="2. 获取 ThreadLocal 的值"></a>2. 获取 ThreadLocal 的值</h3><p>通过get()方法获取ThreadLocal的值，若创建ThreadLocal对象的时候声明了泛型类型，那么获取到的对象不需要做强制转换，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">String threadLocalValue &#x3D; threadLocal.get();</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="3-移除-ThreadLocal-的值"><a href="#3-移除-ThreadLocal-的值" class="headerlink" title="3. 移除 ThreadLocal 的值"></a>3. 移除 ThreadLocal 的值</h3><p>通过remove()方法获取ThreadLocal的值，若创建ThreadLocal对象的时候声明了泛型类型，那么获取到的对象不需要做强制转换，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">threadLocal.remove();</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="4-ThreadLocal-泛型"><a href="#4-ThreadLocal-泛型" class="headerlink" title="4. ThreadLocal 泛型"></a>4. ThreadLocal 泛型</h3><p>我们可以给ThreadLocal指定泛型类型，指定泛型类型之后只能设置泛型类型的值，另外，获取ThreadLocal的值时不需要做类型转换。</p>
+<p>正如我们上面提出的示例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;指定泛型类型为String</span><br><span class="line">private ThreadLocal&lt;String&gt; threadLocal &#x3D; new ThreadLocal&lt;&gt;();</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;设置值</span><br><span class="line">threadLocal.set(&quot;A thread local value&quot;);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;获取值</span><br><span class="line">String threadLocalValue &#x3D; threadLocal.get();</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ]]></content>
       <tags>
-        <tag>Java</tag>
-        <tag>XML</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Java 并发编程] 2. 使用多线程的成本</title>
-    <url>/2020/08/09/%E4%BD%BF%E7%94%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E6%88%90%E6%9C%AC/</url>
-    <content><![CDATA[<p>从单线程应用程序到多线程应用程序不仅仅需要考虑多线程应用程序更加高效，我们还需要考虑使用多线程的成本。使用多线程技术时不要仅仅因为你会使用多线程技术，你应该有一个更好的想法，比如更好的处理线程安全问题，以及多线程使用成本。尽可能的去测试多线程应用程序的性能以及响应速度，而不是靠猜想。</p>
-<h3 id="成本"><a href="#成本" class="headerlink" title="成本"></a>成本</h3><blockquote>
-<ul>
-<li>更复杂的程序设计</li>
-<li>上下文切换的开销</li>
-</ul>
-</blockquote>
-<p><strong>更复杂的程序设计</strong> </p>
-<blockquote>
-<ul>
-<li>在某些情况下，一个多线程应用程序比单线程应用程序更加简单，但是在某些特殊情况下要更加复杂。</li>
-<li>在多个线程引用了同一个共享变量的情况下，多线程应用程序比单线程应用程序使用起来更加复杂，因为需要考虑线程安全问题，不正确的线程同步问题出现的问题往往防不胜防。</li>
-</ul>
-</blockquote>
-<p><strong>上下文切换的开销</strong> </p>
-<blockquote>
-<ul>
-<li>当一个CPU从当前线程切换的执行另外一个线程时，CPU需要保存当前线程的本地数据以及程序指针等等，再有另外一个线程切换到当前线程时，需要重新读取本地数据和程序指针等，这个交换的执行过程叫做上下文切换。</li>
-<li>上下文切换的成本并不便宜。</li>
-</ul>
-</blockquote>
-<p><strong>减少上下文切换</strong></p>
-<blockquote>
-<ul>
-<li>无锁并发编程：多线程竞争锁时，会引起上下文切换，所以多线程处理数据时，可以用一些方法来避免使用锁。</li>
-<li>CAS算法：Java的atomic包使用CAS算法来更新数据，而不需要加锁。</li>
-<li>使用最少线程：避免创建不需要的线程。</li>
-<li>协程：在单线程里实现多任务的调度，并在单线程里维持多个任务间的切换。</li>
-</ul>
-</blockquote>
-]]></content>
-      <tags>
-        <tag>Java</tag>
-        <tag>Java并发编程</tag>
+        <tag>Java 并发编程</tag>
       </tags>
   </entry>
   <entry>
@@ -950,367 +961,250 @@
       </tags>
   </entry>
   <entry>
-    <title>[Java 并发编程] 5. 并发和并行</title>
-    <url>/2020/08/11/%E5%B9%B6%E5%8F%91%E5%92%8C%E5%B9%B6%E8%A1%8C/</url>
-    <content><![CDATA[<h3 id="1-Concurrency-并发"><a href="#1-Concurrency-并发" class="headerlink" title="1. Concurrency 并发"></a>1. Concurrency 并发</h3><p>应用程序中（Application）同时进行一个以上的任务（Task）。对于单CPU的电脑而言，不可能同时进行一个以上的任务，CPU通过交换的执行任务直到任务都被执行完成。<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-vs-parallelism-1.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-vs-parallelism-1.png" alt></div></p>
+    <title>XML基础</title>
+    <url>/2020/06/16/XML%E5%9F%BA%E7%A1%80/</url>
+    <content><![CDATA[<h2 id="1-XML概述"><a href="#1-XML概述" class="headerlink" title="1. XML概述"></a>1. XML概述</h2><p>XML : 可拓展标记语言（Extensible Markup Language, XML）。 是一个非常有用的、用来描述结构化信息的技术。</p>
+<h3 id="1-1-XML文档头"><a href="#1-1-XML文档头" class="headerlink" title="1.1 XML文档头"></a>1.1 XML文档头</h3><p>XML 文档应当以一个文档头开始，严格来说，文档头是可选的，但是强烈建议使用文档头。文档类型定义的是确保文档正确的一个重要机制。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-XML元素"><a href="#1-2-XML元素" class="headerlink" title="1.2 XML元素"></a>1.2 XML元素</h3><p>XML 文档的正文包含根元素，根元素包含其他元素。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;config&gt;</span><br><span class="line">    &lt;title&gt;miracle&#39;s blog&lt;&#x2F;title&gt;</span><br><span class="line">    &lt;content&gt;XML基础与解析&lt;&#x2F;content&gt;</span><br><span class="line">&lt;&#x2F;config&gt;</span><br></pre></td></tr></table></figure>
+<p>注意：</p>
+<blockquote>
+<p>元素可以有子元素、文本或两者兼有。在设计XML文档时，对元素的设计的最好的方式是：要么全部使用元素，要么全部使用文本，这样做的目的是方便解析。</p>
+</blockquote>
+<p>我们应该避免下面这种设计:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;!-- 不推荐：元素config既包含文本、又包含元素 --&gt;</span><br><span class="line">&lt;config&gt;</span><br><span class="line">    miracle&#39;s blog</span><br><span class="line">    &lt;content&gt;XML基础与解析&lt;&#x2F;content&gt;</span><br><span class="line">&lt;&#x2F;config&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-3-XML属性"><a href="#1-3-XML属性" class="headerlink" title="1.3 XML属性"></a>1.3 XML属性</h3><p>XML 元素可以包含属性，例如：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;config version&#x3D;&quot;1.0&quot;&gt;&lt;&#x2F;config&gt;</span><br></pre></td></tr></table></figure>
+
+<p>问题：什么时候使用属性，什么时候使用元素？</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">文档一：</span><br><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;config version&#x3D;&quot;1.0&quot;&gt;&lt;&#x2F;config&gt;</span><br><span class="line"></span><br><span class="line">文档二：</span><br><span class="line">&lt;?xml version&#x3D;1.0 encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;config&gt;</span><br><span class="line">    &lt;version&gt;1.0&lt;&#x2F;version&gt;</span><br><span class="line">&lt;&#x2F;config&gt;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>从上面示例来看，文档一似乎比文档二要更简单一些。然而，属性的灵活性要比元素差很多，通常情况下属性只应该用来作为值的解释，而不是用来作为值。</p>
+</blockquote>
+<p>结论：</p>
+<blockquote>
+<p>优先使用元素，通常情况下属性只应该用来作为值的解释，而不是用来作为值。</p>
+</blockquote>
+<p>注意：</p>
+<blockquote>
+<p>在HTML中，所有的属性都不会展示在HTML中。</p>
+</blockquote>
 <hr>
-<h3 id="2-Parallelism-并行"><a href="#2-Parallelism-并行" class="headerlink" title="2. Parallelism 并行"></a>2. Parallelism 并行</h3><p>应用程序中的任务（Task）被切割成多个子任务（SubTask）同时执行。实现并行你的应用程序必须有多个线程在同时执行，并且至少有一个任务在执行（Task）。<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-vs-parallelism-2.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-vs-parallelism-2.png" alt></div></p>
+<h2 id="2-XML与属性文件（property-file）的区别"><a href="#2-XML与属性文件（property-file）的区别" class="headerlink" title="2. XML与属性文件（property file）的区别"></a>2. XML与属性文件（property file）的区别</h2><p>属性文件包含了各种键值对，例如：</p>
+<blockquote>
+<p>name=sungm</p>
+</blockquote>
+<p>区别：</p>
+<blockquote>
+<ol>
+<li>属性文件结构更加简洁，在要描述的信息更加复杂的场景下，属性文件不能更好的处理它，XML文件可以处理更加复杂的结构化信息。</li>
+<li>属性文件采用的是单一的平面结构，XML文件采用的是层次结构，也可以说是树型结构，更加清晰。</li>
+<li>属性文件中key是不能重复的，XML文件可以存在重复的元素。</li>
+</ol>
+</blockquote>
+<p>结论：</p>
+<blockquote>
+<p>在处理不复杂的结构化信息时优先考虑使用属性文件，在处理复杂的结构化信息时考虑使用XML文件</p>
+</blockquote>
 <hr>
-<h3 id="3-Concurrency-vs-Parallelism"><a href="#3-Concurrency-vs-Parallelism" class="headerlink" title="3. Concurrency vs. Parallelism"></a>3. Concurrency vs. Parallelism</h3><ul>
-<li>并发是一个应用程序同时执行多个任务。</li>
-<li>并行是一个应用程序处理单个任务，将单个任务切割成多个子任务并行执行。</li>
+<h2 id="3-XML与HTML的区别"><a href="#3-XML与HTML的区别" class="headerlink" title="3. XML与HTML的区别"></a>3. XML与HTML的区别</h2><p>HTML : 超文本标记语言（Hyper Text Markup Language）</p>
+<p>区别：</p>
+<blockquote>
+<ol>
+<li>HTML对大小写不敏感；XML对大小写敏感</li>
+<li>在HTML中，如果从上下文中可以分清哪里是段落或者列表项的结尾，那么结束标签可以省略；XML不可省略结束标签</li>
+<li>在XML中，只有单个标签而没有对应的结束标签的元素必须以 / 结尾。</li>
+<li>在XML中，属性值必须用引号括起来；在HTML中，引号可有可无</li>
+<li>在HTML中，属性可以没有值；在XML中，属性必须都有属性值</li>
+</ol>
+</blockquote>
+<h2 id="4-良好的XML文档格式"><a href="#4-良好的XML文档格式" class="headerlink" title="4. 良好的XML文档格式"></a>4. 良好的XML文档格式</h2><blockquote>
+<ul>
+<li>XML文档必须有根元素，且只能有1个根元素</li>
+<li>XML文档必须有关闭标签</li>
+<li>XML文档对大小写敏感</li>
+<li>XML对大小写敏感</li>
+<li>XML元素必须被正确的嵌套</li>
+<li>XML属性必须加引号</li>
 </ul>
+</blockquote>
 ]]></content>
       <tags>
         <tag>Java</tag>
-        <tag>Java并发编程</tag>
+        <tag>XML</tag>
       </tags>
   </entry>
   <entry>
-    <title>[Java 并发编程] 10. Java内存模型</title>
-    <url>/2020/08/12/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/</url>
-    <content><![CDATA[<p>Java Memory Model(JMM: Java内存模型)提到 Java Virtual Machine(JVM: Java虚拟机) 如何与计算机内存工作。JVM是整个计算机模型，所以它包含JMM。</p>
-<p>如果你想要设计出正确的并发程序，那么理解JMM是非常重要的。Java内存模型会提到一个线程怎样获取被别的线程修改后的共享变量的值；也会提到当有必要的时候，怎样让多个线程顺序的访问共享变量。</p>
-<p>注意：原来的Java内存模型进行过修订，从Java 1.5 到 Java 14+，这个版本的内存模型仍然适用。</p>
-<h3 id="1-Java-Memory-Model"><a href="#1-Java-Memory-Model" class="headerlink" title="1. Java Memory Model"></a>1. Java Memory Model</h3><p>在JVM中，JMM包含两种内存模型：Thread Stacks(线程栈)、Heap(堆内存)。如图所示</p>
-<p><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-1.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-1.png" alt></div></p>
-<p><strong>内存模型</strong></p>
-<ol>
-<li>每个在JVM中运行的线程都有自己的线程栈。这个线程栈包含线程中调用的方法信息和程序计数器（当前程序所执行的字节码的行号指示器）。</li>
-<li>在开始执行某个方法的时候，会在线程栈中存储方法内所有的local variable(局部变量)，局部变量只对创建它的线程可见，其他线程无法访问。即使两个线程同时执行同一个方法，这两个线程都会创建局部变量保存至属于自己的线程栈中，线程只能访问自己线程栈中的数据。</li>
-<li>所有基本数据类型（byte、short、int、long、float、double、char、boolean）的局部变量都保存在线程栈中，并且对其他线程不可见。一个线程可能拷贝一个基本数据类型变量给其他线程，但不会共享原始的局部变量（这里是值传递）。</li>
-<li>堆内存中包含Java应用程序中所有对象的创建，不论哪个线程创建的对象都存储在堆内存中，并且包含基础数据类型的包装类也存储于堆内存中。对象的创建不管是作为局部变量、还是作为对象的成员，都始终保存于堆内存中。</li>
-</ol>
-<p>如下图所示：</p>
-<p><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-2.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-2.png" alt></div></p>
-<ol>
-<li>一个本地变量可能是一个基本数据类型，这种情况下本地变量将完全保存在线程栈中。</li>
-<li>一个本地变量可能引用一个对象，这种情况下对象的引用保存在线程栈中，对象保存在堆内存中。</li>
-<li>一个对象可能包含一些方法，方法包含一些本地变量。本地变量保存在线程栈中，方法保存随对象保存在堆内存中。</li>
-<li>一个对象的成员变量随对象保存在堆内存中，不论这个成员变量是基本数据类型还是引用其他对象，成员变量都保存在堆内存中。</li>
-<li>静态变量随 class(类) 保存在堆内存中。</li>
-</ol>
-<p>堆内存的对象可以被任何具有该对象引用的线程访问。</p>
+    <title>[Java 并发编程] 12. synchronized关键字</title>
+    <url>/2020/08/16/synchronized%E5%85%B3%E9%94%AE%E5%AD%97/</url>
+    <content><![CDATA[<h3 id="1-synchronized-同步机制"><a href="#1-synchronized-同步机制" class="headerlink" title="1. synchronized 同步机制"></a>1. synchronized 同步机制</h3><p>synchronized 同步机制是 Java 第一个多线程同步访问共享对象（数据）的机制。显然刚开始的时候Java 同步机制不是很好，因此在 jdk 1.5 提出了一些并发工具类帮助开发者实现比synchronized同步机制更好的并发控制。随着 jdk 版本的不断更新发布，synchronized 关键的性能已经做了很多的优化，在多数情况下，使用 synchronized 关键字能够满足并发控制。</p>
 <hr>
-<h3 id="2-计算机硬件内存结构"><a href="#2-计算机硬件内存结构" class="headerlink" title="2. 计算机硬件内存结构"></a>2. 计算机硬件内存结构</h3><p>现代硬件内存结构与Java内存模型有些不同，为了更好的理解Java内存模型，了解硬件内存结果是很重要的。</p>
-<p>通常的硬件内存结构。如下图<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-4.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-4.png" alt></div></p>
-<p>现代计算机通常拥有2个以上的CPU，有些CPU有多个内核。重点是多CPU计算机可以同时执行多个线程。当你的Java应用程序是多线程应用程序，在你的应用程序中可能同时出现每个CPU都在执行线程的情况。</p>
-<ol>
-<li>每个CPU有一组（注意是一组，多个）CPU寄存器，CPU操作寄存器的速度比操作主内存更快，这也意味着CPU访问寄存器的速度比访问内存更快。</li>
-<li>每个CPU也可能有一个CPU缓存（CPU Cache Memory），事实上，每个CPU可能有一定数量的CPU缓存。CPU访问CPU缓存的速度比访问内存的速度快，通常情况下CPU访问CPU缓存的速度没有访问寄存器的速度快。因此你可以认为CPU访问内存的顺序依次是：寄存器 &gt; CPU缓存 &gt; 主内存。另外，一些CPU可能会有多级CPU缓存（L1,L2,L3等）。</li>
-<li>每个计算机都包含一个主内存，主内存的容量比CPU缓存的容量更大。</li>
-<li>通常情况下，CPU访问内存会读取主内存中的一些数据拷贝至CPU缓存，甚至拷贝至CPU内部的寄存器，然后可以在CPU缓存或者寄存器操作数据。当CPU需要写回数据至主内存中时，它首先会将寄存器中的结果值提交至CPU缓存中，然后再将CPU缓存的值提交至主内存中。</li>
-<li>当CPU需要将CPU缓存的数据提交至主内存中时，CPU缓存的数据将会被写回主内存中。</li>
-</ol>
-<h5 id="2-1-桥接Java内存模型和计算机硬件内存结构"><a href="#2-1-桥接Java内存模型和计算机硬件内存结构" class="headerlink" title="2.1 桥接Java内存模型和计算机硬件内存结构"></a>2.1 桥接Java内存模型和计算机硬件内存结构</h5><p>如您所知，Java内存模型与现代计算机硬件内存结构不同，硬件内存结构没有区分线程栈内存和堆内存。也就是说：线程栈内存和堆内存可以都存在于硬件的主内存、CPU高速缓存、寄存器中。<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-5.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-5.png" alt></div></p>
-<p>当Java对象和变量可以保存在不同的计算机内存区域中，这就可能会导致一些问题的发生。主要的两个问题是：</p>
-<ol>
-<li>当线程更新共享数据时，共享数据在多个线程中的可见性。</li>
-<li>当多个线程读、写、检查共享数据时，产生竞争条件。</li>
-</ol>
-<p>下面我们来解释这2个问题</p>
-<h5 id="2-2-共享数据的可见性"><a href="#2-2-共享数据的可见性" class="headerlink" title="2.2. 共享数据的可见性"></a>2.2. 共享数据的可见性</h5><p>如果多个线程共享一个对象，并且代码中没有使用 volatile 关键字和 synchronized 同步代码块。当一个线程更新这个共享对象后，修改后的对象的值可能对其他线程不可见。</p>
-<p>想象一下，当一个共享对象保存在主内存中时，一个CPU正在执行某个线程时把主内存中共享对象缓存至CPU高速缓存上，另外一个CPU也把共享对象缓存到CPU高速缓存中，其中一个CPU在CPU高速缓存中更新了共享数据并把共享数据写回到主内存中，此时另外一个CPU的CPU高速缓存还是旧的共享资源数据。</p>
-<p>下图中解释了上面这种场景。下图左边的正在执行某个线程的CPU将 obj.count 加载到CPU高速缓存中，同时将 obj.count 的值改为 2。左边这个线程对 obj.count 的值进行修改后，对执行其他线程的CPU并不可见。<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-6.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-6.png" alt></div></p>
-<p>解决这个问题我们可以使用 Java 提供的 volatile 关键字。这个关键字用于修饰某个成员变量，当线程要读取这个变量的值时，会从读取主内存中读取变量的值，并且每次修改变量的值时都会重新写回到主内存中。（后面会有文章详细介绍 volatile 关键字）</p>
-<h5 id="竞争条件"><a href="#竞争条件" class="headerlink" title="竞争条件"></a>竞争条件</h5><p>如果多个线程共享一个对象，并且有多个线程修改共享变量，可能产生竞争条件。</p>
-<p>想象一下，如果一个线程A从主内存中读取共享变量 obj.count 并写入CPU高速缓存中，同时线程B也从主内存中读取共享变量 obj.count 并写入CPU高速缓存中，线程A和线程B同时对 obj.count 做自增操作，也就是说 obj.count 同时被自增2次，在每个CPU里面自增一次。如果变量 obj.count 的同步执行递增2次，那么这个变量写回主内存时值应该是 obj.count + 2，然而这2次递增没有同步执行，实际上是在线程A和线程B并行执行，最终线程A和线程B把 obj.count 的值写回数据到主内存后，实际值变成了 obj.count + 1。如下图<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-7.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/java-memory-model-7.png" alt></div></p>
-<p>解决这个问题我们可以使用 Java 提供的 synchronized 锁。synchronized 可以分别用于 代码块、普通方法、静态方法。后面有文章介绍 synchronized，这里不做过多描述。</p>
+<h3 id="2-synchronized-关键字"><a href="#2-synchronized-关键字" class="headerlink" title="2. synchronized 关键字"></a>2. synchronized 关键字</h3><p>通过 synchronized 关键字标记 synchronized 代码块。Java 中 synchronized 代码块是在某个对象上做同步（这个对象我们称为锁），所有作用在某个对象的同步代码块同时只能被一个执行，其他线程尝试执行同步代码块时必须等待正在执行同步代码块的线程退出之后才能进入同步代码块。</p>
+<p>synchronized 关键字三种用法：</p>
+<ul>
+<li>作用于实例方法（普通方法）</li>
+<li>作用于静态方法</li>
+<li>作用于代码块</li>
+</ul>
+<p>建议：在需要使用synchronized 关键字时，首先考虑作用于代码块，其次是普通方法，最后是静态方法（代码块 &gt; 普通方法 &gt; 静态方法）。</p>
+<h5 id="2-1-作用于普通方法"><a href="#2-1-作用于普通方法" class="headerlink" title="2.1 作用于普通方法"></a>2.1 作用于普通方法</h5><p>通过使用 synchronized 关键字声明一个同步的普通方法。</p>
+<p>示例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyCounter &#123;</span><br><span class="line"></span><br><span class="line">  private int count &#x3D; 0;</span><br><span class="line"></span><br><span class="line">  public synchronized void add(int value)&#123;</span><br><span class="line">      this.count +&#x3D; value;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>示例中通过使用  声明 add() 方法，告诉 JVM 这个 add() 方法是同步的。</p>
+<p><strong>synchronized 同步实例方法：给当前实例对象加锁，当某个线程进入执行synchronized实例方法时需要获取当前实例对象的锁。因此当synchronized作用于普通方法时，每个实例的同步方法只作用于自己的实例对象。</strong></p>
+<p><strong>只有一个线程可以执行实例同步方法。如果存在多个线程，那么只有一个线程能够同时执行实例同步方法，其他线程必须等待正在执行同步方法的线程执行完毕同步方法，获取到实例锁之后才能执行同步方法。</strong></p>
+<h5 id="2-2-作用于静态方法"><a href="#2-2-作用于静态方法" class="headerlink" title="2.2 作用于静态方法"></a>2.2 作用于静态方法</h5><p>通过使用 synchronized 关键字声明一个同步的静态方法，与普通方法不同的是，静态方法需要通过 static 关键字声明。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static MyStaticCounter&#123;</span><br><span class="line"></span><br><span class="line">  private static int count &#x3D; 0;</span><br><span class="line"></span><br><span class="line">  public static synchronized void add(int value)&#123;</span><br><span class="line">      count +&#x3D; value;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>示例中通过使用 synchronized 声明 add() 方法，告诉 JVM 这个 add() 方法是同步的。</p>
+<p><strong>synchronized 同步静态方法：给当前类的 class 对象加锁，当某个线程进入synchronized静态方法时需要获取当前类的class对象的锁。</strong></p>
+<p><strong>因为JVM中每个类只有一个class对象，因此只有一个线程能够同时执行静态同步方法。</strong></p>
+<p>如果一个类声明了多个静态同步方法，只有一个线程可以同时执行这些方法。示例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static MyStaticCounter&#123;</span><br><span class="line"></span><br><span class="line">  private static int count &#x3D; 0;</span><br><span class="line"></span><br><span class="line">  public static synchronized void add(int value)&#123;</span><br><span class="line">    count +&#x3D; value;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public static synchronized void subtract(int value)&#123;</span><br><span class="line">    count -&#x3D; value;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由于静态同步方法的锁作用于当前类的class对象，所以当多个线程需要执行同一个类中声明的不同的静态同步方法时，同一时间只有一个线程能拿到类的class对象锁，因此只有一个线程能在给定的时间内执行某个静态方法。</p>
+<p>上例中声明了2个静态同步方法，分别是add()方法和subtract()方法，当某个线程执行add()方法时，其他线程只能等待正在执行add()方法执行完毕，并释放类的class对象锁后，才能获取到锁并执行对应的静态同步方法。</p>
+<h5 id="2-3-作用于代码块"><a href="#2-3-作用于代码块" class="headerlink" title="2.3 作用于代码块"></a>2.3 作用于代码块</h5><p>通常情况下，我们不需要同步整个方法，可以在方法内部声明同步代码块，当多个线程执行到同步代码时，使线程的变得同步执行。如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">synchronized (object) &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>说明：object 表示接收某个对象作为锁，可以是任意对象，也可以是class对象。</strong> </p>
+<p>示例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void add(int value)&#123;</span><br><span class="line">    synchronized(this)&#123;</span><br><span class="line">       this.count +&#x3D; value;   </span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>上例中通过使用synchronized标记这段代码块是同步的，当多个线程需要执行这段代码时，线程会变得同步执行。</p>
+<p>synchronized代码块接收一个对象作为同步锁，只有获取到同步锁才能执行同步代码，这个对象可以是我们自定义的任意对象，包括class对象。通常包括下面三种情况：</p>
+<blockquote>
+<ul>
+<li>this 对象</li>
+<li>class 对象</li>
+<li>其他自定义对象</li>
+</ul>
+</blockquote>
+<h6 id="2-3-1-this对象作为synchronized同步代码块的锁"><a href="#2-3-1-this对象作为synchronized同步代码块的锁" class="headerlink" title="2.3.1 this对象作为synchronized同步代码块的锁"></a>2.3.1 this对象作为synchronized同步代码块的锁</h6><p>当以this对象（表示当前实例对象）作为同步代码块的锁时，只有获取到当前实例对象锁的线程才能执行相应的同步代码。</p>
+<p>示例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyClass &#123;</span><br><span class="line"></span><br><span class="line">    public synchronized void log1(String msg1, String msg2) &#123;</span><br><span class="line">         log.writeln(msg1);</span><br><span class="line">           log.writeln(msg2);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    public void log2(String msg1, String msg2) &#123;</span><br><span class="line">         synchronized (this) &#123;</span><br><span class="line">            log.writeln(msg1);</span><br><span class="line">            log.writeln(msg2);  </span><br><span class="line">         &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上例中：如果某个线程正在执行log2()方法中的同步代码块，那么会阻塞其他线程执行log1()方法和log2()方法中的同步代码块（log1方法是普通同步方法，也是以当前实例对象作为锁）。</p>
+<p>以this为对象锁的同步代码块，和普通同步方法的锁对象相同，都是某个实例对象作为同步锁。这种情况下，我们要考虑多线程竞争锁对象时造成的不必要的损耗。</p>
+<h6 id="2-3-2-class对象作为synchronized同步代码块的锁"><a href="#2-3-2-class对象作为synchronized同步代码块的锁" class="headerlink" title="2.3.2 class对象作为synchronized同步代码块的锁"></a>2.3.2 class对象作为synchronized同步代码块的锁</h6><p>当以class对象作为同步代码块的锁时，只有获取到class对象锁的线程才能执行相应的同步代码。</p>
+<p>示例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyClass &#123;</span><br><span class="line"></span><br><span class="line">    public static synchronized void log1(String msg1, String msg2) &#123;</span><br><span class="line">         log.writeln(msg1);</span><br><span class="line">           log.writeln(msg2);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    public static void log2(String msg1, String msg2) &#123;</span><br><span class="line">         synchronized (MyClass.class) &#123;</span><br><span class="line">            log.writeln(msg1);</span><br><span class="line">            log.writeln(msg2);  </span><br><span class="line">         &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上例中：当某个线程正在执行log1()方法中的同步代码块或者log2()方法时，会阻塞其他线程执行这两个方法中的任意一个方法。</p>
+<p>以class为对象锁的同步代码块，和静态同步方法的锁对象相同，都是某个类的class对象作为同步锁。这种情况下，我们也要考虑多线程竞争锁对象时造成的不必要的损耗。</p>
+<h6 id="2-3-2-其他对象作为synchronized同步代码块的锁"><a href="#2-3-2-其他对象作为synchronized同步代码块的锁" class="headerlink" title="2.3.2 其他对象作为synchronized同步代码块的锁"></a>2.3.2 其他对象作为synchronized同步代码块的锁</h6><p>可以指定任意对象作为同步代码块的对象锁，通常情况下我们使用共享资源对象作为指定的对象锁。备注：如果存在多个共享资源，那么一定要注意锁的顺序，有效防止死锁。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyClass &#123;</span><br><span class="line"></span><br><span class="line">    private String lock &#x3D; &quot;lock&quot;;</span><br><span class="line">    </span><br><span class="line">    public static void log2(String msg1, String msg2) &#123;</span><br><span class="line">         synchronized (lock) &#123;</span><br><span class="line">            log.writeln(msg1);</span><br><span class="line">            log.writeln(msg2);  </span><br><span class="line">         &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以任意自定义对象作为锁时，似乎要比以this对象和class对象作为synchronized同步锁要灵活的多，不过也要根据场景来使用不同的对象作为同步锁。</p>
+<h6 id="2-3-3-Lambda-表达式中的同步代码块"><a href="#2-3-3-Lambda-表达式中的同步代码块" class="headerlink" title="2.3.3 Lambda 表达式中的同步代码块"></a>2.3.3 Lambda 表达式中的同步代码块</h6><p>我们可以在Lambda表达式中声明synchronized同步代码块，其使用方式跟我们上面提到的知识点是一样的。</p>
+<p>示例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyClass &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        String lock &#x3D; &quot;lock&quot;;</span><br><span class="line">        Consumer&lt;String&gt; consumer &#x3D; s -&gt; &#123;</span><br><span class="line">            synchronized (lock) &#123;</span><br><span class="line">                &#x2F;&#x2F;do something...</span><br><span class="line">            &#125;            </span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="3-synchronized-数据可见性"><a href="#3-synchronized-数据可见性" class="headerlink" title="3. synchronized 数据可见性"></a>3. synchronized 数据可见性</h3><p>上一篇博客我们讲<a href="https://miracle-sungm.github.io/2020/08/14/Guarantee/" target="_blank" rel="noopener">《Java Happens Before Guarantee》</a> 时提到过 volatile 关键字和 synchronize 关键字的数据可见性保证。</p>
+<p>这里我们简单回忆一下：没有使用 volatile 关键字或 synchronized 关键字时，当某个线程改变了共享资源的值时对其他线程不可见，原因是不会保证存储于CPU寄存器或者CPU高速缓存的数据重新写回主内存中。</p>
+<p>synchronized 数据可见性：<strong>通过使用synchronized关键字声明同步方法或者同步代码块时，某个线程进入synchronized代码块时，会从主内存中读取最新的数据保存至CPU高速缓存或者CPU寄存器中；当某个线程退出synchronized代码块时，会将CPU寄存器中最新的数据刷回到CPU高速缓存中，再将CPU高速缓存中的最新数据刷新到主内存中，以此保证数据可见性。</strong></p>
+<hr>
+<h3 id="4-synchronized-和指令重排"><a href="#4-synchronized-和指令重排" class="headerlink" title="4. synchronized 和指令重排"></a>4. synchronized 和指令重排</h3><p>上一篇博客中提到过： synchronized 在一定程度上限制了指令重排。</p>
+<p>JVM 和 CPU 为了让程序更快的执行，允许指令重排，通过指令重排让指令并行执行。（前提条件是并行执行的指令没有依赖关系，也就是重排的指令之间不存在依赖关系）</p>
+<p>指令重排在多线程中可能会产生一些问题，比如synchronized同步代码块中写一个变量的代码被重排到synchronized外面。为了防止这种问题产生，synchronized 关键字限制了一些指令重排的发生（与volatile关键字限制指令重排相似）。</p>
+<p>最终的结果是：你可以确定你的代码正确的工作 ———— synchronized限制了指令重排的发生。</p>
+<hr>
+<h3 id="5-什么对象用来做同步对象锁？"><a href="#5-什么对象用来做同步对象锁？" class="headerlink" title="5. 什么对象用来做同步对象锁？"></a>5. 什么对象用来做同步对象锁？</h3><p>正如我们前面多次提到的一样，synchronized 关键字必须作用于某个对象上做同步（通常情况下我们称这个对象为同步对象锁）。</p>
+<p>你可以使用任意对象作为同步对象锁，但是不建议你使用某些String类型的对象和原始基本数据类型的包装类对象作为同步对象锁。因为编译器会优化它们，最终的结果是当你使用他们在不同的同步代码块中作为对象锁时，你以为你使用了不同的对象作为对象锁，实际上只使用了同一个对象作为对象锁。</p>
+<p>出于安全考虑，使用 this 对象或者 new Object() 作为同步对象锁，这种情况下不会被Java编译器或JVM缓存。</p>
+<hr>
+<h3 id="6-synchronized-代码块的限制和替代品"><a href="#6-synchronized-代码块的限制和替代品" class="headerlink" title="6. synchronized 代码块的限制和替代品"></a>6. synchronized 代码块的限制和替代品</h3><p>Java 中的 synchronized代码块存在一些限制，比如同一时间只允许一个线程进入同步代码块。如果多个线程只读取共享数据，不更新共享数据，这是线程安全的，这种情况下我们可以使用 Read / Write Lock 代替 synchronized 代码块。</p>
+<p>你想要多个线程进入同步代码块还是只是一个线程进入同步代码块？我们可以通过使用 Semaphore（计数信号量：限流的作用） 来实现指定数量的线程进入同步代码块(这个点说的同步代码块不是指synchronized代码块)，后面的博客我们来讲解这种实现方式。</p>
+<p>synchronized代码块不会保证等待线程按顺序执行同步代码块。如果我们需要线程按顺序执行同步代码块，可以通过实现 Fairness（公平锁） 来达到这个目的。</p>
+<p>如果只有一个线程修改共享变量，其他的线程只读取共享变量的值，我们可以使用 volatile 关键字，不需要任何同步代码块。</p>
+<hr>
+<h3 id="7-synchronized-性能消耗"><a href="#7-synchronized-性能消耗" class="headerlink" title="7. synchronized 性能消耗"></a>7. synchronized 性能消耗</h3><p>当线程进入和退出 synchronized 代码块时存在一些性能消耗。随着 JDK 版本的发布，性能的消耗变得越来越小，但是使用synchronized代码块还是不可避免地需要付出一些代价。</p>
+<p>如果在循环内不断地进入和退出同步代码块，无疑会让放大性能的损耗。</p>
+<p>尽量避免大的同步代码块，换句话说，只把真正需要的同步操作的代码放进同步代码块，避免其他线程执行不需要同步操作的代码时造成阻塞，同时也能提高执行代码的性能。</p>
+<hr>
+<h3 id="8-synchronized-锁重入"><a href="#8-synchronized-锁重入" class="headerlink" title="8. synchronized 锁重入"></a>8. synchronized 锁重入</h3><p>锁重入：当一个线程进入某个同步代码块时，线程持有同步代码块的同步锁，若同步代码块还调用了具有相同同步锁的同步代码块，线程不需要再次获取锁，可以直接进入相同同步锁的其他同步代码块。</p>
+<p>synchronized 支持锁重入。</p>
+<p>备注：设计多重同步代码块时，需要合理的设计，错误的实现容易导致死锁产生，保持同步代码的锁的顺序一致是一种设计方案。</p>
+<hr>
+<h3 id="9-集群中的-synchronized-代码块"><a href="#9-集群中的-synchronized-代码块" class="headerlink" title="9. 集群中的 synchronized 代码块"></a>9. 集群中的 synchronized 代码块</h3><p>请记住：synchronized 代码块只针对于同一个 JVM 中不同的线程能起到同步作用，如果你拥有相同的 Java 应用程序在多个 JVM 上面运行 ———— 集群，可能导致每个JVM都有一个线程在同时访问共享资源。 </p>
+<p>如果你需要所有的JVM同步访问共享资源，可以使用其他的同步机制，而不是使用 synchronized 代码块。</p>
 ]]></content>
       <tags>
-        <tag>Java</tag>
-        <tag>Java并发编程</tag>
+        <tag>Java 并发编程</tag>
       </tags>
   </entry>
   <entry>
-    <title>原始类型特化</title>
-    <url>/2020/06/13/%E5%8E%9F%E5%A7%8B%E7%B1%BB%E5%9E%8B%E7%89%B9%E5%8C%96/</url>
-    <content><![CDATA[<p><strong>引言</strong></p>
-<blockquote>
-<p>上篇我们介绍了三个函数式接口：Predicate<T>、Consumer<T>、Function&lt;T，R&gt; 。还有一些函数式接口是专门为某些类型涉及的。<a href="https://www.jianshu.com/p/4c93e1f7c19b" target="_blank" rel="noopener">https://www.jianshu.com/p/4c93e1f7c19b</a></T></T></p>
-</blockquote>
-<a id="more"></a>
-
-<p> <strong>Java 类型</strong></p>
-<blockquote>
-<ul>
-<li>引用类型（如 Byte、Integer、Long、Object、List）</li>
-<li>原始类型（byte、short、int、float、double、long、char、boolean）</li>
-</ul>
-</blockquote>
-<p> <strong>回顾知识点：</strong></p>
-<blockquote>
-<ul>
-<li>Java 类型要么是引用类型，要么是原始类型。</li>
-<li>泛型只能绑定到引用类型上面、这是由泛型内部的实现方式造成的。</li>
-<li>在 Java 中有一个将原始类型转换为对应的引用类型的机制、这个机智就叫做装箱。相反的操作、也就是将引用类型转换成对应的原始类型的机制，这种机智叫做拆箱。Java 还有一个自动装拆箱的机智来帮助我们程序员执行这一任务：装箱和拆箱都是自动完成的。</li>
-</ul>
-</blockquote>
-<p><strong>注意：</strong></p>
-<blockquote>
-<p>虽然 Java 提供了自动装拆箱的机智，但这在性能方面是要付出代价的，装箱的本质是就是把原始类型包裹起来，并保存在堆里。因此、装箱后的值需要更多的内存、并需要额外的内存搜索来获取被包裹的值。因此、为提高程序的执行效率、Java  8 为我们前面所提到的函数式接口提供了一个专门的版本、以便在输入和输出都是原始类型时避免自动装拆箱的操作。</p>
-</blockquote>
-<p><strong>举例</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;IntPredicate 源码</span><br><span class="line"></span><br><span class="line">@FunctionalInterface</span><br><span class="line">public interface IntPredicate &#123;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * Evaluates this predicate on the given argument.</span><br><span class="line">     *</span><br><span class="line">     * @param value the input argument</span><br><span class="line">     * @return &#123;@code true&#125; if the input argument matches the predicate,</span><br><span class="line">     * otherwise &#123;@code false&#125;</span><br><span class="line">     *&#x2F;</span><br><span class="line">    boolean test(int value);</span><br><span class="line">  </span><br><span class="line">    &#x2F;&#x2F; 其他默认方法省略</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>说明</strong></p>
-<blockquote>
-<p> IntPredicate 源码解析：IntPredicate 类的 test方法接收一个原始类型 int类型的入参，其返回值为 boolean，避免了输入和输出都是原始类型时自动装拆箱的操作。 </p>
-</blockquote>
-<p><strong>Java 8中的常用函数式接口</strong></p>
-<p><div class="img-item" data-src="https://upload-images.jianshu.io/upload_images/11864885-b49768e2e438afa1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-sub-html=".caption"><img src="https://upload-images.jianshu.io/upload_images/11864885-b49768e2e438afa1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt></div></p>
-<p><div class="img-item" data-src="https://upload-images.jianshu.io/upload_images/11864885-b03a23c45dc9e0d6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-sub-html=".caption"><img src="https://upload-images.jianshu.io/upload_images/11864885-b03a23c45dc9e0d6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="常用函数式接口"><div class="img-caption d-block text-center"><span class="center-caption text-muted border-bottom">常用函数式接口</span></div></div></p>
-<p><strong>Lambdas及函数式接口的例子</strong><br><div class="img-item" data-src="https://upload-images.jianshu.io/upload_images/11864885-049343497380171b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-sub-html=".caption"><img src="https://upload-images.jianshu.io/upload_images/11864885-049343497380171b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Lambdas及函数式接口的例子"><div class="img-caption d-block text-center"><span class="center-caption text-muted border-bottom">Lambdas及函数式接口的例子</span></div></div></p>
+    <title>[Java 并发编程] 13. volatile关键字</title>
+    <url>/2020/08/19/volatile%E5%85%B3%E9%94%AE%E5%AD%97/</url>
+    <content><![CDATA[<p>volatile 关键字用来标记一个 Java 变量被保存至主内存中。更确切的说：每次读取 volatile 变量时会从主内存中读取，而不是从CPU高速缓存中读取；每次写 volatile 变量时会把数据写回主内存中，而不是CPU高速缓存中。</p>
+<p>实际上，自 Java 5 起，volatile 关键字不仅仅保证从主内存中读取数据或者写回数据至主内存中。下面一起来探索下 volatile 关键字的作用吧。</p>
+<h3 id="1-volatile-可见性问题"><a href="#1-volatile-可见性问题" class="headerlink" title="1. volatile 可见性问题"></a>1. volatile 可见性问题</h3><p>volatile 关键字保证了当某个线程改变了 volatile 变量的值时对其他线程可见。</p>
+<p>在多线程应用系统中，线程操作 non-volatile 变量时，每个线程会拷贝 non-volatile 变量（拷贝引用）至CPU高速缓存中。如果你的计算机包含多个CPU，每个线程在不同的CPU上运行时，这就意味着每个线程拷贝这些变量至不同的CPU的CPU高速缓存中，如下图所示：</p>
+<p><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/java-volatile-1.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/java-volatile-1.png" alt></div></p>
+<p>对于 non-volatile 变量，JVM每次读取变量数据时不会保证从主内存中拷贝至CPU高速缓存中，或者每次写数据时不会保证把CPU高速缓存的数据写回至主内存中。</p>
+<p>下面我们来看个示例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class ShareObject &#123;</span><br><span class="line">    public int count &#x3D; 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>想象一下，有2个线程，第一个线程对 count 的值做修改，第二个的线程能读取到 count 被修改后的值吗？？？</p>
+<p>由于这个 count 变量没有被 volatile 关键字声明，当2个CPU运行的2个线程分别读取 count 的值时，会从主内存中将count的值拷贝至各自的CPU高速缓存中，其中一个线程修改count的值，由于它没有被volatile声明，因此不会保证被修改后的值写回至主内存中。请看下图：</p>
+<p><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/java-volatile-2.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/java-volatile-2.png" alt></div></p>
+<p>由于count变量值被修改后没有写回主内存中，并且线程每次读取count变量值也没有保证从主内存中读取，这个问题被称为数据可见性问题，我们可以通过使用volatile关键字解决数据可见性问题，也可以使用其他方式解决。</p>
 <hr>
-<p><strong>推荐书籍</strong></p>
+<h3 id="2-volatile-可见性保证"><a href="#2-volatile-可见性保证" class="headerlink" title="2. volatile 可见性保证"></a>2. volatile 可见性保证</h3><p>volatile 关键字解决了数据可见性问题。通过使用 volatile 关键字声明变量是一个volatile变量，保证了每次读取变量数据时从主内存读取，写数据时把数据写回主内存中。</p>
+<p>通过 volatile 声明变量：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class ShareObject &#123;</span><br><span class="line">    public volatile int count &#x3D; 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面提到的这种情况，当线程一修改了count的值，线程二没有修改count的值，只读取了count的值，这种情况下，使用volatile关键字声明count变量足够保证数据的线程二读取到的是最新的数据。</p>
+<p><strong>注意：当存在多个线程对同一个共享变量做修改操作时，使用volatile是远远不够的，volatile关键字只能保证数据可见性，并不能保证数据操作是原子性的，我们可以使用synchronized关键字或者Java提供的JUC工具包。</strong></p>
+<h5 id="2-1-所有变量可见性保证"><a href="#2-1-所有变量可见性保证" class="headerlink" title="2.1 所有变量可见性保证"></a>2.1 所有变量可见性保证</h5><p>实际上，volatile 关键字的作用超越了 volatile 变量本身，有更多的作用。包括：</p>
 <blockquote>
 <ul>
-<li>《Java 8 in Action》</li>
+<li>当某个线程写回volatile变量的值至主内存时，这个<strong>线程可见的所有变量的值</strong>都会写回至主内存中</li>
+<li>当某个线程从主内存中读取volatile变量的值时，这个<strong>线程可见的所有变量的值</strong>都会重新从主内存中读取</li>
 </ul>
 </blockquote>
+<p>上面提到的这些内容我们在博客<a href="https://miracle-sungm.github.io/2020/08/14/Guarantee/" target="_blank" rel="noopener">[Java 并发编程] 11. Java Happen Before Guarantee</a>提到过，这里不再举例证明。</p>
+<hr>
+<h3 id="3-指令重排挑战"><a href="#3-指令重排挑战" class="headerlink" title="3. 指令重排挑战"></a>3. 指令重排挑战</h3><p>JVM和CPU为了提升性能允许指令重排，只要满足语义不变（单线程情况下执行结果不变）即可指令重排。</p>
+<p>请看下面示例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int a &#x3D; 1;</span><br><span class="line">int b &#x3D; 2;</span><br><span class="line"></span><br><span class="line">a++;</span><br><span class="line">b++;</span><br></pre></td></tr></table></figure>
+
+<p>指令重排后：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int a &#x3D; 1;</span><br><span class="line">a++;</span><br><span class="line"></span><br><span class="line">int b &#x3D; 2;</span><br><span class="line">b++;</span><br></pre></td></tr></table></figure>
+
+<p>然而，当一个变量被volatile修饰时，存在一些指令重排的挑战。请看示例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyClass &#123;</span><br><span class="line">    private int years;</span><br><span class="line">    private int months</span><br><span class="line">    private volatile int days;</span><br><span class="line"></span><br><span class="line">    public void update(int years, int months, int days)&#123;</span><br><span class="line">        this.years  &#x3D; years;</span><br><span class="line">        this.months &#x3D; months;</span><br><span class="line">        this.days   &#x3D; days;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>一旦执行上面的update()方法，执行到修改days的指令时，years和months修改后的值也会被写回到主内存中。但是如果发生了指令重排，如下所示</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void update(int years, int months, int days)&#123;</span><br><span class="line">    this.days   &#x3D; days;</span><br><span class="line">    this.years  &#x3D; years;</span><br><span class="line">    this.months &#x3D; months;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>同样执行到days修改的指令时，years和months的值也会被写回到主内存中，但此时years和months的值未被修改（指令重排导致years和months修改的指令在days指令下面），写回数据至主内存的操作发生在years和months修改指令的前面，当执行完years和months的修改指令后，不会同步数据至主内存，因此years和months的新值对其他线程不可见（未使用volatile关键字），这样的指令重排导致程序的语义发生了改变。</p>
+<p>Java 有解决这个问题，让我们看下一章节。</p>
+<h3 id="4-volatile-happens-before-保证"><a href="#4-volatile-happens-before-保证" class="headerlink" title="4. volatile happens-before 保证"></a>4. volatile happens-before 保证</h3><p>为了解决指令重排可能产生的问题，java volatile 关键字除了提供可见性保证之外，还提供提供了happens-before保证，如下：</p>
+<blockquote>
+<ul>
+<li>当其他变量的读写指令原本就在volatile写指令前面时，那么其他变量的读写指令不会被重排序到 volatile 写指令后面。（请注意：这里只提出了原本在volatile变量写指令前面的指令，不会被重排序到volatile指令后面，原本在volatile写指令前面的指令之间可以发生指令重排。）</li>
+<li>当其他变量的读写指令原本就在volatile读指令后面时，那么其他变量的读写指令不会被重排序到 volatile 读指令前面。（同样：原本在 volatile 读指令后面的指令之间可以发生指令重排）</li>
+</ul>
+</blockquote>
+<h3 id="5-volatile-不足"><a href="#5-volatile-不足" class="headerlink" title="5. volatile 不足"></a>5. volatile 不足</h3><p>即使 volatile 关键字保证了线程每次读取 volatile 变量时从主内存中读取数据，每次写数据时把数据写回主内存中，但在一些情况下，声明volatile变量是不够的。</p>
+<p>上面我们提到过当一个线程修改volatile变量时，能保证其他线程可以读取到volatile变量的最新值。</p>
+<p>事实上，在多个线程修改volatile变量的情况下，也能确保最新值被写回到主内存中。但这样可能会存在一些问题，示例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">private volatile int totalPrice &#x3D; 0;</span><br><span class="line"></span><br><span class="line">public int addPrice(int price) &#123;</span><br><span class="line">    totalPrice +&#x3D; price;</span><br><span class="line">    return totalPrice;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public void initTotalPrice() &#123;</span><br><span class="line">    totalPrice &#x3D; 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当线程一、线程二分别在执行addPrice()方法和initTotalPrice()方法时，线程一执行完totalPrice += price指令后，把totalPrice的最新值刷回到主内存中，若此时线程二正巧执行完initTotalPrice()方法，totalPrice的值被重新刷回0，当线程一再读取totalPrice值并返回，导致最终返回的值是0，这可能不是我们程序最终想要的结果。（备注：当然我们不会去写这种程序代码，这个示例我只用来说明问题，并没有实际测试过这种场景。）</p>
+<p>上例其实就是为了说明一个问题：<strong>volatile 只是保证了数据的可见性，并没有保证原子性，如果要执行原子性操作，使用volatile关键字是远远不够的。这里顺便提一下，synchronized关键字不仅保证了数据可见性，同时也保证了原子性。</strong></p>
+<p>再来看下一个示例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;声明volatile变量</span><br><span class="line">volatile int i &#x3D; 0;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;自增</span><br><span class="line">i++;</span><br></pre></td></tr></table></figure>
+<p>当2个线程同时对变量 i 做自增操作，当他们同时把 i 的值写回到主内存中时，最终写回的值时1，实际上i做了2次自增。</p>
+<p>因此：在多个线程同时存在修改共享数据的情况时，仅仅使用volatile变量是不够的。请记住：volatile 关键字只保证了数据可见性，并不保证原子性。</p>
+<h3 id="6-什么时候使用-volatile"><a href="#6-什么时候使用-volatile" class="headerlink" title="6. 什么时候使用 volatile ?"></a>6. 什么时候使用 volatile ?</h3><p>正如前面提到的，如果多个线程同时对共享数据进行读写操作，这种情况下使用volatile关键字是不够的。我们需要使用synchronized关键字保证数据读写的可见性和原子性。</p>
+<p>除了使用synchronized关键字之外，我们还可以使用 java.util.concurrent 包提供的各种工具类，比如 AtomicLong 、 AtomicReference 等等。</p>
+<p>当只有一个线程会对共享变量的值进行修改，其他的线程只读取共享变量的值时，我们使用volatile关键字是足够的。</p>
+<p>另外: volatile 关键字工作在32位或者64位的变量上。</p>
+<h3 id="7-volatile-性能考虑"><a href="#7-volatile-性能考虑" class="headerlink" title="7. volatile 性能考虑"></a>7. volatile 性能考虑</h3><p>我们都知道，CPU操作CPU高速缓存的速度远远快于操作主内存的速度。CPU每次操作volatile关键字都会操作主内存会带来额外的性能开销。另外，volatile 关键字防止指令重排是正常性能增强技术。在条件允许的情况下，使用volatile关键字代替synchronized代码块能节省性能开销。</p>
 ]]></content>
       <tags>
-        <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>做有意义的命名</title>
-    <url>/2020/06/13/%E5%81%9A%E6%9C%89%E6%84%8F%E4%B9%89%E7%9A%84%E5%91%BD%E5%90%8D/</url>
-    <content><![CDATA[<blockquote>
-<p>软件中随处可见命名。我们给变量、函数、参数、类和封包命名。我们给源代码及源码所在的目录命名。我们给 jar 文件、 war 文件 和 ear 文件命名。有很多命名要做、不妨做好它。下面列出几条简单规则。</p>
-</blockquote>
-<a id="more"></a>
-
-<h2 id="1-名副其实"><a href="#1-名副其实" class="headerlink" title="1. 名副其实"></a>1. 名副其实</h2><blockquote>
-<p>变量、函数或类的名称应该已经答复了所有的大问题。它该告诉你，它为什么会存在，它做了什么事，应该怎么用。如果名称需要注释来补充，那就不算是名副其实。</p>
-</blockquote>
-<hr>
-<h2 id="2-避免误导"><a href="#2-避免误导" class="headerlink" title="2. 避免误导"></a>2. 避免误导</h2><blockquote>
-<ol>
-<li><strong>避免留下掩藏代码本意的错误线索。</strong><br>例如：使用某些专有名词作为变量名，使用缩写。</li>
-<li><strong>避免使用与本意相悖的词</strong><br>例如：<br>String[] accountList = new String[10];  accountList 实质是一个数组对象，命名后缀为<br>List产生误导作用。</li>
-<li><strong>避免使用外形相似的命名</strong><br>例如：两个变量</li>
-<li><strong>避免使用小写字母 l 与 大写字母 O 作为变量名，跟数组1 和数字 0 难以区分。</strong></li>
-</ol>
-</blockquote>
-<hr>
-<h2 id="3-做有意义的区分"><a href="#3-做有意义的区分" class="headerlink" title="3. 做有意义的区分"></a>3. 做有意义的区分</h2><blockquote>
-<p>如果只是为了满足编译器或解释器的需要而写代码，肯定会制造麻烦。</p>
-</blockquote>
-<blockquote>
-<p>#####错误示例：<br><strong>1. 添加数字系列，这样的名称纯属误导。</strong></p>
-<ul>
-<li>例如：<br>定义两个学生对象<br>Student student1 = new Student();<br>Student student2 = new Student();</li>
-</ul>
-<p><strong>2. 少使用废话，废话都是冗余。要区分名称，要以读者能鉴别之处来区分。</strong></p>
-<ul>
-<li><p>例如：假设已有一个 Product 类，还有ProductInfo 类 和 ProductData 类，虽然名称不同，意思却无差别。 Info 和 Data 就i想 a、an、the 一样，都是意义含混的废话。</p>
-</li>
-<li><p>例如：如果你需要获取账户信息，你该调用那个方法呢 ？<br>getAccount();<br>getAccounts();<br>getAccountInfo();</p>
-</li>
-<li><p>例如：<br>moneyAmount 和 money 没区别，<br>customerInfo 与 customer 没区别，<br>accountData 和 account 没区别，<br>theMessage 和 message 没区别 。</p>
-</li>
-</ul>
-</blockquote>
-<hr>
-<h2 id="4-使用读的出来的名称"><a href="#4-使用读的出来的名称" class="headerlink" title="4. 使用读的出来的名称"></a>4. 使用读的出来的名称</h2><blockquote>
-<p>#####错误示例：<br><strong>1.  使用汉语拼音，只会让别人觉得你写的代码很 low.</strong></p>
-<p><strong>2. 使用罕见的英语词汇</strong></p>
-</blockquote>
-<hr>
-<h2 id="5-使用可搜索的名称"><a href="#5-使用可搜索的名称" class="headerlink" title="5. 使用可搜索的名称"></a>5. 使用可搜索的名称</h2><blockquote>
-<p>#####建议:<br><strong>1. 使用长名称，长名称胜于短名称。</strong></p>
-<ul>
-<li>例如： WORK_DAYS_PER_WEEK 比数字 5 好找得多。</li>
-</ul>
-</blockquote>
-<hr>
-<h2 id="6-避免使用编码"><a href="#6-避免使用编码" class="headerlink" title="6. 避免使用编码"></a>6. 避免使用编码</h2><blockquote>
-<p>编码已经太多，不需要自找麻烦。</p>
-</blockquote>
-<hr>
-<h2 id="7-避免使用前缀"><a href="#7-避免使用前缀" class="headerlink" title="7. 避免使用前缀"></a>7. 避免使用前缀</h2><blockquote>
-<p>不必使用 m_ 前缀来表名成员变量，很多时候阅读代码的人不会去看前缀，直接看后面有意义的名称，前缀反而成了废代码。</p>
-</blockquote>
-<hr>
-<h2 id="8-接口和实现"><a href="#8-接口和实现" class="headerlink" title="8. 接口和实现"></a>8. 接口和实现</h2><p>略</p>
-<hr>
-<h2 id="9-类名"><a href="#9-类名" class="headerlink" title="9. 类名"></a>9. 类名</h2><blockquote>
-<p>类名和对象名应该是名词或者名词短语，不应该是动词。</p>
-<ul>
-<li>正例：Customer</li>
-<li>反例：CustomerInfo、CustomerData、 Data .</li>
-</ul>
-</blockquote>
-<hr>
-<h2 id="10-方法名"><a href="#10-方法名" class="headerlink" title="10. 方法名"></a>10. 方法名</h2><blockquote>
-<p>方法名应该是动词或者动词短语，不应该是名词。</p>
-<ul>
-<li>例如：getName(); setName() 等。</li>
-</ul>
-</blockquote>
-<hr>
-<h2 id="11-避免思维映射"><a href="#11-避免思维映射" class="headerlink" title="11. 避免思维映射"></a>11. 避免思维映射</h2><blockquote>
-<ul>
-<li>例如：变量 i、j 通常用于 for 循环中，传统惯用这种单字母名词作为循环计数器，并不是一种好的选择。</li>
-</ul>
-</blockquote>
-<hr>
-<h2 id="12-避免使用双关语"><a href="#12-避免使用双关语" class="headerlink" title="12. 避免使用双关语"></a>12. 避免使用双关语</h2><blockquote>
-<ul>
-<li>例如：add方法用来添加一个对象，返回结果应该是布尔类型（添加成功或者失败） ，如果你需要添加一个对象并返回添加后产生的新值，建议使用append方法和insert方法。</li>
-</ul>
-</blockquote>
-]]></content>
-      <tags>
-        <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Java 并发编程] 6. 创建和开始Java线程</title>
-    <url>/2020/08/12/%E5%88%9B%E5%BB%BA%E5%92%8C%E5%BC%80%E5%A7%8BJava%E7%BA%BF%E7%A8%8B/</url>
-    <content><![CDATA[<p>一个Java线程就像一个可以执行你的Java代码的虚拟CPU。</p>
-<p>当Java虚拟机创建的主线程开始执行main方法时，你的Java应用程序启动，在你的Java应用程序里面你可以创建和开始你自定义的线程。</p>
-<p>Java 线程都是对象，就像其他的Java对象一样，线程对象都是 java.lang.Tread 的实例或者其子类的实例。</p>
-<h3 id="1-创建和开始线程"><a href="#1-创建和开始线程" class="headerlink" title="1 创建和开始线程"></a>1 创建和开始线程</h3><p>你可以像这样创建一个线程对象</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Thread myThread &#x3D; new Thread();</span><br></pre></td></tr></table></figure>
-
-<p>你可以像这样开始一个线程</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">myThread.start();</span><br></pre></td></tr></table></figure>
-
-<p>创建线程的几种方式：</p>
-<blockquote>
-<ul>
-<li>继承 java.lang.Thread 类并重写 run() 方法。</li>
-<li>实现 java.lang.Runnable 接口并重写 run() 方法。</li>
-<li>实现 java.util.concurrent.Callable 接口并重写 call() 方法。（备注：这种实现方式后面有 JUC 专题）</li>
-</ul>
-</blockquote>
-<hr>
-<h3 id="2-Thread-子类"><a href="#2-Thread-子类" class="headerlink" title="2 Thread 子类"></a>2 Thread 子类</h3><p>继承 java.lang.Thread 类并重写 run() 方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread extends Thread &#123;</span><br><span class="line"></span><br><span class="line">  public void run()&#123;</span><br><span class="line">     System.out.println(&quot;MyThread running&quot;);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>main方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args)&#123;</span><br><span class="line">    MyThread myThread &#x3D; new MyThread();</span><br><span class="line">    myThread.start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>start() 方法不会等线程执行完 run()方法，run() 方法将会由其他不同的CPU执行。</p>
-<hr>
-<h3 id="3-实现-Runnable-接口"><a href="#3-实现-Runnable-接口" class="headerlink" title="3 实现 Runnable 接口"></a>3 实现 Runnable 接口</h3><p>第二种创建线程的方式是实现 java.lang.Runnable 接口并重写该接口的 run() 方法。一个 Java 对象实现 Runnable 接口 可以被Java Thread 类执行。</p>
-<p>Runnable 接口由 JDK 提供，仅有一个 run 方法，是一个函数式接口。源码如下：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@FunctionalInterface</span><br><span class="line">public interface Callable&lt;V&gt; &#123;</span><br><span class="line">    &#x2F;**</span><br><span class="line">     * Computes a result, or throws an exception if unable to do so.</span><br><span class="line">     *</span><br><span class="line">     * @return computed result</span><br><span class="line">     * @throws Exception if unable to compute a result</span><br><span class="line">     *&#x2F;</span><br><span class="line">    V call() throws Exception;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>实现 Runnable 的方式有3种：</p>
-<blockquote>
-<ol>
-<li>创建一个 Java 类实现 Runnable 接口</li>
-<li>创建一个 Java 匿名类实现 Runnable 接口</li>
-<li>使用 Java 8 Lambda 表达式实现 Runnable 接口</li>
-</ol>
-</blockquote>
-<h5 id="3-1-创建一个-Java-类实现-Runnable-接口"><a href="#3-1-创建一个-Java-类实现-Runnable-接口" class="headerlink" title="3.1 创建一个 Java 类实现 Runnable 接口"></a>3.1 创建一个 Java 类实现 Runnable 接口</h5><p>例如：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyRunnable implements Runnable &#123;</span><br><span class="line"></span><br><span class="line">  public void run()&#123;</span><br><span class="line">     System.out.println(&quot;MyRunnable running&quot;);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h5 id="3-2-创建一个-Java-匿名类实现-Runnable-接口"><a href="#3-2-创建一个-Java-匿名类实现-Runnable-接口" class="headerlink" title="3.2 创建一个 Java 匿名类实现 Runnable 接口"></a>3.2 创建一个 Java 匿名类实现 Runnable 接口</h5><p>例如：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Runnable myRunnable &#x3D; new Runnable()&#123;</span><br><span class="line"></span><br><span class="line">    public void run()&#123;</span><br><span class="line">        System.out.println(&quot;Runnable running&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h5 id="3-3-使用-Java-8-Lambda-表达式实现-Runnable-接口"><a href="#3-3-使用-Java-8-Lambda-表达式实现-Runnable-接口" class="headerlink" title="3.3 使用 Java 8 Lambda 表达式实现 Runnable 接口"></a>3.3 使用 Java 8 Lambda 表达式实现 Runnable 接口</h5><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Runnable runnable &#x3D; () -&gt; &#123; System.out.println(&quot;Lambda Runnable running&quot;); &#125;;</span><br></pre></td></tr></table></figure>
-
-<h5 id="3-4-开启一个实现了-Runnable-接口的线程"><a href="#3-4-开启一个实现了-Runnable-接口的线程" class="headerlink" title="3.4 开启一个实现了 Runnable 接口的线程"></a>3.4 开启一个实现了 Runnable 接口的线程</h5><p>java.lang.Thread的包含传入一个Runnable接口的构造函数。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    &#x2F;&#x2F;or an anonymous class, or lambda...</span><br><span class="line">    Runnable runnable &#x3D; new MyRunnable();</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;executed by a thread</span><br><span class="line">    Thread thread &#x3D; new Thread(runnable);</span><br><span class="line">    thread.start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="4-使用哪种方式创建线程更好"><a href="#4-使用哪种方式创建线程更好" class="headerlink" title="4. 使用哪种方式创建线程更好 ?"></a>4. 使用哪种方式创建线程更好 ?</h3><p>关于继承Thread和实现Runnable接口，没有明确的规定用哪种方式创建线程更好，两种方式都可以让线程运行。我更倾向于使用实现Runnable接口的方式，后面我还们会了解到另外一种创建线程的方式，通过线程池创建线程的方式更加合理。</p>
-<h3 id="5-常见陷阱：调用-run-代替-start"><a href="#5-常见陷阱：调用-run-代替-start" class="headerlink" title="5. 常见陷阱：调用 run() 代替 start()"></a>5. 常见陷阱：调用 run() 代替 start()</h3><p>通过调用start()，程序会告诉 CPU 线程已准备就绪，等待CPU执行 run() 方法。若直接调用 run() 方法则不会开启一个新的线程去执行 run() 方法，而是在原来的线程中去执行 run() 方法，所以当我们需要一个新的线程去执行 run() 方法中的代码时，应该调用 start() 方法启动一个线程，而不是直接调用 run() 方法。</p>
-<h3 id="6-线程名（Thread-Names）"><a href="#6-线程名（Thread-Names）" class="headerlink" title="6. 线程名（Thread Names）"></a>6. 线程名（Thread Names）</h3><p>创建线程的时候可以指定线程名称，详见 java.lang.Thread API</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    Runnable myRunnable &#x3D; () -&gt; System.out.println(&quot;Thread name is &quot; + Thread.currantThread().getName());</span><br><span class="line">    </span><br><span class="line">    new Thread(myRunnable, &quot;Thread One&quot;).start();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">console out: Thread name is Thread One</span><br></pre></td></tr></table></figure>
-
-<h3 id="7-Thread-currentThread"><a href="#7-Thread-currentThread" class="headerlink" title="7. Thread.currentThread()"></a>7. Thread.currentThread()</h3><p>通过 Thread.currentThread() 获取当前正在执行的线程对象。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Thread currentThread &#x3D; Thread.currentThread();</span><br></pre></td></tr></table></figure>
-
-<h3 id="8-暂停线程"><a href="#8-暂停线程" class="headerlink" title="8. 暂停线程"></a>8. 暂停线程</h3><p>可以通过 Thread.sheep() 让线程睡眠指定毫秒数。这里不建议使用 thread.suspend() 方法，该方法和 Thread 类的 resume()、stop()、destroy() 都是 JDK 标注废弃方法。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">try &#123;</span><br><span class="line">    Thread.sleep(1000L);</span><br><span class="line">&#125; catch (InterruptedException e) &#123;</span><br><span class="line">    e.printStackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>注意： Thread.sheep() 方法不会释放CPU资源，如果设置锁的话也不会释放锁资源，只是让线程睡眠指定毫秒数。与 Object 类的 wait() 方法不同， wait() 方法主要用于线程通信，且 wait() 方法会释放锁资源。</p>
-<h3 id="9-停止一个线程"><a href="#9-停止一个线程" class="headerlink" title="9. 停止一个线程"></a>9. 停止一个线程</h3><p>不建议使用 Thread 类提供的 stop() 方法去停止一个线程，stop() 方法会暴力停止一个线程，对程序不友好，可以通过更友好的方式停止一个线程。</p>
-<p>请看示例：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyRunnable implements Runnable &#123;</span><br><span class="line"></span><br><span class="line">    private boolean doStop &#x3D; false;</span><br><span class="line"></span><br><span class="line">    public synchronized void doStop() &#123;</span><br><span class="line">        this.doStop &#x3D; true;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private synchronized boolean keepRunning() &#123;</span><br><span class="line">        return this.doStop &#x3D;&#x3D; false;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        while(keepRunning()) &#123;</span><br><span class="line">            &#x2F;&#x2F; keep doing what this thread should do.</span><br><span class="line">            System.out.println(&quot;Running&quot;);</span><br><span class="line"></span><br><span class="line">            try &#123;</span><br><span class="line">                Thread.sleep(3L * 1000L);</span><br><span class="line">            &#125; catch (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>请注意 doStop() 方法和 keepRunning() 方法使用了 synchronized 关键字，后面会详细讲解 synchronized 关键字的作用，这里不做过多描述。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyRunnableMain &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        MyRunnable myRunnable &#x3D; new MyRunnable();</span><br><span class="line"></span><br><span class="line">        Thread thread &#x3D; new Thread(myRunnable);</span><br><span class="line"></span><br><span class="line">        thread.start();</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            Thread.sleep(10L * 1000L);</span><br><span class="line">        &#125; catch (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        myRunnable.doStop();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>上面示例通过设置一个标识，主线程里面启动子线程，然后主线程睡眠10秒钟后调用 doStop() 方法，实现在主线程中停止子线程的运行。</p>
-]]></content>
-      <tags>
-        <tag>Java</tag>
-        <tag>Java并发编程</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>并行流</title>
-    <url>/2020/07/09/%E5%B9%B6%E8%A1%8C%E6%B5%81/</url>
-    <content><![CDATA[]]></content>
-  </entry>
-  <entry>
-    <title>正确的避免NullPointException</title>
-    <url>/2020/06/13/%E6%AD%A3%E7%A1%AE%E7%9A%84%E9%81%BF%E5%85%8DNullPointException/</url>
-    <content><![CDATA[<h2 id="1-正确使用-String类的-equals-方法-和-Object类的-equals-方法"><a href="#1-正确使用-String类的-equals-方法-和-Object类的-equals-方法" class="headerlink" title="1. 正确使用 String类的 equals()方法 和 Object类的 equals() 方法"></a>1. 正确使用 String类的 equals()方法 和 Object类的 equals() 方法</h2><blockquote>
-<p>已知对象在前，未知对象在后。注意：已知对象不为 null</p>
-</blockquote>
-<a id="more"></a>
-
-<p>######正确示例</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    String name &#x3D; &quot;sungm&quot;; </span><br><span class="line">    &#x2F;&#x2F;name为已知对象且被赋予初始值不为空</span><br><span class="line">    if (name.equals(getOtherName())) &#123;</span><br><span class="line">        &#x2F;&#x2F;todo do something</span><br><span class="line">        System.out.println(&quot;todo do something&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static String getOtherName() &#123;</span><br><span class="line">    return &quot;sungm&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>######错误示例</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">    String name &#x3D; &quot;sungm&quot;;</span><br><span class="line">    &#x2F;&#x2F;getOtherName()方法返回值为 null。抛出NPE</span><br><span class="line">    if (getOtherName().equals(name)) &#123;</span><br><span class="line">        &#x2F;&#x2F;todo do something</span><br><span class="line">        System.out.println(&quot;todo do something&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static String getOtherName() &#123;</span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="2-未知对象转String使用String-valueOf-方法"><a href="#2-未知对象转String使用String-valueOf-方法" class="headerlink" title="2. 未知对象转String使用String.valueOf()方法"></a>2. 未知对象转String使用String.valueOf()方法</h2><blockquote>
-<p>空对象调用 toString() 方法会抛出NPE，使用 String.valueOf() 替代</p>
-</blockquote>
-<p>#####示例</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    &#x2F;&#x2F;抛NPE</span><br><span class="line">    System.out.println(getPrice().toString());</span><br><span class="line">    &#x2F;&#x2F;不抛NPE</span><br><span class="line">    System.out.println(String.valueOf(getPrice()));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static BigDecimal getPrice() &#123;</span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h5 id="String-valueOf-方法源码"><a href="#String-valueOf-方法源码" class="headerlink" title="String.valueOf() 方法源码"></a>String.valueOf() 方法源码</h5><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static String valueOf(Object obj) &#123;</span><br><span class="line">    return (obj &#x3D;&#x3D; null) ? &quot;null&quot; : obj.toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="3-使用第三方类库或者自己封装的工具类"><a href="#3-使用第三方类库或者自己封装的工具类" class="headerlink" title="3. 使用第三方类库或者自己封装的工具类"></a>3. 使用第三方类库或者自己封装的工具类</h2><blockquote>
-<p>例如 Apache 的 StringUtils 类</p>
-</blockquote>
-<p>#####Apache 的 StringUtils工具类部分源码</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">public static boolean isEmpty(String str) &#123;</span><br><span class="line">    return str &#x3D;&#x3D; null || str.length() &#x3D;&#x3D; 0;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static boolean isNotEmpty(String str) &#123;</span><br><span class="line">    return !isEmpty(str);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static boolean isBlank(String str) &#123;</span><br><span class="line">    int strLen;</span><br><span class="line">    if (str !&#x3D; null &amp;&amp; (strLen &#x3D; str.length()) !&#x3D; 0) &#123;</span><br><span class="line">        for(int i &#x3D; 0; i &lt; strLen; ++i) &#123;</span><br><span class="line">            if (!Character.isWhitespace(str.charAt(i))) &#123;</span><br><span class="line">                return false;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return true;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static boolean isNotBlank(String str) &#123;</span><br><span class="line">    return !isBlank(str);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>#####Apache 中 StringUtils 中 isEmpty() 方法 和 isBlank() 方法的区别：</p>
-<blockquote>
-<p>1: isEmpty() 方法：当Sting为null或者空（””）时返回true<br>2: isBlank() 方法 ：当Sting为null或者空（””）或者空字符串（”     “）时返回true</p>
-</blockquote>
-<p>#####示例</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">    String empty &#x3D; null;</span><br><span class="line">    System.out.println(StringUtils.isEmpty(empty));</span><br><span class="line"></span><br><span class="line">    empty &#x3D; &quot;&quot;;</span><br><span class="line">    System.out.println(StringUtils.isEmpty(empty));</span><br><span class="line"></span><br><span class="line">    empty &#x3D; &quot;      &quot;;</span><br><span class="line">    System.out.println(StringUtils.isBlank(empty));</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="4-避免自动拆箱可能抛出NPE"><a href="#4-避免自动拆箱可能抛出NPE" class="headerlink" title="4. 避免自动拆箱可能抛出NPE"></a>4. 避免自动拆箱可能抛出NPE</h2><blockquote>
-<p>自动拆箱可能抛出NPE</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;反例</span><br><span class="line">public int function() &#123;</span><br><span class="line">    return Integer对象;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="5-数据库查出的数据可能为null，做空判断"><a href="#5-数据库查出的数据可能为null，做空判断" class="headerlink" title="5. 数据库查出的数据可能为null，做空判断"></a>5. 数据库查出的数据可能为null，做空判断</h2><blockquote>
-<p>数据库非空字段可以加非空约束；对可能为空的字段做空判断、防止NPE。</p>
-</blockquote>
-<hr>
-<h2 id="6-级联调用容易抛出NPE，建议使用Java-8-的-Optional类"><a href="#6-级联调用容易抛出NPE，建议使用Java-8-的-Optional类" class="headerlink" title="6. 级联调用容易抛出NPE，建议使用Java 8 的 Optional类"></a>6. 级联调用容易抛出NPE，建议使用Java 8 的 Optional类</h2><blockquote>
-<p>例如 object.getMehtodA().getMethodB().getMethodC()；很容易抛出NPE</p>
-</blockquote>
-<hr>
-<h2 id="7-远程调用返回对象容易抛出NPE，建议做空判断"><a href="#7-远程调用返回对象容易抛出NPE，建议做空判断" class="headerlink" title="7. 远程调用返回对象容易抛出NPE，建议做空判断"></a>7. 远程调用返回对象容易抛出NPE，建议做空判断</h2><blockquote>
-<p>调用第三方接口等返回对象可能为空，建议对该对象操作之前做空判断。</p>
-</blockquote>
-<hr>
-<h2 id="8-取Session中-的值之前做空判断"><a href="#8-取Session中-的值之前做空判断" class="headerlink" title="8. 取Session中 的值之前做空判断"></a>8. 取Session中 的值之前做空判断</h2><blockquote>
-<p> 取Session的值之前对Session做空判断，对获取的Session值操作之前对Session值做空判断、避免NPE</p>
-</blockquote>
-<hr>
-<h2 id="9-对集合的操作之前做空判断"><a href="#9-对集合的操作之前做空判断" class="headerlink" title="9. 对集合的操作之前做空判断"></a>9. 对集合的操作之前做空判断</h2><blockquote>
-<p> 取集合中的值之前对集合做空判断，对获取的集合值操作之前对集合值做空判断、避免NPE</p>
-</blockquote>
-<hr>
-]]></content>
-      <tags>
-        <tag>Java</tag>
+        <tag>Java 并发编程</tag>
       </tags>
   </entry>
   <entry>
@@ -1770,6 +1664,281 @@
       </tags>
   </entry>
   <entry>
+    <title>做有意义的命名</title>
+    <url>/2020/06/13/%E5%81%9A%E6%9C%89%E6%84%8F%E4%B9%89%E7%9A%84%E5%91%BD%E5%90%8D/</url>
+    <content><![CDATA[<blockquote>
+<p>软件中随处可见命名。我们给变量、函数、参数、类和封包命名。我们给源代码及源码所在的目录命名。我们给 jar 文件、 war 文件 和 ear 文件命名。有很多命名要做、不妨做好它。下面列出几条简单规则。</p>
+</blockquote>
+<a id="more"></a>
+
+<h2 id="1-名副其实"><a href="#1-名副其实" class="headerlink" title="1. 名副其实"></a>1. 名副其实</h2><blockquote>
+<p>变量、函数或类的名称应该已经答复了所有的大问题。它该告诉你，它为什么会存在，它做了什么事，应该怎么用。如果名称需要注释来补充，那就不算是名副其实。</p>
+</blockquote>
+<hr>
+<h2 id="2-避免误导"><a href="#2-避免误导" class="headerlink" title="2. 避免误导"></a>2. 避免误导</h2><blockquote>
+<ol>
+<li><strong>避免留下掩藏代码本意的错误线索。</strong><br>例如：使用某些专有名词作为变量名，使用缩写。</li>
+<li><strong>避免使用与本意相悖的词</strong><br>例如：<br>String[] accountList = new String[10];  accountList 实质是一个数组对象，命名后缀为<br>List产生误导作用。</li>
+<li><strong>避免使用外形相似的命名</strong><br>例如：两个变量</li>
+<li><strong>避免使用小写字母 l 与 大写字母 O 作为变量名，跟数组1 和数字 0 难以区分。</strong></li>
+</ol>
+</blockquote>
+<hr>
+<h2 id="3-做有意义的区分"><a href="#3-做有意义的区分" class="headerlink" title="3. 做有意义的区分"></a>3. 做有意义的区分</h2><blockquote>
+<p>如果只是为了满足编译器或解释器的需要而写代码，肯定会制造麻烦。</p>
+</blockquote>
+<blockquote>
+<p>#####错误示例：<br><strong>1. 添加数字系列，这样的名称纯属误导。</strong></p>
+<ul>
+<li>例如：<br>定义两个学生对象<br>Student student1 = new Student();<br>Student student2 = new Student();</li>
+</ul>
+<p><strong>2. 少使用废话，废话都是冗余。要区分名称，要以读者能鉴别之处来区分。</strong></p>
+<ul>
+<li><p>例如：假设已有一个 Product 类，还有ProductInfo 类 和 ProductData 类，虽然名称不同，意思却无差别。 Info 和 Data 就i想 a、an、the 一样，都是意义含混的废话。</p>
+</li>
+<li><p>例如：如果你需要获取账户信息，你该调用那个方法呢 ？<br>getAccount();<br>getAccounts();<br>getAccountInfo();</p>
+</li>
+<li><p>例如：<br>moneyAmount 和 money 没区别，<br>customerInfo 与 customer 没区别，<br>accountData 和 account 没区别，<br>theMessage 和 message 没区别 。</p>
+</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="4-使用读的出来的名称"><a href="#4-使用读的出来的名称" class="headerlink" title="4. 使用读的出来的名称"></a>4. 使用读的出来的名称</h2><blockquote>
+<p>#####错误示例：<br><strong>1.  使用汉语拼音，只会让别人觉得你写的代码很 low.</strong></p>
+<p><strong>2. 使用罕见的英语词汇</strong></p>
+</blockquote>
+<hr>
+<h2 id="5-使用可搜索的名称"><a href="#5-使用可搜索的名称" class="headerlink" title="5. 使用可搜索的名称"></a>5. 使用可搜索的名称</h2><blockquote>
+<p>#####建议:<br><strong>1. 使用长名称，长名称胜于短名称。</strong></p>
+<ul>
+<li>例如： WORK_DAYS_PER_WEEK 比数字 5 好找得多。</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="6-避免使用编码"><a href="#6-避免使用编码" class="headerlink" title="6. 避免使用编码"></a>6. 避免使用编码</h2><blockquote>
+<p>编码已经太多，不需要自找麻烦。</p>
+</blockquote>
+<hr>
+<h2 id="7-避免使用前缀"><a href="#7-避免使用前缀" class="headerlink" title="7. 避免使用前缀"></a>7. 避免使用前缀</h2><blockquote>
+<p>不必使用 m_ 前缀来表名成员变量，很多时候阅读代码的人不会去看前缀，直接看后面有意义的名称，前缀反而成了废代码。</p>
+</blockquote>
+<hr>
+<h2 id="8-接口和实现"><a href="#8-接口和实现" class="headerlink" title="8. 接口和实现"></a>8. 接口和实现</h2><p>略</p>
+<hr>
+<h2 id="9-类名"><a href="#9-类名" class="headerlink" title="9. 类名"></a>9. 类名</h2><blockquote>
+<p>类名和对象名应该是名词或者名词短语，不应该是动词。</p>
+<ul>
+<li>正例：Customer</li>
+<li>反例：CustomerInfo、CustomerData、 Data .</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="10-方法名"><a href="#10-方法名" class="headerlink" title="10. 方法名"></a>10. 方法名</h2><blockquote>
+<p>方法名应该是动词或者动词短语，不应该是名词。</p>
+<ul>
+<li>例如：getName(); setName() 等。</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="11-避免思维映射"><a href="#11-避免思维映射" class="headerlink" title="11. 避免思维映射"></a>11. 避免思维映射</h2><blockquote>
+<ul>
+<li>例如：变量 i、j 通常用于 for 循环中，传统惯用这种单字母名词作为循环计数器，并不是一种好的选择。</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="12-避免使用双关语"><a href="#12-避免使用双关语" class="headerlink" title="12. 避免使用双关语"></a>12. 避免使用双关语</h2><blockquote>
+<ul>
+<li>例如：add方法用来添加一个对象，返回结果应该是布尔类型（添加成功或者失败） ，如果你需要添加一个对象并返回添加后产生的新值，建议使用append方法和insert方法。</li>
+</ul>
+</blockquote>
+]]></content>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Java 并发编程] 2. 使用多线程的成本</title>
+    <url>/2020/08/09/%E4%BD%BF%E7%94%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E6%88%90%E6%9C%AC/</url>
+    <content><![CDATA[<p>从单线程应用程序到多线程应用程序不仅仅需要考虑多线程应用程序更加高效，我们还需要考虑使用多线程的成本。使用多线程技术时不要仅仅因为你会使用多线程技术，你应该有一个更好的想法，比如更好的处理线程安全问题，以及多线程使用成本。尽可能的去测试多线程应用程序的性能以及响应速度，而不是靠猜想。</p>
+<h3 id="成本"><a href="#成本" class="headerlink" title="成本"></a>成本</h3><blockquote>
+<ul>
+<li>更复杂的程序设计</li>
+<li>上下文切换的开销</li>
+</ul>
+</blockquote>
+<p><strong>更复杂的程序设计</strong> </p>
+<blockquote>
+<ul>
+<li>在某些情况下，一个多线程应用程序比单线程应用程序更加简单，但是在某些特殊情况下要更加复杂。</li>
+<li>在多个线程引用了同一个共享变量的情况下，多线程应用程序比单线程应用程序使用起来更加复杂，因为需要考虑线程安全问题，不正确的线程同步问题出现的问题往往防不胜防。</li>
+</ul>
+</blockquote>
+<p><strong>上下文切换的开销</strong> </p>
+<blockquote>
+<ul>
+<li>当一个CPU从当前线程切换的执行另外一个线程时，CPU需要保存当前线程的本地数据以及程序指针等等，再有另外一个线程切换到当前线程时，需要重新读取本地数据和程序指针等，这个交换的执行过程叫做上下文切换。</li>
+<li>上下文切换的成本并不便宜。</li>
+</ul>
+</blockquote>
+<p><strong>减少上下文切换</strong></p>
+<blockquote>
+<ul>
+<li>无锁并发编程：多线程竞争锁时，会引起上下文切换，所以多线程处理数据时，可以用一些方法来避免使用锁。</li>
+<li>CAS算法：Java的atomic包使用CAS算法来更新数据，而不需要加锁。</li>
+<li>使用最少线程：避免创建不需要的线程。</li>
+<li>协程：在单线程里实现多任务的调度，并在单线程里维持多个任务间的切换。</li>
+</ul>
+</blockquote>
+]]></content>
+      <tags>
+        <tag>Java 并发编程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Java 并发编程] 6. 创建和开始Java线程</title>
+    <url>/2020/08/12/%E5%88%9B%E5%BB%BA%E5%92%8C%E5%BC%80%E5%A7%8BJava%E7%BA%BF%E7%A8%8B/</url>
+    <content><![CDATA[<p>一个Java线程就像一个可以执行你的Java代码的虚拟CPU。</p>
+<p>当Java虚拟机创建的主线程开始执行main方法时，你的Java应用程序启动，在你的Java应用程序里面你可以创建和开始你自定义的线程。</p>
+<p>Java 线程都是对象，就像其他的Java对象一样，线程对象都是 java.lang.Tread 的实例或者其子类的实例。</p>
+<h3 id="1-创建和开始线程"><a href="#1-创建和开始线程" class="headerlink" title="1 创建和开始线程"></a>1 创建和开始线程</h3><p>你可以像这样创建一个线程对象</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Thread myThread &#x3D; new Thread();</span><br></pre></td></tr></table></figure>
+
+<p>你可以像这样开始一个线程</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">myThread.start();</span><br></pre></td></tr></table></figure>
+
+<p>创建线程的几种方式：</p>
+<blockquote>
+<ul>
+<li>继承 java.lang.Thread 类并重写 run() 方法。</li>
+<li>实现 java.lang.Runnable 接口并重写 run() 方法。</li>
+<li>实现 java.util.concurrent.Callable 接口并重写 call() 方法。（备注：这种实现方式后面有 JUC 专题）</li>
+</ul>
+</blockquote>
+<hr>
+<h3 id="2-Thread-子类"><a href="#2-Thread-子类" class="headerlink" title="2 Thread 子类"></a>2 Thread 子类</h3><p>继承 java.lang.Thread 类并重写 run() 方法</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread extends Thread &#123;</span><br><span class="line"></span><br><span class="line">  public void run()&#123;</span><br><span class="line">     System.out.println(&quot;MyThread running&quot;);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>main方法</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args)&#123;</span><br><span class="line">    MyThread myThread &#x3D; new MyThread();</span><br><span class="line">    myThread.start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>start() 方法不会等线程执行完 run()方法，run() 方法将会由其他不同的CPU执行。</p>
+<hr>
+<h3 id="3-实现-Runnable-接口"><a href="#3-实现-Runnable-接口" class="headerlink" title="3 实现 Runnable 接口"></a>3 实现 Runnable 接口</h3><p>第二种创建线程的方式是实现 java.lang.Runnable 接口并重写该接口的 run() 方法。一个 Java 对象实现 Runnable 接口 可以被Java Thread 类执行。</p>
+<p>Runnable 接口由 JDK 提供，仅有一个 run 方法，是一个函数式接口。源码如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@FunctionalInterface</span><br><span class="line">public interface Callable&lt;V&gt; &#123;</span><br><span class="line">    &#x2F;**</span><br><span class="line">     * Computes a result, or throws an exception if unable to do so.</span><br><span class="line">     *</span><br><span class="line">     * @return computed result</span><br><span class="line">     * @throws Exception if unable to compute a result</span><br><span class="line">     *&#x2F;</span><br><span class="line">    V call() throws Exception;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>实现 Runnable 的方式有3种：</p>
+<blockquote>
+<ol>
+<li>创建一个 Java 类实现 Runnable 接口</li>
+<li>创建一个 Java 匿名类实现 Runnable 接口</li>
+<li>使用 Java 8 Lambda 表达式实现 Runnable 接口</li>
+</ol>
+</blockquote>
+<h5 id="3-1-创建一个-Java-类实现-Runnable-接口"><a href="#3-1-创建一个-Java-类实现-Runnable-接口" class="headerlink" title="3.1 创建一个 Java 类实现 Runnable 接口"></a>3.1 创建一个 Java 类实现 Runnable 接口</h5><p>例如：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyRunnable implements Runnable &#123;</span><br><span class="line"></span><br><span class="line">  public void run()&#123;</span><br><span class="line">     System.out.println(&quot;MyRunnable running&quot;);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="3-2-创建一个-Java-匿名类实现-Runnable-接口"><a href="#3-2-创建一个-Java-匿名类实现-Runnable-接口" class="headerlink" title="3.2 创建一个 Java 匿名类实现 Runnable 接口"></a>3.2 创建一个 Java 匿名类实现 Runnable 接口</h5><p>例如：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Runnable myRunnable &#x3D; new Runnable()&#123;</span><br><span class="line"></span><br><span class="line">    public void run()&#123;</span><br><span class="line">        System.out.println(&quot;Runnable running&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="3-3-使用-Java-8-Lambda-表达式实现-Runnable-接口"><a href="#3-3-使用-Java-8-Lambda-表达式实现-Runnable-接口" class="headerlink" title="3.3 使用 Java 8 Lambda 表达式实现 Runnable 接口"></a>3.3 使用 Java 8 Lambda 表达式实现 Runnable 接口</h5><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Runnable runnable &#x3D; () -&gt; &#123; System.out.println(&quot;Lambda Runnable running&quot;); &#125;;</span><br></pre></td></tr></table></figure>
+
+<h5 id="3-4-开启一个实现了-Runnable-接口的线程"><a href="#3-4-开启一个实现了-Runnable-接口的线程" class="headerlink" title="3.4 开启一个实现了 Runnable 接口的线程"></a>3.4 开启一个实现了 Runnable 接口的线程</h5><p>java.lang.Thread的包含传入一个Runnable接口的构造函数。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    &#x2F;&#x2F;or an anonymous class, or lambda...</span><br><span class="line">    Runnable runnable &#x3D; new MyRunnable();</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;executed by a thread</span><br><span class="line">    Thread thread &#x3D; new Thread(runnable);</span><br><span class="line">    thread.start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="4-使用哪种方式创建线程更好"><a href="#4-使用哪种方式创建线程更好" class="headerlink" title="4. 使用哪种方式创建线程更好 ?"></a>4. 使用哪种方式创建线程更好 ?</h3><p>关于继承Thread和实现Runnable接口，没有明确的规定用哪种方式创建线程更好，两种方式都可以让线程运行。我更倾向于使用实现Runnable接口的方式，后面我还们会了解到另外一种创建线程的方式，通过线程池创建线程的方式更加合理。</p>
+<h3 id="5-常见陷阱：调用-run-代替-start"><a href="#5-常见陷阱：调用-run-代替-start" class="headerlink" title="5. 常见陷阱：调用 run() 代替 start()"></a>5. 常见陷阱：调用 run() 代替 start()</h3><p>通过调用start()，程序会告诉 CPU 线程已准备就绪，等待CPU执行 run() 方法。若直接调用 run() 方法则不会开启一个新的线程去执行 run() 方法，而是在原来的线程中去执行 run() 方法，所以当我们需要一个新的线程去执行 run() 方法中的代码时，应该调用 start() 方法启动一个线程，而不是直接调用 run() 方法。</p>
+<h3 id="6-线程名（Thread-Names）"><a href="#6-线程名（Thread-Names）" class="headerlink" title="6. 线程名（Thread Names）"></a>6. 线程名（Thread Names）</h3><p>创建线程的时候可以指定线程名称，详见 java.lang.Thread API</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    Runnable myRunnable &#x3D; () -&gt; System.out.println(&quot;Thread name is &quot; + Thread.currantThread().getName());</span><br><span class="line">    </span><br><span class="line">    new Thread(myRunnable, &quot;Thread One&quot;).start();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">console out: Thread name is Thread One</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-Thread-currentThread"><a href="#7-Thread-currentThread" class="headerlink" title="7. Thread.currentThread()"></a>7. Thread.currentThread()</h3><p>通过 Thread.currentThread() 获取当前正在执行的线程对象。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Thread currentThread &#x3D; Thread.currentThread();</span><br></pre></td></tr></table></figure>
+
+<h3 id="8-暂停线程"><a href="#8-暂停线程" class="headerlink" title="8. 暂停线程"></a>8. 暂停线程</h3><p>可以通过 Thread.sheep() 让线程睡眠指定毫秒数。这里不建议使用 thread.suspend() 方法，该方法和 Thread 类的 resume()、stop()、destroy() 都是 JDK 标注废弃方法。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">try &#123;</span><br><span class="line">    Thread.sleep(1000L);</span><br><span class="line">&#125; catch (InterruptedException e) &#123;</span><br><span class="line">    e.printStackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意： Thread.sheep() 方法不会释放CPU资源，如果设置锁的话也不会释放锁资源，只是让线程睡眠指定毫秒数。与 Object 类的 wait() 方法不同， wait() 方法主要用于线程通信，且 wait() 方法会释放锁资源。</p>
+<h3 id="9-停止一个线程"><a href="#9-停止一个线程" class="headerlink" title="9. 停止一个线程"></a>9. 停止一个线程</h3><p>不建议使用 Thread 类提供的 stop() 方法去停止一个线程，stop() 方法会暴力停止一个线程，对程序不友好，可以通过更友好的方式停止一个线程。</p>
+<p>请看示例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyRunnable implements Runnable &#123;</span><br><span class="line"></span><br><span class="line">    private boolean doStop &#x3D; false;</span><br><span class="line"></span><br><span class="line">    public synchronized void doStop() &#123;</span><br><span class="line">        this.doStop &#x3D; true;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private synchronized boolean keepRunning() &#123;</span><br><span class="line">        return this.doStop &#x3D;&#x3D; false;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        while(keepRunning()) &#123;</span><br><span class="line">            &#x2F;&#x2F; keep doing what this thread should do.</span><br><span class="line">            System.out.println(&quot;Running&quot;);</span><br><span class="line"></span><br><span class="line">            try &#123;</span><br><span class="line">                Thread.sleep(3L * 1000L);</span><br><span class="line">            &#125; catch (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>请注意 doStop() 方法和 keepRunning() 方法使用了 synchronized 关键字，后面会详细讲解 synchronized 关键字的作用，这里不做过多描述。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyRunnableMain &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        MyRunnable myRunnable &#x3D; new MyRunnable();</span><br><span class="line"></span><br><span class="line">        Thread thread &#x3D; new Thread(myRunnable);</span><br><span class="line"></span><br><span class="line">        thread.start();</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            Thread.sleep(10L * 1000L);</span><br><span class="line">        &#125; catch (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        myRunnable.doStop();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面示例通过设置一个标识，主线程里面启动子线程，然后主线程睡眠10秒钟后调用 doStop() 方法，实现在主线程中停止子线程的运行。</p>
+]]></content>
+      <tags>
+        <tag>Java 并发编程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>原始类型特化</title>
+    <url>/2020/06/13/%E5%8E%9F%E5%A7%8B%E7%B1%BB%E5%9E%8B%E7%89%B9%E5%8C%96/</url>
+    <content><![CDATA[<p><strong>引言</strong></p>
+<blockquote>
+<p>上篇我们介绍了三个函数式接口：Predicate<T>、Consumer<T>、Function&lt;T，R&gt; 。还有一些函数式接口是专门为某些类型涉及的。<a href="https://www.jianshu.com/p/4c93e1f7c19b" target="_blank" rel="noopener">https://www.jianshu.com/p/4c93e1f7c19b</a></T></T></p>
+</blockquote>
+<a id="more"></a>
+
+<p> <strong>Java 类型</strong></p>
+<blockquote>
+<ul>
+<li>引用类型（如 Byte、Integer、Long、Object、List）</li>
+<li>原始类型（byte、short、int、float、double、long、char、boolean）</li>
+</ul>
+</blockquote>
+<p> <strong>回顾知识点：</strong></p>
+<blockquote>
+<ul>
+<li>Java 类型要么是引用类型，要么是原始类型。</li>
+<li>泛型只能绑定到引用类型上面、这是由泛型内部的实现方式造成的。</li>
+<li>在 Java 中有一个将原始类型转换为对应的引用类型的机制、这个机智就叫做装箱。相反的操作、也就是将引用类型转换成对应的原始类型的机制，这种机智叫做拆箱。Java 还有一个自动装拆箱的机智来帮助我们程序员执行这一任务：装箱和拆箱都是自动完成的。</li>
+</ul>
+</blockquote>
+<p><strong>注意：</strong></p>
+<blockquote>
+<p>虽然 Java 提供了自动装拆箱的机智，但这在性能方面是要付出代价的，装箱的本质是就是把原始类型包裹起来，并保存在堆里。因此、装箱后的值需要更多的内存、并需要额外的内存搜索来获取被包裹的值。因此、为提高程序的执行效率、Java  8 为我们前面所提到的函数式接口提供了一个专门的版本、以便在输入和输出都是原始类型时避免自动装拆箱的操作。</p>
+</blockquote>
+<p><strong>举例</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;IntPredicate 源码</span><br><span class="line"></span><br><span class="line">@FunctionalInterface</span><br><span class="line">public interface IntPredicate &#123;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * Evaluates this predicate on the given argument.</span><br><span class="line">     *</span><br><span class="line">     * @param value the input argument</span><br><span class="line">     * @return &#123;@code true&#125; if the input argument matches the predicate,</span><br><span class="line">     * otherwise &#123;@code false&#125;</span><br><span class="line">     *&#x2F;</span><br><span class="line">    boolean test(int value);</span><br><span class="line">  </span><br><span class="line">    &#x2F;&#x2F; 其他默认方法省略</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>说明</strong></p>
+<blockquote>
+<p> IntPredicate 源码解析：IntPredicate 类的 test方法接收一个原始类型 int类型的入参，其返回值为 boolean，避免了输入和输出都是原始类型时自动装拆箱的操作。 </p>
+</blockquote>
+<p><strong>Java 8中的常用函数式接口</strong></p>
+<p><div class="img-item" data-src="https://upload-images.jianshu.io/upload_images/11864885-b49768e2e438afa1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-sub-html=".caption"><img src="https://upload-images.jianshu.io/upload_images/11864885-b49768e2e438afa1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt></div></p>
+<p><div class="img-item" data-src="https://upload-images.jianshu.io/upload_images/11864885-b03a23c45dc9e0d6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-sub-html=".caption"><img src="https://upload-images.jianshu.io/upload_images/11864885-b03a23c45dc9e0d6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="常用函数式接口"><div class="img-caption d-block text-center"><span class="center-caption text-muted border-bottom">常用函数式接口</span></div></div></p>
+<p><strong>Lambdas及函数式接口的例子</strong><br><div class="img-item" data-src="https://upload-images.jianshu.io/upload_images/11864885-049343497380171b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-sub-html=".caption"><img src="https://upload-images.jianshu.io/upload_images/11864885-049343497380171b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Lambdas及函数式接口的例子"><div class="img-caption d-block text-center"><span class="center-caption text-muted border-bottom">Lambdas及函数式接口的例子</span></div></div></p>
+<hr>
+<p><strong>推荐书籍</strong></p>
+<blockquote>
+<ul>
+<li>《Java 8 in Action》</li>
+</ul>
+</blockquote>
+]]></content>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Java 并发编程] 5. 并发和并行</title>
+    <url>/2020/08/11/%E5%B9%B6%E5%8F%91%E5%92%8C%E5%B9%B6%E8%A1%8C/</url>
+    <content><![CDATA[<h3 id="1-Concurrency-并发"><a href="#1-Concurrency-并发" class="headerlink" title="1. Concurrency 并发"></a>1. Concurrency 并发</h3><p>应用程序中（Application）同时进行一个以上的任务（Task）。对于单CPU的电脑而言，不可能同时进行一个以上的任务，CPU通过交换的执行任务直到任务都被执行完成。<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-vs-parallelism-1.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-vs-parallelism-1.png" alt></div></p>
+<hr>
+<h3 id="2-Parallelism-并行"><a href="#2-Parallelism-并行" class="headerlink" title="2. Parallelism 并行"></a>2. Parallelism 并行</h3><p>应用程序中的任务（Task）被切割成多个子任务（SubTask）同时执行。实现并行你的应用程序必须有多个线程在同时执行，并且至少有一个任务在执行（Task）。<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-vs-parallelism-2.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-vs-parallelism-2.png" alt></div></p>
+<hr>
+<h3 id="3-Concurrency-vs-Parallelism"><a href="#3-Concurrency-vs-Parallelism" class="headerlink" title="3. Concurrency vs. Parallelism"></a>3. Concurrency vs. Parallelism</h3><ul>
+<li>并发是一个应用程序同时执行多个任务。</li>
+<li>并行是一个应用程序处理单个任务，将单个任务切割成多个子任务并行执行。</li>
+</ul>
+]]></content>
+      <tags>
+        <tag>Java 并发编程</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[Java 并发编程] 3. 并发模型</title>
     <url>/2020/08/09/%E5%B9%B6%E5%8F%91%E6%A8%A1%E5%9E%8B/</url>
     <content><![CDATA[<p>我们可以通过使用不同的并发模型来实现一个并发系统，线程之间通过协作完成系统给定的任务。不同的并发模型以不同的方式切割任务，线程之间可能存在通信和合作完成不同的任务。</p>
@@ -1838,18 +2007,76 @@
 </blockquote>
 ]]></content>
       <tags>
-        <tag>Java</tag>
-        <tag>Java并发编程</tag>
+        <tag>Java 并发编程</tag>
       </tags>
   </entry>
   <entry>
-    <title>[Java 并发编程] 7. 竞争条件和临界区</title>
-    <url>/2020/08/12/%E7%AB%9E%E4%BA%89%E6%9D%A1%E4%BB%B6%E5%92%8C%E4%B8%B4%E7%95%8C%E5%8C%BA/</url>
-    <content><![CDATA[<p>竞争条件是临界区可能发生的一种特殊状况。临界区是为了避免多线程产生并发问题而让多个线程顺序执行的那一段代码（我查阅了很多资源，对比了一些博客网站，对临界区的描述各不一致，这里只是我对临界区的一种理解，如果您有更好的描述，请告知小弟）。</p>
+    <title>并行流</title>
+    <url>/2020/07/09/%E5%B9%B6%E8%A1%8C%E6%B5%81/</url>
+    <content><![CDATA[]]></content>
+  </entry>
+  <entry>
+    <title>正确的避免NullPointException</title>
+    <url>/2020/06/13/%E6%AD%A3%E7%A1%AE%E7%9A%84%E9%81%BF%E5%85%8DNullPointException/</url>
+    <content><![CDATA[<h2 id="1-正确使用-String类的-equals-方法-和-Object类的-equals-方法"><a href="#1-正确使用-String类的-equals-方法-和-Object类的-equals-方法" class="headerlink" title="1. 正确使用 String类的 equals()方法 和 Object类的 equals() 方法"></a>1. 正确使用 String类的 equals()方法 和 Object类的 equals() 方法</h2><blockquote>
+<p>已知对象在前，未知对象在后。注意：已知对象不为 null</p>
+</blockquote>
+<a id="more"></a>
+
+<p>######正确示例</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    String name &#x3D; &quot;sungm&quot;; </span><br><span class="line">    &#x2F;&#x2F;name为已知对象且被赋予初始值不为空</span><br><span class="line">    if (name.equals(getOtherName())) &#123;</span><br><span class="line">        &#x2F;&#x2F;todo do something</span><br><span class="line">        System.out.println(&quot;todo do something&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static String getOtherName() &#123;</span><br><span class="line">    return &quot;sungm&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>######错误示例</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">    String name &#x3D; &quot;sungm&quot;;</span><br><span class="line">    &#x2F;&#x2F;getOtherName()方法返回值为 null。抛出NPE</span><br><span class="line">    if (getOtherName().equals(name)) &#123;</span><br><span class="line">        &#x2F;&#x2F;todo do something</span><br><span class="line">        System.out.println(&quot;todo do something&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static String getOtherName() &#123;</span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="2-未知对象转String使用String-valueOf-方法"><a href="#2-未知对象转String使用String-valueOf-方法" class="headerlink" title="2. 未知对象转String使用String.valueOf()方法"></a>2. 未知对象转String使用String.valueOf()方法</h2><blockquote>
+<p>空对象调用 toString() 方法会抛出NPE，使用 String.valueOf() 替代</p>
+</blockquote>
+<p>#####示例</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    &#x2F;&#x2F;抛NPE</span><br><span class="line">    System.out.println(getPrice().toString());</span><br><span class="line">    &#x2F;&#x2F;不抛NPE</span><br><span class="line">    System.out.println(String.valueOf(getPrice()));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static BigDecimal getPrice() &#123;</span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="String-valueOf-方法源码"><a href="#String-valueOf-方法源码" class="headerlink" title="String.valueOf() 方法源码"></a>String.valueOf() 方法源码</h5><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static String valueOf(Object obj) &#123;</span><br><span class="line">    return (obj &#x3D;&#x3D; null) ? &quot;null&quot; : obj.toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="3-使用第三方类库或者自己封装的工具类"><a href="#3-使用第三方类库或者自己封装的工具类" class="headerlink" title="3. 使用第三方类库或者自己封装的工具类"></a>3. 使用第三方类库或者自己封装的工具类</h2><blockquote>
+<p>例如 Apache 的 StringUtils 类</p>
+</blockquote>
+<p>#####Apache 的 StringUtils工具类部分源码</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">public static boolean isEmpty(String str) &#123;</span><br><span class="line">    return str &#x3D;&#x3D; null || str.length() &#x3D;&#x3D; 0;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static boolean isNotEmpty(String str) &#123;</span><br><span class="line">    return !isEmpty(str);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static boolean isBlank(String str) &#123;</span><br><span class="line">    int strLen;</span><br><span class="line">    if (str !&#x3D; null &amp;&amp; (strLen &#x3D; str.length()) !&#x3D; 0) &#123;</span><br><span class="line">        for(int i &#x3D; 0; i &lt; strLen; ++i) &#123;</span><br><span class="line">            if (!Character.isWhitespace(str.charAt(i))) &#123;</span><br><span class="line">                return false;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return true;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static boolean isNotBlank(String str) &#123;</span><br><span class="line">    return !isBlank(str);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>#####Apache 中 StringUtils 中 isEmpty() 方法 和 isBlank() 方法的区别：</p>
+<blockquote>
+<p>1: isEmpty() 方法：当Sting为null或者空（””）时返回true<br>2: isBlank() 方法 ：当Sting为null或者空（””）或者空字符串（”     “）时返回true</p>
+</blockquote>
+<p>#####示例</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">    String empty &#x3D; null;</span><br><span class="line">    System.out.println(StringUtils.isEmpty(empty));</span><br><span class="line"></span><br><span class="line">    empty &#x3D; &quot;&quot;;</span><br><span class="line">    System.out.println(StringUtils.isEmpty(empty));</span><br><span class="line"></span><br><span class="line">    empty &#x3D; &quot;      &quot;;</span><br><span class="line">    System.out.println(StringUtils.isBlank(empty));</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="4-避免自动拆箱可能抛出NPE"><a href="#4-避免自动拆箱可能抛出NPE" class="headerlink" title="4. 避免自动拆箱可能抛出NPE"></a>4. 避免自动拆箱可能抛出NPE</h2><blockquote>
+<p>自动拆箱可能抛出NPE</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;反例</span><br><span class="line">public int function() &#123;</span><br><span class="line">    return Integer对象;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="5-数据库查出的数据可能为null，做空判断"><a href="#5-数据库查出的数据可能为null，做空判断" class="headerlink" title="5. 数据库查出的数据可能为null，做空判断"></a>5. 数据库查出的数据可能为null，做空判断</h2><blockquote>
+<p>数据库非空字段可以加非空约束；对可能为空的字段做空判断、防止NPE。</p>
+</blockquote>
+<hr>
+<h2 id="6-级联调用容易抛出NPE，建议使用Java-8-的-Optional类"><a href="#6-级联调用容易抛出NPE，建议使用Java-8-的-Optional类" class="headerlink" title="6. 级联调用容易抛出NPE，建议使用Java 8 的 Optional类"></a>6. 级联调用容易抛出NPE，建议使用Java 8 的 Optional类</h2><blockquote>
+<p>例如 object.getMehtodA().getMethodB().getMethodC()；很容易抛出NPE</p>
+</blockquote>
+<hr>
+<h2 id="7-远程调用返回对象容易抛出NPE，建议做空判断"><a href="#7-远程调用返回对象容易抛出NPE，建议做空判断" class="headerlink" title="7. 远程调用返回对象容易抛出NPE，建议做空判断"></a>7. 远程调用返回对象容易抛出NPE，建议做空判断</h2><blockquote>
+<p>调用第三方接口等返回对象可能为空，建议对该对象操作之前做空判断。</p>
+</blockquote>
+<hr>
+<h2 id="8-取Session中-的值之前做空判断"><a href="#8-取Session中-的值之前做空判断" class="headerlink" title="8. 取Session中 的值之前做空判断"></a>8. 取Session中 的值之前做空判断</h2><blockquote>
+<p> 取Session的值之前对Session做空判断，对获取的Session值操作之前对Session值做空判断、避免NPE</p>
+</blockquote>
+<hr>
+<h2 id="9-对集合的操作之前做空判断"><a href="#9-对集合的操作之前做空判断" class="headerlink" title="9. 对集合的操作之前做空判断"></a>9. 对集合的操作之前做空判断</h2><blockquote>
+<p> 取集合中的值之前对集合做空判断，对获取的集合值操作之前对集合值做空判断、避免NPE</p>
+</blockquote>
+<hr>
 ]]></content>
       <tags>
         <tag>Java</tag>
-        <tag>Java并发编程</tag>
       </tags>
   </entry>
   <entry>
@@ -1869,8 +2096,31 @@
 <p>相同线程系统基本含义是进程同时包含处理多个相同的线程，在相同线程系统中并发时没有线程共享数据。</p>
 ]]></content>
       <tags>
-        <tag>Java</tag>
-        <tag>Java并发编程</tag>
+        <tag>Java 并发编程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Java 并发编程] 7. 竞争条件和临界区</title>
+    <url>/2020/08/12/%E7%AB%9E%E4%BA%89%E6%9D%A1%E4%BB%B6%E5%92%8C%E4%B8%B4%E7%95%8C%E5%8C%BA/</url>
+    <content><![CDATA[<p>竞争条件是临界区可能发生的一种特殊状况。临界区是为了避免多线程产生并发问题而让多个线程顺序执行的那一段代码（我查阅了很多资源，对比了一些博客网站，对临界区的描述各不一致，这里只是我对临界区的一种理解，如果您有更好的描述，请告知小弟）。</p>
+]]></content>
+      <tags>
+        <tag>Java 并发编程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Java 并发编程] 9. 线程安全和不变性</title>
+    <url>/2020/08/12/%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E5%92%8C%E4%B8%8D%E5%8F%98%E6%80%A7/</url>
+    <content><![CDATA[<p>竞争条件只发生在多个线程同时访问相同资源，并且存在一个或多个线程修改了共享资源，如果多个线程只读共享资源那么不会产生竞争条件。</p>
+<p>下面我们通过一个实例来说明当一个共享资源被多个线程访问，但没有线程修改共享资源时不会产生竞争条件。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class ImmutableValue&#123;</span><br><span class="line"></span><br><span class="line">  private int value &#x3D; 0;</span><br><span class="line"></span><br><span class="line">  public ImmutableValue(int value)&#123;</span><br><span class="line">    this.value &#x3D; value;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public int getValue()&#123;</span><br><span class="line">    return this.value;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>请注意 ImmutableValue 提供了一个传入指定 value 的构造函数，一旦对象被创建，该对象没有提供任何修改value值的方法，所以value的值无法被修改。</p>
+<h3 id="特别注意：对象引用不是线程安全的"><a href="#特别注意：对象引用不是线程安全的" class="headerlink" title="特别注意：对象引用不是线程安全的"></a>特别注意：对象引用不是线程安全的</h3><p>需要注意的是，当一个对象不可变时对象本身是线程安全的，但是对象的引用可能不是线程安全的。举例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Calculator&#123;</span><br><span class="line">  private ImmutableValue currentValue &#x3D; null;</span><br><span class="line"></span><br><span class="line">  public ImmutableValue getImmutableValue()&#123;</span><br><span class="line">    return currentValue;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public void setImmutableValue(ImmutableValue newValue)&#123;</span><br><span class="line">    this.currentValue &#x3D; newValue;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public void add(int newValue)&#123;</span><br><span class="line">    this.currentValue &#x3D; new ImmutableValue(currentValue.getValue() + newValue);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Calculator 类引用了一个 ImmutableValue 对象，请注意它可以通过 setImmutableValue() 方法和 add() 方法改变了 ImmutableValue 对象的引用。换句话说，即使 ImmutableValue 对象是不可变的，但它也是非线程安全的。ImmutableValue 类是线程安全的，但对象的引用是非线程安全的。<strong>所以特别注意：对象的引用可能是非线程安全的。</strong> 可以通过给 setImmutableValue() 方法和 add() 方法加锁（使用 synchronized 关键字等）保证线程安全。</p>
+]]></content>
+      <tags>
+        <tag>Java 并发编程</tag>
       </tags>
   </entry>
   <entry>
@@ -1903,24 +2153,24 @@
 </blockquote>
 ]]></content>
       <tags>
-        <tag>Java</tag>
-        <tag>Java并发编程</tag>
+        <tag>Java 并发编程</tag>
       </tags>
   </entry>
   <entry>
-    <title>[Java 并发编程] 9. 线程安全和不变性</title>
-    <url>/2020/08/12/%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E5%92%8C%E4%B8%8D%E5%8F%98%E6%80%A7/</url>
-    <content><![CDATA[<p>竞争条件只发生在多个线程同时访问相同资源，并且存在一个或多个线程修改了共享资源，如果多个线程只读共享资源那么不会产生竞争条件。</p>
-<p>下面我们通过一个实例来说明当一个共享资源被多个线程访问，但没有线程修改共享资源时不会产生竞争条件。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class ImmutableValue&#123;</span><br><span class="line"></span><br><span class="line">  private int value &#x3D; 0;</span><br><span class="line"></span><br><span class="line">  public ImmutableValue(int value)&#123;</span><br><span class="line">    this.value &#x3D; value;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public int getValue()&#123;</span><br><span class="line">    return this.value;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>请注意 ImmutableValue 提供了一个传入指定 value 的构造函数，一旦对象被创建，该对象没有提供任何修改value值的方法，所以value的值无法被修改。</p>
-<h3 id="特别注意：对象引用不是线程安全的"><a href="#特别注意：对象引用不是线程安全的" class="headerlink" title="特别注意：对象引用不是线程安全的"></a>特别注意：对象引用不是线程安全的</h3><p>需要注意的是，当一个对象不可变时对象本身是线程安全的，但是对象的引用可能不是线程安全的。举例：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Calculator&#123;</span><br><span class="line">  private ImmutableValue currentValue &#x3D; null;</span><br><span class="line"></span><br><span class="line">  public ImmutableValue getImmutableValue()&#123;</span><br><span class="line">    return currentValue;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public void setImmutableValue(ImmutableValue newValue)&#123;</span><br><span class="line">    this.currentValue &#x3D; newValue;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public void add(int newValue)&#123;</span><br><span class="line">    this.currentValue &#x3D; new ImmutableValue(currentValue.getValue() + newValue);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Calculator 类引用了一个 ImmutableValue 对象，请注意它可以通过 setImmutableValue() 方法和 add() 方法改变了 ImmutableValue 对象的引用。换句话说，即使 ImmutableValue 对象是不可变的，但它也是非线程安全的。ImmutableValue 类是线程安全的，但对象的引用是非线程安全的。<strong>所以特别注意：对象的引用可能是非线程安全的。</strong> 可以通过给 setImmutableValue() 方法和 add() 方法加锁（使用 synchronized 关键字等）保证线程安全。</p>
-]]></content>
+    <title>[Java 并发编程] 15. 线程通信</title>
+    <url>/2020/08/21/%E7%BA%BF%E7%A8%8B%E9%80%9A%E4%BF%A1/</url>
+    <content><![CDATA[<h3 id="1-通过共享对象实现线程通信"><a href="#1-通过共享对象实现线程通信" class="headerlink" title="1. 通过共享对象实现线程通信"></a>1. 通过共享对象实现线程通信</h3><p>线程通过在共享对象中发送一个信号实现与其他线程通信。如下图所示，设置一个成员变量 hasProcess，线程A通过setHasProcess同步方法设置hasProcess的值，这样线程B可以读取到成员变量hasProcess的值，实现线程之间的通信。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MySignal &#123;</span><br><span class="line"></span><br><span class="line">    private boolean hasProcess &#x3D; false;</span><br><span class="line"></span><br><span class="line">    public synchronized void setHasProcess(boolean hasProcess) &#123; this.hasProcess &#x3D; hasProcess; &#125;</span><br><span class="line"></span><br><span class="line">    public synchronized boolean getHasProcess() &#123; return this.hasProcess; &#125;    </span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>线程A和线程B必须引用共享对象 MySignal 的实例来实现线程A与线程B之间的线程通信。如果线程A和线程B引用了不同的MySignal实例对象，那么线程A和线程B不会检测到彼此发送的信号，达不到线程通信的目的。</p>
+<hr>
+<h3 id="2-Busy-Wait"><a href="#2-Busy-Wait" class="headerlink" title="2. Busy Wait"></a>2. Busy Wait</h3><p>上例中线程B需要等待信号处理数据，因此它的业务代码很可能一直在等待信号，浪费了很多CPU资源。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">MySignal singal &#x3D; ...</span><br><span class="line"></span><br><span class="line">while (!singal.getHasProcess()) &#123;</span><br><span class="line">    &#x2F;&#x2F;do nothing... busy waiting</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>因为我们不知道线程A什么时候发送信号，因此导致线程B一直等待线程A的信号，没做任何事情，浪费CPU资源。</p>
+<hr>
+<h3 id="3-等待通知机制：wait-、notify-、notifyAll"><a href="#3-等待通知机制：wait-、notify-、notifyAll" class="headerlink" title="3. 等待通知机制：wait()、notify()、notifyAll()"></a>3. 等待通知机制：wait()、notify()、notifyAll()</h3>]]></content>
       <tags>
-        <tag>Java</tag>
-        <tag>Java并发编程</tag>
+        <tag>Java 并发编程</tag>
       </tags>
   </entry>
   <entry>
@@ -2054,27 +2304,6 @@
       </tags>
   </entry>
   <entry>
-    <title>验证XML</title>
-    <url>/2020/06/18/%E9%AA%8C%E8%AF%81XML/</url>
-    <content><![CDATA[<h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h2><blockquote>
-<ul>
-<li>如果我们解析XML之后，获取到XML的内容，再校验XML内容或格式是否符合设计规范，这个工作是很繁琐的。</li>
-<li>幸好，XML解析器的一个很大的好处就是它能够自动校验某个文档是否具有正确的结构，这样解析工作就变的简单的多。</li>
-<li>通过定义一个 <a href="https://www.w3school.com.cn/dtd/dtd_intro.asp" target="_blank" rel="noopener">DTD</a> 或者 <a href="https://www.w3school.com.cn/schema/schema_intro.asp" target="_blank" rel="noopener">XML Schema</a>， DTD 或者 Schema 包含了用于解释文档如何构成的规则，这些规则指定了每个元素的合法子元素和属性。</li>
-</ul>
-</blockquote>
-<hr>
-<h2 id="2-定义DTD校验规则"><a href="#2-定义DTD校验规则" class="headerlink" title="2. 定义DTD校验规则"></a>2. 定义DTD校验规则</h2><p><strong>XML文档</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot; ?&gt;</span><br><span class="line">&lt;!-- 定义DTD校验规则 --&gt;</span><br><span class="line">&lt;!DOCTYPE class [</span><br><span class="line">    &lt;!-- 定义class至少包含一个student --&gt;</span><br><span class="line">    &lt;!ELEMENT class (student+)&gt;</span><br><span class="line">    &lt;!-- 定义student只包含name,age,sex,className属性 --&gt;</span><br><span class="line">    &lt;!ELEMENT student (name, age, sex, className)&gt;</span><br><span class="line">        &lt;!-- 定义id属性, 属性默认值为0 --&gt;</span><br><span class="line">        &lt;!ATTLIST student id CDATA &quot;0&quot;&gt;</span><br><span class="line">    &lt;!ELEMENT name (#PCDATA)&gt;</span><br><span class="line">    &lt;!ELEMENT age (#PCDATA)&gt;</span><br><span class="line">    &lt;!ELEMENT sex (#PCDATA)&gt;</span><br><span class="line">    &lt;!ELEMENT className (#PCDATA)&gt;</span><br><span class="line">]&gt;</span><br><span class="line">&lt;class&gt;</span><br><span class="line">    &lt;student id&#x3D;&quot;1&quot;&gt;</span><br><span class="line">        &lt;name&gt;sungm&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age&gt;25&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className&gt;Class One&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">    &lt;student id&#x3D;&quot;2&quot;&gt;</span><br><span class="line">        &lt;name&gt;sunhw&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age&gt;1&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className&gt;Class Two&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">&lt;&#x2F;class&gt;</span><br></pre></td></tr></table></figure>
-
-
-]]></content>
-      <tags>
-        <tag>Java</tag>
-        <tag>XML</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>通用Builder</title>
     <url>/2020/06/15/%E9%80%9A%E7%94%A8Builder/</url>
     <content><![CDATA[<blockquote>
@@ -2103,6 +2332,27 @@
         <tag>Java</tag>
         <tag>工具类</tag>
         <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>验证XML</title>
+    <url>/2020/06/18/%E9%AA%8C%E8%AF%81XML/</url>
+    <content><![CDATA[<h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h2><blockquote>
+<ul>
+<li>如果我们解析XML之后，获取到XML的内容，再校验XML内容或格式是否符合设计规范，这个工作是很繁琐的。</li>
+<li>幸好，XML解析器的一个很大的好处就是它能够自动校验某个文档是否具有正确的结构，这样解析工作就变的简单的多。</li>
+<li>通过定义一个 <a href="https://www.w3school.com.cn/dtd/dtd_intro.asp" target="_blank" rel="noopener">DTD</a> 或者 <a href="https://www.w3school.com.cn/schema/schema_intro.asp" target="_blank" rel="noopener">XML Schema</a>， DTD 或者 Schema 包含了用于解释文档如何构成的规则，这些规则指定了每个元素的合法子元素和属性。</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="2-定义DTD校验规则"><a href="#2-定义DTD校验规则" class="headerlink" title="2. 定义DTD校验规则"></a>2. 定义DTD校验规则</h2><p><strong>XML文档</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot; ?&gt;</span><br><span class="line">&lt;!-- 定义DTD校验规则 --&gt;</span><br><span class="line">&lt;!DOCTYPE class [</span><br><span class="line">    &lt;!-- 定义class至少包含一个student --&gt;</span><br><span class="line">    &lt;!ELEMENT class (student+)&gt;</span><br><span class="line">    &lt;!-- 定义student只包含name,age,sex,className属性 --&gt;</span><br><span class="line">    &lt;!ELEMENT student (name, age, sex, className)&gt;</span><br><span class="line">        &lt;!-- 定义id属性, 属性默认值为0 --&gt;</span><br><span class="line">        &lt;!ATTLIST student id CDATA &quot;0&quot;&gt;</span><br><span class="line">    &lt;!ELEMENT name (#PCDATA)&gt;</span><br><span class="line">    &lt;!ELEMENT age (#PCDATA)&gt;</span><br><span class="line">    &lt;!ELEMENT sex (#PCDATA)&gt;</span><br><span class="line">    &lt;!ELEMENT className (#PCDATA)&gt;</span><br><span class="line">]&gt;</span><br><span class="line">&lt;class&gt;</span><br><span class="line">    &lt;student id&#x3D;&quot;1&quot;&gt;</span><br><span class="line">        &lt;name&gt;sungm&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age&gt;25&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className&gt;Class One&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">    &lt;student id&#x3D;&quot;2&quot;&gt;</span><br><span class="line">        &lt;name&gt;sunhw&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;age&gt;1&lt;&#x2F;age&gt;</span><br><span class="line">        &lt;sex&gt;Man&lt;&#x2F;sex&gt;</span><br><span class="line">        &lt;className&gt;Class Two&lt;&#x2F;className&gt;</span><br><span class="line">    &lt;&#x2F;student&gt;</span><br><span class="line">&lt;&#x2F;class&gt;</span><br></pre></td></tr></table></figure>
+
+
+]]></content>
+      <tags>
+        <tag>Java</tag>
+        <tag>XML</tag>
       </tags>
   </entry>
 </search>
