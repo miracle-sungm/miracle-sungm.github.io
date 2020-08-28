@@ -162,7 +162,31 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">MySignal singal &#x3D; ...</span><br><span class="line"></span><br><span class="line">while (!singal.getHasProcess()) &#123;</span><br><span class="line">    &#x2F;&#x2F;do nothing... busy waiting</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>因为我们不知道线程A什么时候发送信号，因此导致线程B一直等待线程A的信号，没做任何事情，浪费CPU资源。</p>
 <hr>
-<h3 id="3-等待通知机制：wait-、notify-、notifyAll"><a href="#3-等待通知机制：wait-、notify-、notifyAll" class="headerlink" title="3. 等待通知机制：wait()、notify()、notifyAll()"></a>3. 等待通知机制：wait()、notify()、notifyAll()</h3>
+<h3 id="3-等待通知机制：wait-、notify-、notifyAll"><a href="#3-等待通知机制：wait-、notify-、notifyAll" class="headerlink" title="3. 等待通知机制：wait()、notify()、notifyAll()"></a>3. 等待通知机制：wait()、notify()、notifyAll()</h3><p>Busy waiting 浪费了CPU资源，即使某些情况下等待的时间非常短暂。因此，让等待信号的线程在接收信号之前处于无效状态，直到接收信号之后（被唤醒）继续执行代码，这是一种非常聪明的做法。</p>
+<p><strong>等待通知机制：</strong>让等待信号的线程在接收信号之前处于无效状态（不占用CPU资源，线程暂停执行），由发出信号的线程唤醒等待信号的线程，等待信号的线程被唤醒后继续执行，这就是等待通知机制。</p>
+<p>Java 有一个等待机制：让等待信号的线程处于无效状态。Java Object 类定义了三个方法分别是wait()、notify()、notifyAll()，通过这三个方法我们可以实现这种机制。</p>
+<p>一个线程调用了某个对象的 wait() 方法之后，这个线程就成为无效状态，直到另外一个线程调用了同一个对象的 notify() 方法或者 notifyAll()方法之后，原来处于无效状态的线程才结束无效状态。</p>
+<p>线程调用某个对象的 wait() 方法或者 notify() 方法必须获取这个对象的锁，也就是说 wait() 方法或者 notify() 方法调用的代码必须包含在 synchronized 代码块中，synchronized 监视器必须是 wait() 或 nofity() 方法所属的那个对象。</p>
+<p>示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;监视器对象</span><br><span class="line">public class MonitorObject &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class MyWaitNotify &#123;</span><br><span class="line"></span><br><span class="line">    MonitorObject myMonitorObject &#x3D; new MonitorObject();</span><br><span class="line"></span><br><span class="line">    public void doWait() &#123;</span><br><span class="line">        synchronized (myMonitorObject) &#123;</span><br><span class="line">            try &#123;</span><br><span class="line">                &#x2F;&#x2F;wait()方法必须包含在synchronized代码块中，且synchronized监视器是wait()方法所属对象myMonitorObject</span><br><span class="line">                myMonitorObject.wait();</span><br><span class="line">            &#125; catch (InterruptedException e) &#123;</span><br><span class="line">                ...</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void doNotify() &#123;</span><br><span class="line">        synchronized (myMonitorObject) &#123;</span><br><span class="line">            &#x2F;&#x2F;notify()方法必须包含在synchronized代码块中，且synchronized监视器是notify()方法所属对象myMonitorObject</span><br><span class="line">            myMonitorObject.notify();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当一个线程调用某个对象的notify()方法，会唤醒一个等待状态的线程；通过调用notifyAll()方法，唤醒所有处于等待状态的线程。</p>
+<p>你可以从上例中观察到<strong>wait()方法和notify()方法都在同步代码块中，并且同步代码块的监视器对象与调用wait方法（或notify方法）的对象是同一个对象</strong>。这是强制的，一个线程不能在没有持有某个对象锁的方法上调用wait方法或notify方法，否则程序将抛出 IllegalMonitorStateException (非法监视器状态异常)。</p>
+<p>你可能会想：当等待线程进入synchronized代码块调用wait方法使得线程进入等待状态，并没有退出synchronized代码块，那么等待线程就会阻止唤醒线程进入synchronized代码块调用notify()方法，那么唤醒线程怎么可能能够进入synchronized代码块呢？答案是唤醒线程可以进入synchronized代码块调用notify方法，原因是当一个线程调用了wait方法之后，当前线程会释放基于某个对象的持有锁，这样其他的线程就有机会进入synchronized代码块。</p>
+<p>一旦一个线程被唤醒，它不能立即退出wait()方法，等待线程需要等待唤醒线程退出包含notify()方法的synchronized代码块之后，等待线程需要重新获取对象的持有锁之后退出wait方法，然后继续执行下面的代码。</p>
+<p>使用notifyAll()唤醒多个等待线程，那么多个等待线程也需要等唤醒线程退出synchronized代码块之后，各个等待线程需要重新获取对象的持有锁才能退出wait()方法继续执行程序，由于各个等待线程的synchronized代码块的监视器是同一个对象，因此各个线程之间是同步退出wait()方法。</p>
+<p>小结：</p>
+<ul>
+<li>Java 的等待通知机制是基于某个对象实现的一种等待通知机制。</li>
+<li>Java Object 类定义的 wait()、notify()、notifyAll()用于线程通信，这些方法的调用必须包含在以这些方法的对象为监视器的synchronized代码块中，否则程序将抛出IllegalMonitorStateException异常。</li>
+<li>当一个线程调用wait()方法后，线程会释放基于这个方法的对象的持有锁，并使线程进入无效状态，只有当其他线程调用了同一个对象的notify方法（或notifyAll方法）之后，这个对象才可能被唤醒，等待线程需等唤醒线程退出包含notify方法（或notifyAll方法）的synchronized代码块之后，才能重新获取对象的持有锁并退出wait方法继续执行程序。</li>
+<li>当一个线程调用某个对象的notifyAll方法后，所有基于这个对象的等待中的线程将全部被唤醒，但这些等待中的线程需要等唤醒线程退出包含notifyAll方法的synchronized代码块之后，同步的获取对象的持有锁并退出wait()方法。</li>
+</ul>
+<hr>
+<h3 id="4-丢失信号"><a href="#4-丢失信号" class="headerlink" title="4. 丢失信号"></a>4. 丢失信号</h3><p>当一个线程调用notify方法时没有线程处于等待状态，那么这个唤醒信号就被丢失了。丢失信号可能会导致程序产生一些问题，也可能不会产生一些问题，但我们需要知道这种情况可能发生。在某些情况下，丢失信号可能导致一些等待线程一直处于等待中，从未被唤醒，因为唤醒线程调用notify方法发生在等待线程调用wait方法之前。</p>
+<p>为了避免这个问题，我们可以将信号保存在共享数据对象中，这里就不在举例了。</p>
+<h3 id="5-虚假唤醒"><a href="#5-虚假唤醒" class="headerlink" title="5. 虚假唤醒"></a>5. 虚假唤醒</h3><p>TODO</p>
+
             </div>
 
             <!-- Post information -->
@@ -181,6 +205,8 @@
             
     <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
         <ul class="pagination d-block text-center">
+            
+                <li class="previous page-item d-inline"><a href="/2020/08/27/%E7%BA%BF%E7%A8%8B%E6%AD%BB%E9%94%81/" class="page-link float-left">&larr;  下一页</a></li>
             
             
                 <li class="next page-item d-inline"><a href="/2020/08/21/ThreadLocal/" class="page-link float-right">上一页  &rarr;</a></li>
