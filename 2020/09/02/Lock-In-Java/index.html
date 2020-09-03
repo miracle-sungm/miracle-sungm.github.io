@@ -9,14 +9,8 @@
 
 
 
-    <meta name="description" content="我们可以通过使用不同的并发模型来实现一个并发系统，线程之间通过协作完成系统给定的任务。不同的并发模型以不同的方式切割任务，线程之间可能存在通信和合作完成不同的任务。
-1. 并发模型与分布式系统相似
-
-在一个并发系统中，不同的线程之间相互通信。
-在一个分布式系统中，不同的进程之间相互通信。
-
-
-分布式"/>
+    <meta name="description" content="Lock 是除synchronized代码块的另外一种线程同步机制，Lock可以具有比synchronized代码块更复杂的作用。Lock可以使用synchronized关键字，所以它并不能让我们摆脱synchronized关键字。
+自JDK 5开始，java.util.concurrent.loc"/>
 
 
 <!--Author-->
@@ -26,19 +20,13 @@
 
 <!--Open Graph Title-->
 
-    <meta property="og:title" content="[Java 并发编程] 3. 并发模型"/>
+    <meta property="og:title" content="[Java 并发编程] 10. Lock"/>
 
 
 <!--Open Graph Description-->
 
-    <meta property="og:description" content="我们可以通过使用不同的并发模型来实现一个并发系统，线程之间通过协作完成系统给定的任务。不同的并发模型以不同的方式切割任务，线程之间可能存在通信和合作完成不同的任务。
-1. 并发模型与分布式系统相似
-
-在一个并发系统中，不同的线程之间相互通信。
-在一个分布式系统中，不同的进程之间相互通信。
-
-
-分布式"/>
+    <meta property="og:description" content="Lock 是除synchronized代码块的另外一种线程同步机制，Lock可以具有比synchronized代码块更复杂的作用。Lock可以使用synchronized关键字，所以它并不能让我们摆脱synchronized关键字。
+自JDK 5开始，java.util.concurrent.loc"/>
 
 
 <!--Open Graph Site Name-->
@@ -65,7 +53,7 @@
 
 <!-- Title -->
 
-<title>[Java 并发编程] 3. 并发模型 - Miracle&#39;s Blog</title>
+<title>[Java 并发编程] 10. Lock - Miracle&#39;s Blog</title>
 
 <!-- Bootstrap Core CSS -->
 <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
@@ -133,7 +121,7 @@
         <div class="row">
             <div class="col-lg-12 col-md-12 text-center">
                 <div class="post-heading text-white">
-                    <h1>[Java 并发编程] 3. 并发模型</h1>
+                    <h1>[Java 并发编程] 10. Lock</h1>
                     
                 </div>
             </div>
@@ -155,7 +143,7 @@
     
         <span class="post-meta-split">&nbsp;|&nbsp;</span>
         <i class="far fa-calendar-check fa-fw"></i>
-        2020-08-09
+        2020-09-02
     
     <!-- word count and read count -->
     
@@ -165,69 +153,26 @@
     
 </span>  
                 
-                <p>我们可以通过使用不同的并发模型来实现一个并发系统，线程之间通过协作完成系统给定的任务。不同的并发模型以不同的方式切割任务，线程之间可能存在通信和合作完成不同的任务。</p>
-<h3 id="1-并发模型与分布式系统相似"><a href="#1-并发模型与分布式系统相似" class="headerlink" title="1. 并发模型与分布式系统相似"></a>1. 并发模型与分布式系统相似</h3><blockquote>
-<ul>
-<li>在一个并发系统中，不同的线程之间相互通信。</li>
-<li>在一个分布式系统中，不同的进程之间相互通信。</li>
-</ul>
-</blockquote>
-<p>分布式系统比并发系统面临更多的挑战，比如可能面临网络异常、远程主机或进程停止；并发系统理论上也存在相似的问题，比如CPU异常，内存或硬盘损坏等情况，这种异常的概率相对较小，但实际上是存在的。</p>
+                <p>Lock 是除synchronized代码块的另外一种线程同步机制，Lock可以具有比synchronized代码块更复杂的作用。Lock可以使用synchronized关键字，所以它并不能让我们摆脱synchronized关键字。</p>
+<p>自JDK 5开始，java.util.concurrent.locks包提供了一些Lock的实现类，比如ReentrantLock、ReadWriteLock、Condition，因此你可能不需要自己自定义Lock，但是你可能需要知道如何使用它们并了解其中的原理。这里我们不详细讲解，更多的细节，后面我将总结JUC工具包的相关知识点。</p>
+<h3 id="1-简单的Lock"><a href="#1-简单的Lock" class="headerlink" title="1. 简单的Lock"></a>1. 简单的Lock</h3><p>先看看synchronized的同步：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class Counter &#123;</span><br><span class="line"></span><br><span class="line">    private int count &#x3D; 0;</span><br><span class="line">    </span><br><span class="line">    public int inc() &#123;</span><br><span class="line">        synchronized(this) &#123;</span><br><span class="line">            return ++count;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意inc()方法里面的synchronized(this)代码块，这个代码块确保了同一时间只有一个线程能够执行 ++count 指令。下面我们看看使用自定义的Lock代替上面这段代码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public class Counter&#123;</span><br><span class="line">    </span><br><span class="line">    private Lock lock  &#x3D; new Lock();</span><br><span class="line">    private int count &#x3D; 0;</span><br><span class="line"></span><br><span class="line">    public int inc() throws InterruptedException &#123;</span><br><span class="line">        lock.lock();</span><br><span class="line">        int newCount &#x3D; ++count;</span><br><span class="line">        lock.unLock();</span><br><span class="line">        return newCount;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Lock的实现如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public class Lock &#123;</span><br><span class="line"></span><br><span class="line">    private boolean hasLock &#x3D; false;</span><br><span class="line"></span><br><span class="line">    private synchronized void lock() throws InterruptedException &#123;</span><br><span class="line">        while (hasLock) &#123;</span><br><span class="line">            wait();</span><br><span class="line">        &#125;</span><br><span class="line">        hasLock &#x3D; true;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private synchronized void unLock() &#123;</span><br><span class="line">        hasLock &#x3D; false;</span><br><span class="line">        notify();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>请注意lock()方法中的while (hasLock)循环，我们称它为“自旋锁”，自旋锁解决了线程通信的虚假唤醒的问题。</p>
 <hr>
-<h3 id="2-共享状态-vs-隔离状态"><a href="#2-共享状态-vs-隔离状态" class="headerlink" title="2. 共享状态 vs 隔离状态"></a>2. 共享状态 vs 隔离状态</h3><h5 id="2-1-共享状态"><a href="#2-1-共享状态" class="headerlink" title="2.1 共享状态"></a>2.1 共享状态</h5><p>共享状态意味着同一系统的多个线程之间共享一些状态（一般指数据，共享一个或多个对象的数据）。当线程共享状态时，容易引发一些并发问题，比如死锁，竞争条件等等，这取决于线程怎样地使用和访问共享数据等等。<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-0-1.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-0-1.png" alt></div></p>
-<h5 id="2-2-隔离状态"><a href="#2-2-隔离状态" class="headerlink" title="2.2 隔离状态"></a>2.2 隔离状态</h5><p>隔离状态意味着同一系统的多个线程之间不共享状态。如果不同的线程之间需要进行通信，可以通过交换不可变对象、或者使用复制的对象进行通信。当多个线程之间不存在共享状态（或共享数据），就可以避免最常见的并发问题。<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-0-2.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-0-2.png" alt></div></p>
-<p><strong>备注</strong><br>隔离状态通常情况下可以让代码实现更加简单，并且可以不用担心发生并发访问的问题，避免一些常见的并发问题。在一些特殊情况下，使用分离状态并发设计可能存在更大的挑战。</p>
+<h3 id="2-锁重入"><a href="#2-锁重入" class="headerlink" title="2. 锁重入"></a>2. 锁重入</h3><p>当某个线程进入同步代码块时，首先会尝试获取同步代码块的对象锁，一个线程可以拥有多个对象锁，由于不同同步代码块可能具有相同的对象锁，当线程拥有某个对象锁时，进入这个对象锁的同步代码块不需要再次获取锁，我们称它为可重入锁。</p>
+<p>synchronized 具有重入锁的机制。示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public class Reentrant &#123;</span><br><span class="line">    </span><br><span class="line">    public synchronized void methodA() &#123;</span><br><span class="line">        methodB();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public synchronized void methodB() &#123;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>请注意普通方法A和普通方法B都使用了synchronized关键字声明，它的监视器对象是Reentrant的一个实例对象，methodA()中调用了methodB()，当某个线程进入进入methodA()，获取到对应的锁，进入methodB()不需要再次获取锁，可以直接进入methodB()。</p>
+<p>JUC中还提供了一些重入锁，比如ReentrantLock、ReentrantReadWriteLock等等，这里我们不细讲，后面请看JUC博客专题。</p>
+<p>现在我们自定义一个可重入锁。如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 自定义可重入锁</span><br><span class="line"> *</span><br><span class="line"> * @author : sungm</span><br><span class="line"> * @date : 2020-09-03 10:48</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class CustomReentrantLock &#123;</span><br><span class="line"></span><br><span class="line">    private boolean hasLocked &#x3D; false;</span><br><span class="line">    private Thread lockedBy &#x3D; null;</span><br><span class="line"></span><br><span class="line">    public synchronized void lock() throws InterruptedException &#123;</span><br><span class="line">        while (hasLocked &amp;&amp; lockedBy !&#x3D; Thread.currentThread()) &#123;</span><br><span class="line">            wait();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        hasLocked &#x3D; true;</span><br><span class="line">        lockedBy &#x3D; Thread.currentThread();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public synchronized void unLock() &#123;</span><br><span class="line">        hasLocked &#x3D; false;</span><br><span class="line">        lockedBy &#x3D; null;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如上所示，while 循环中不仅要判断hasLocked是否被锁住还要判断当前线程是否是锁被拥有的线程，这就是可重入的锁。</p>
 <hr>
-<h3 id="3-并发模型"><a href="#3-并发模型" class="headerlink" title="3. 并发模型"></a>3. 并发模型</h3><h5 id="3-1-Parallel-Workers-并行工作者并发模式"><a href="#3-1-Parallel-Workers-并行工作者并发模式" class="headerlink" title="3.1 Parallel Workers (并行工作者并发模式)"></a>3.1 Parallel Workers (并行工作者并发模式)</h5><p><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-1.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-1.png" alt></div></p>
-<p><strong>并行工作者模式：</strong><br>传入的工作被分配到不同的工作者去执行，每个工作者执行完整的工作流程。工作者在不同的线程中执行。并行工作者并发模型在 Java 应用程序中很常见，JUC包中很多并发工具类的设计都采用了这种并发模型。 </p>
-<h6 id="优点："><a href="#优点：" class="headerlink" title="优点："></a>优点：</h6><blockquote>
-<ul>
-<li>非常容易理解：如果要提高并行效率只需要增加更多的工作者</li>
-</ul>
-</blockquote>
-<h6 id="缺点："><a href="#缺点：" class="headerlink" title="缺点："></a>缺点：</h6><blockquote>
-<ul>
-<li>存在共享状态时实现更加复杂</li>
-<li>工作顺序不固定</li>
-</ul>
-</blockquote>
-<p><strong>缺点1：存在共享状态时实现更加复杂</strong><br>并行工作者模式不同线程存在共享数据时，实现变得更加复杂。共享线程通常需要访问共享对象，不论共享对象存在于内存中还是数据库中。如下图所示<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-2.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-2.png" alt></div></p>
-<p>某些共享状态是工作队列中的通信机制，也有些共享状态是业务数据、数据缓存、数据库连接池等等。</p>
-<p>并行工作者并发模式的线程之间存在共享数据时会更加复杂，当一个线程修改了共享数据变量时，需要确保其他线程读取的共享数据变量是最新的（线程修改了共享数据变量应该把数据保存至主内存中，而不是保存至线程独有的CPU高速缓存栈中）。线程需要避免死锁、竞争条件、或者其他共享状态的并发问题。</p>
-<p>当某个线程正在访问共享数据结构时，其他线程会等待正在访问共享数据结构的线程执行完毕，造成阻塞。这可能导致这些线程在竞争共享数据资源，高的竞争条件会导致许多线程访问共享数据时串行执行。</p>
-<p>现代非阻塞并发算法可能降低竞争并且提高性能，但是非阻塞并发算法很难实现。</p>
-<p>持久性数据结构是另一种选择，当持久性数据结构被修改时，他总是保持修改前版本。当多个线程引用了某个持久性数据结构，其中某个线程对持久性数据结构做了修改时，这个修改了持久性数据结构的线程获得了最新的引用数据，而其他的线程保持原来的引用的数据。在共享数据被修改时，持久性数据结构的方式是一个很好的解决方案。</p>
-<blockquote>
-<p>关于持久性数据结构的举例：</p>
-<ul>
-<li>当某个线程给ArrayList添加一个元素时，新添加的元素对其他线程并不可见</li>
-<li>也存在某些缺陷，比如LinkedList， 由于LinkedList是链表的数据结构，链表的每个元素都是一个单独的对象，这种数据结构分布在内存块中的各个地方。然而现代CPU在访问顺序的数据结构时要快的多，比如ArrayList，所以CPU在访问ArrayList时能够表现出更加卓越的性能。CPU能够一次加载一个较大的数组类型的数据结构至高速缓存中，但是无法将一个元素分布至内存各个地方的链表（ListedList）加载到CPU的高速缓存中。</li>
-</ul>
-</blockquote>
-<p><strong>无状态工作者</strong><br>共享数据可以被系统中某个线程修改，其他线程在每次访问共享数据时必须重新读取最新的内存中的数据，以保证线程在执行中时拿到的是最新的内存副本，一个线程不始终保持自己线程独有的CPU高速缓存数据的状态称为无状态。</p>
-<p><strong>缺点2：工作顺序不固定</strong><br>工作A可能被分配给线程A执行，也可能被分配给线程B执行，因此并行工作者模式的执行顺序不是固定的。</p>
-<h5 id="3-2-Assembly-Line-流水线并发模式"><a href="#3-2-Assembly-Line-流水线并发模式" class="headerlink" title="3.2 Assembly Line (流水线并发模式)"></a>3.2 Assembly Line (流水线并发模式)</h5><p><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-3.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-3.png" alt></div></p>
-<p>这种模式就像工厂中流水线的工人一样，每个工作者只负责整个生产车间的一部分工作，每个工作者负责的这部分工作完成之后会传递给下一个工作者。</p>
-<p>每个工作者在自己的线程内执行，不存在共享状态，流水线并发模式也被称为无共享并发模式。</p>
-<p>流水线并发模式经常在非阻塞IO (NIO) 被设计使用。当一个工作者开始IO操作，其他工作者不需要等待IO操作结束。IO操作很慢，所以等待IO操作完成会浪费大量CPU时间，当IO操作完成时，IO操作的结果会被传递给其他工作者。</p>
-<p>关于NIO， 在IO操作确定工人之间的界限。如图<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-4.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-4.png" alt></div></p>
-<p>实际上，工作模式可能不只一条流水线，大多数系统可以设计多条流水线。<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-5.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-5.png" alt></div></p>
-<p>工作可能并定向到一个工作者进行并行处理。比如一个工作可能同时被分配到工作执行器和日志执行器中执行。<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-6.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-6.png" alt></div></p>
-<p>流水线并发模式也被称为反应系统或者事件响应系统。</p>
-<p><strong>优点：</strong></p>
-<blockquote>
-<ul>
-<li>不共享状态</li>
-<li>可以顺序执行工作</li>
-</ul>
-</blockquote>
-<p><strong>缺点</strong></p>
-<blockquote>
-<ul>
-<li>作业的执行分散在各个工人</li>
-<li>调试更加复杂</li>
-</ul>
-</blockquote>
+<h3 id="3-公平锁"><a href="#3-公平锁" class="headerlink" title="3. 公平锁"></a>3. 公平锁</h3><p>在上一章<a href="https://www.runoob.com" target="_blank" rel="noopener">饥饿与公平</a></p>
 
             </div>
 
@@ -248,10 +193,8 @@
     <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
         <ul class="pagination d-block text-center">
             
-                <li class="previous page-item d-inline"><a href="/2020/08/11/%E7%9B%B8%E5%90%8C%E7%BA%BF%E7%A8%8B/" class="page-link float-left">&larr;  下一页</a></li>
             
-            
-                <li class="next page-item d-inline"><a href="/2020/08/09/%E4%BD%BF%E7%94%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E6%88%90%E6%9C%AC/" class="page-link float-right">上一页  &rarr;</a></li>
+                <li class="next page-item d-inline"><a href="/2020/09/01/%E9%A5%A5%E9%A5%BF%E4%B8%8E%E5%85%AC%E5%B9%B3/" class="page-link float-right">上一页  &rarr;</a></li>
             
         </ul>
     </div>
