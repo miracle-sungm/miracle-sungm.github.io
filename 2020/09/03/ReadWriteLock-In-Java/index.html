@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+<!--Description-->
+
+
+
+    <meta name="description" content="读写锁比其他同步锁要更加复杂一些。多个线程读相同的共享资源不会引发线程安全问题，所以允许共享资源被多个线程同时访问。但是如果有一个线程在写某个资源，需要保证没有线程在读取这个共享资源的数据。为了提高系统的性能，我们可以使用读写锁，在读取资源的时候允许多个线程访问共享资源，在写资源的时候保证多个线程是"/>
+
+
+<!--Author-->
+
+    <meta name="author" content="sungm"/>
+
+
+<!--Open Graph Title-->
+
+    <meta property="og:title" content="[Java 并发编程] 19. Read/Write Lock"/>
+
+
+<!--Open Graph Description-->
+
+    <meta property="og:description" content="读写锁比其他同步锁要更加复杂一些。多个线程读相同的共享资源不会引发线程安全问题，所以允许共享资源被多个线程同时访问。但是如果有一个线程在写某个资源，需要保证没有线程在读取这个共享资源的数据。为了提高系统的性能，我们可以使用读写锁，在读取资源的时候允许多个线程访问共享资源，在写资源的时候保证多个线程是"/>
+
+
+<!--Open Graph Site Name-->
+    <meta property="og:site_name" content="Miracle&#39;s Blog"/>
+
+<!--Type page-->
+
+    <meta property="og:type" content="article"/>
+
+
+<!--Page Cover-->
+
+
+    <meta property="og:image" content="http://yoursite.com/img/home-bg.jpg"/>
+
+
+<meta name="twitter:card" content="summary_large_image"/>
+
+
+
+
+    <meta name="twitter:image" content="http://yoursite.com/img/home-bg.jpg"/>
+
+
+<!-- Title -->
+
+<title>[Java 并发编程] 19. Read/Write Lock - Miracle&#39;s Blog</title>
+
+<!-- Bootstrap Core CSS -->
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+
+<!-- Custom CSS -->
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<!-- Custom Fonts -->
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.0/css/all.min.css" />
+<link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css"/>
+<link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css"/>
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+<!-- Gallery -->
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/featherlight@1.4.0/src/featherlight.css" integrity="sha256-30DV/STftlyQ6v8yaOWlabammvCYtRJERLj/m0b3zno=" crossorigin="anonymous">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/lightgallery@1.6.11/dist/css/lightgallery.min.css">
+
+<!-- favicon -->
+
+<link rel="icon" href="/img/favicon.png"/>
+
+
+
+    <!-- Google Analytics -->
+    
+
+
+<meta name="generator" content="Hexo 4.2.1"><link rel="alternate" href="/atom.xml" title="Miracle's Blog" type="application/atom+xml">
+</head>
+<!-- Head tag -->
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top bg-transparent position-absolute w-100 p-0" id="nav">
+    <div class="container pl-0 pr-0">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <a class="navbar-brand text-white p-1 pl-3" href="/">Miracle's Blog</a>
+        </div>
+        <div class="navbar-nav float-right">
+            <button class="btn btn-link search-btn navbar-item" data-toggle="modal" data-target="#searchModal">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    </div>
+    <!-- /.container -->
+</nav>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 text-center">
+                <div class="post-heading text-white">
+                    <h1>[Java 并发编程] 19. Read/Write Lock</h1>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Main Content -->
+            <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
+                
+                    <span class="meta d-inline-block">
+    
+    
+    <!-- Date -->
+    
+        <span class="post-meta-split">&nbsp;|&nbsp;</span>
+        <i class="far fa-calendar-check fa-fw"></i>
+        2020-09-03
+    
+    <!-- word count and read count -->
+    
+
+    
+
+    
+</span>  
+                
+                <p>读写锁比其他同步锁要更加复杂一些。多个线程读相同的共享资源不会引发线程安全问题，所以允许共享资源被多个线程同时访问。但是如果有一个线程在写某个资源，需要保证没有线程在读取这个共享资源的数据。为了提高系统的性能，我们可以使用读写锁，在读取资源的时候允许多个线程访问共享资源，在写资源的时候保证多个线程是同步访问共享资源。</p>
+<p>Java 5 的 java.util.concurrent 提供了读写锁，我们可以使用它，也需要了解它的一些原理。</p>
+<hr>
+<h3 id="1-Java-实现-Read-Write-Lock"><a href="#1-Java-实现-Read-Write-Lock" class="headerlink" title="1. Java 实现 Read/Write Lock"></a>1. Java 实现 Read/Write Lock</h3><p>首先我们总结下读写访问共享数据的条件：</p>
+<blockquote>
+<ul>
+<li>Read  : 没有线程在写共享资源的数据，也没有线程在请求访问写共享资源的数据。</li>
+<li>Write : 没有线程在读或者写共享资源。</li>
+</ul>
+</blockquote>
+<p><strong>一个线程需要读共享资源，只要保证没有线程在写共享资源的数据，也没有线程在请求写共享资源的数据。</strong> 通过优先写共享资源数据的请求我们可以得到写的请求比读的请求更重要。此外，如果读经常发生，并且我们没有优先写操作，饥饿（饥饿是由于线程间不公平竞争共享资源产生某些线程被无限期阻塞的现象）经常发生。如果一个读的线程不断的获取到访问资源的锁，那么写的线程将无限期的等待锁资源被释放，产生饥饿。因此一个线程需要读共享资源，需要保证没有线程在写共享资源，并且没有线程在请求写共享资源。</p>
+<p><strong>一个线程需要写共享资源，只要保证没有线程在读或写共享资源。</strong> </p>
+<p>记住这些简单的规则，我们来实现一个简单的例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">class ReadWriteLock &#123;</span><br><span class="line"></span><br><span class="line">    private int readers &#x3D; 0;</span><br><span class="line">    private int writes &#x3D; 0;</span><br><span class="line">    private int requestWrites &#x3D; 0;</span><br><span class="line"></span><br><span class="line">    public synchronized void lockRead() throws InterruptedException &#123;</span><br><span class="line">        &#x2F;&#x2F;读需要保证没有线程在写共享资源并且没有线程在请求写共享资源</span><br><span class="line">        while (writes &gt; 0 || requestWrites &gt; 0) &#123;</span><br><span class="line">            wait();</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F;读资源线程记录数自增</span><br><span class="line">        readers++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public synchronized void unlockRead() &#123;</span><br><span class="line">        readers--;</span><br><span class="line">        &#x2F;&#x2F;唤醒所有等待的线程</span><br><span class="line">        notifyAll();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public synchronized void lockWrite() throws InterruptedException &#123;</span><br><span class="line">        &#x2F;&#x2F;自增请求写资源的线程记录数</span><br><span class="line">        requestWrites++;</span><br><span class="line">        &#x2F;&#x2F;写需要保证没有线程在读或写资源</span><br><span class="line">        while (readers &gt; 0 || writes &gt; 0) &#123;</span><br><span class="line">            wait();</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F;请求写资源的线程获取到了锁，请求数自减</span><br><span class="line">        requestWrites--;</span><br><span class="line">        &#x2F;&#x2F;自增正在写资源的线程记录数</span><br><span class="line">        writes++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public synchronized void unlockWrite() &#123;</span><br><span class="line">        writes--;</span><br><span class="line">        &#x2F;&#x2F;唤醒所有等待的线程</span><br><span class="line">        notifyAll();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里是我们自定义的一个读写锁，通过synchronized实现，如果你需要实现线程间公平的写资源，可以使用JUC提供的ReadWriteLock，JUC的内容我们将在JUC专题总结。同一时间允许多个线程读共享资源，但是在调用lockRead()方法和unlockRead()方法时使得读线程同步。同一时间只允许一个线程写共享资源，同样在调用lockWrite()方法和unlockWrite()方法时会使得写线程同步。</p>
+<p>这里再次强调下我们的规则：</p>
+<blockquote>
+<ul>
+<li><strong>一个线程需要读共享资源，只要保证没有线程在写共享资源的数据，也没有线程在请求写共享资源的数据。</strong></li>
+<li><strong>一个线程需要写共享资源，只要保证没有线程在读或写共享资源。</strong> </li>
+</ul>
+</blockquote>
+<hr>
+<h3 id="2-可重入-Read-Write-Lock"><a href="#2-可重入-Read-Write-Lock" class="headerlink" title="2. 可重入 Read / Write Lock"></a>2. 可重入 Read / Write Lock</h3><p>上面示例中的ReadWriteLock不是可重入锁。使得ReadWriteLock可重入需要做一些改变。</p>
+<p>我们可以先列出锁重入的情况，如下所示：</p>
+<blockquote>
+<ul>
+<li>读 -&gt; 读</li>
+<li>读 -&gt; 写</li>
+<li>写 -&gt; 读</li>
+<li>写 -&gt; 写</li>
+</ul>
+</blockquote>
+<p>下面我们按照上面列出的情况，逐一分析，这里做一个简化，因为“读 -&gt; 读”、“写 -&gt; 写”的情况比“读 -&gt; 写”、“写 -&gt; 读”简单，所以我们按照“读 -&gt; 读”、“写 -&gt; 写”、“读 -&gt; 写”、“写 -&gt; 读”的顺序来分析，最后我们将实现一个覆盖所有场景的可重入读写锁。</p>
+<h5 id="2-1-读可重入（读-gt-读）"><a href="#2-1-读可重入（读-gt-读）" class="headerlink" title="2.1 读可重入（读 -&gt; 读）"></a>2.1 读可重入（读 -&gt; 读）</h5><p>首先我们总结下读可重入的规则：<strong>如果一个线程要实现读可重入，那么需要保证没有线程正在写共享资源获取请求写共享资源，或者它已经拥有读共享资源的锁。</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><span class="line">class ReadWriteLock &#123;</span><br><span class="line"></span><br><span class="line">    private Map&lt;Thread, Integer&gt; readerMap &#x3D; new HashMap&lt;Thread, Integer&gt;();</span><br><span class="line"></span><br><span class="line">    private int writes &#x3D; 0;</span><br><span class="line">    private int requestWrites &#x3D; 0;</span><br><span class="line"></span><br><span class="line">    public synchronized void lockRead() throws InterruptedException &#123;</span><br><span class="line">        Thread currentThread &#x3D; Thread.currentThread();</span><br><span class="line">        &#x2F;&#x2F;自旋</span><br><span class="line">        while (!canGrantReadAccess(currentThread)) &#123;</span><br><span class="line">            wait();</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F;读资源线程记录数自增</span><br><span class="line">        if (!readerMap.containsKey(currentThread)) &#123;</span><br><span class="line">            readerMap.put(currentThread, 0);</span><br><span class="line">        &#125;</span><br><span class="line">        readerMap.put(currentThread, readerMap.get(currentThread) + 1);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 是否可以获取读访问</span><br><span class="line">     *</span><br><span class="line">     * &lt;p&gt;读需要保证没有线程在写共享资源并且没有线程在请求写共享资源，或者当前线程已经具有读的锁&lt;&#x2F;p&gt;</span><br><span class="line">     *</span><br><span class="line">     * @param thread        线程</span><br><span class="line">     * @return boolean      结果</span><br><span class="line">     *&#x2F;</span><br><span class="line">    private boolean canGrantReadAccess(Thread thread) &#123;</span><br><span class="line">        &#x2F;&#x2F;如果当前线程已经具有读的锁，就排除了有线程在写的可能性</span><br><span class="line">        if (readerMap.containsKey(thread) &amp;&amp; readerMap.get(thread) &gt; 0) &#123;</span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line">        if (writes &gt; 0) &#123;</span><br><span class="line">            return false;</span><br><span class="line">        &#125;</span><br><span class="line">        return requestWrites &#x3D;&#x3D; 0;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public synchronized void unlockRead() &#123;</span><br><span class="line">        Thread currentThread &#x3D; Thread.currentThread();</span><br><span class="line">        readerMap.put(currentThread, readerMap.get(currentThread) - 1);</span><br><span class="line">        if (readerMap.get(currentThread) &#x3D;&#x3D; 0) &#123;</span><br><span class="line">            &#x2F;&#x2F;清空引用</span><br><span class="line">            readerMap.remove(currentThread);</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F;唤醒所有等待的线程</span><br><span class="line">        notifyAll();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public synchronized void lockWrite() throws InterruptedException &#123;</span><br><span class="line">        &#x2F;&#x2F;自增请求写资源的线程记录数</span><br><span class="line">        requestWrites++;</span><br><span class="line">        &#x2F;&#x2F;自旋</span><br><span class="line">        while (!canGrateWriteAccess()) &#123;</span><br><span class="line">            wait();</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F;请求写资源的线程获取到了锁，请求数自减</span><br><span class="line">        requestWrites--;</span><br><span class="line">        &#x2F;&#x2F;自增正在写资源的线程记录数</span><br><span class="line">        writes++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 是否可以获取写访问</span><br><span class="line">     *</span><br><span class="line">     * &lt;p&gt;写需要保证没有线程在读或写资源&lt;p&#x2F;&gt;</span><br><span class="line">     *</span><br><span class="line">     * @return          结果</span><br><span class="line">     *&#x2F;</span><br><span class="line">    private boolean canGrateWriteAccess() &#123;</span><br><span class="line">        return readerMap.values().stream().mapToInt(i -&gt; i).sum() &gt; 0 || writes &gt; 0;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public synchronized void unlockWrite() &#123;</span><br><span class="line">        writes--;</span><br><span class="line">        &#x2F;&#x2F;唤醒所有等待的线程</span><br><span class="line">        notifyAll();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当你充分的了解了读重入锁的规则，你也可以轻易的写出类似的代码。所以：重点是规则。</p>
+<h5 id="2-2-写可重入（写-gt-写）"><a href="#2-2-写可重入（写-gt-写）" class="headerlink" title="2.2 写可重入（写 -&gt; 写）"></a>2.2 写可重入（写 -&gt; 写）</h5><p>写可重入的规则：<strong>当前线程拥有写资源的锁，不需要再次获取锁可再次进入同步代码块。</strong> 让我们在上面示例的基础上做一些修改。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">class ReadWriteLock &#123;</span><br><span class="line"></span><br><span class="line">    private Map&lt;Thread, Integer&gt; readerMap &#x3D; new HashMap&lt;Thread, Integer&gt;();</span><br><span class="line"></span><br><span class="line">    private int writes &#x3D; 0;</span><br><span class="line">    private int requestWrites &#x3D; 0;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 正在写的线程</span><br><span class="line">     *&#x2F;</span><br><span class="line">    private Thread writingThread &#x3D; null;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;...省略读的 lockRead() 和 unlockRead() 方法</span><br><span class="line"></span><br><span class="line">    public synchronized void lockWrite() throws InterruptedException &#123;</span><br><span class="line">        &#x2F;&#x2F;自增请求写资源的线程记录数</span><br><span class="line">        requestWrites++;</span><br><span class="line">        &#x2F;&#x2F;自旋</span><br><span class="line">        while (!canGrateWriteAccess()) &#123;</span><br><span class="line">            wait();</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F;请求写资源的线程获取到了锁，请求数自减</span><br><span class="line">        requestWrites--;</span><br><span class="line">        &#x2F;&#x2F;自增正在写资源的线程记录数</span><br><span class="line">        writes++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 是否可以获取写访问</span><br><span class="line">     *</span><br><span class="line">     * &lt;p&gt;写需要保证没有线程在读或写资源&lt;p&#x2F;&gt;</span><br><span class="line">     *</span><br><span class="line">     * @return          结果</span><br><span class="line">     *&#x2F;</span><br><span class="line">    private boolean canGrateWriteAccess() &#123;</span><br><span class="line">        return writingThread &#x3D;&#x3D; Thread.currentThread()</span><br><span class="line">                || readerMap.values().stream().mapToInt(i -&gt; i).sum() &gt; 0</span><br><span class="line">                || writes &gt; 0;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public synchronized void unlockWrite() &#123;</span><br><span class="line">        writes--;</span><br><span class="line">        &#x2F;&#x2F;没有写的线程，清空writingThread</span><br><span class="line">        if (writes &#x3D;&#x3D; 0) &#123;</span><br><span class="line">            writingThread &#x3D; null;</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F;唤醒所有等待的线程</span><br><span class="line">        notifyAll();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我只增加了一个writingThread变量记录当前写的线程，并修改了lockWrite()方法的自旋条件canGrateWriteAccess()方法和unlockWrite()方法。</p>
+<h5 id="2-3-读-写可重入（读-gt-写）"><a href="#2-3-读-写可重入（读-gt-写）" class="headerlink" title="2.3 读-写可重入（读 -&gt; 写）"></a>2.3 读-写可重入（读 -&gt; 写）</h5><p>当一个线程拥有读共享资源的锁时，获取写的锁需要满足以下条件：没有其他线程正在读取数据，并且没有任何线程在写共享资源数据或者请求写共享资源数据。</p>
+<p>因此，我们只需要改动canGrateWriteAccess()方法的代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">private boolean canGrateWriteAccess() &#123;</span><br><span class="line">    return  writingThread &#x3D;&#x3D; Thread.currentThread()</span><br><span class="line">            || writes &gt; 0</span><br><span class="line">            || readerMap.entrySet().stream().filter(thread -&gt; thread !&#x3D; Thread.currentThread())</span><br><span class="line">                .map(Map.Entry::getValue)</span><br><span class="line">                .mapToInt(i -&gt; i).sum() &gt; 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="2-4-写-读可重入（写-gt-读）"><a href="#2-4-写-读可重入（写-gt-读）" class="headerlink" title="2.4 写-读可重入（写 -&gt; 读）"></a>2.4 写-读可重入（写 -&gt; 读）</h5><p>当一个线程拥有写共享资源的锁时，需要确保没有线程在读取或写共享资源，因此它可以直接读共享资源的数据。</p>
+<p>因此，我们只要改动canGrantReadAccess()方法的代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">private boolean canGrantReadAccess(Thread thread) &#123;</span><br><span class="line">    &#x2F;&#x2F;如果当前线程已经获取写资源的锁，则不需要再次获取锁</span><br><span class="line">    if (thread &#x3D;&#x3D; writingThread) &#123;</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F;如果当前线程已经具有读的锁，就排除了有线程在写的可能性</span><br><span class="line">    if (readerMap.containsKey(thread) &amp;&amp; readerMap.get(thread) &gt; 0) &#123;</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line">    if (writes &gt; 0) &#123;</span><br><span class="line">        return false;</span><br><span class="line">    &#125;</span><br><span class="line">    return requestWrites &#x3D;&#x3D; 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="2-5-全功能读写可重入锁"><a href="#2-5-全功能读写可重入锁" class="headerlink" title="2.5 全功能读写可重入锁"></a>2.5 全功能读写可重入锁</h5><p>经过前面四小结的完善，ReadWriteLock就具备了读-读、读-写、写-读、写-写各个功能的锁重入。代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br></pre></td><td class="code"><pre><span class="line">class ReadWriteLock &#123;</span><br><span class="line"></span><br><span class="line">    private Map&lt;Thread, Integer&gt; readerMap &#x3D; new HashMap&lt;Thread, Integer&gt;();</span><br><span class="line"></span><br><span class="line">    private int writes &#x3D; 0;</span><br><span class="line">    private int requestWrites &#x3D; 0;</span><br><span class="line">    private Thread writingThread &#x3D; null;</span><br><span class="line"></span><br><span class="line">    public synchronized void lockRead() throws InterruptedException &#123;</span><br><span class="line">        Thread currentThread &#x3D; Thread.currentThread();</span><br><span class="line">        &#x2F;&#x2F;自旋</span><br><span class="line">        while (!canGrantReadAccess(currentThread)) &#123;</span><br><span class="line">            wait();</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F;读资源线程记录数自增</span><br><span class="line">        if (!readerMap.containsKey(currentThread)) &#123;</span><br><span class="line">            readerMap.put(currentThread, 0);</span><br><span class="line">        &#125;</span><br><span class="line">        readerMap.put(currentThread, readerMap.get(currentThread) + 1);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 是否可以获取读访问</span><br><span class="line">     *</span><br><span class="line">     * &lt;p&gt;读需要保证没有线程在写共享资源并且没有线程在请求写共享资源，或者当前线程已经具有读的锁&lt;&#x2F;p&gt;</span><br><span class="line">     *</span><br><span class="line">     * @param thread        线程</span><br><span class="line">     * @return boolean      结果</span><br><span class="line">     *&#x2F;</span><br><span class="line">    private boolean canGrantReadAccess(Thread thread) &#123;</span><br><span class="line">        &#x2F;&#x2F;如果当前线程已经获取写资源的锁，则不需要再次获取锁</span><br><span class="line">        if (thread &#x3D;&#x3D; writingThread) &#123;</span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F;如果当前线程已经具有读的锁，就排除了有线程在写的可能性</span><br><span class="line">        if (readerMap.containsKey(thread) &amp;&amp; readerMap.get(thread) &gt; 0) &#123;</span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line">        if (writes &gt; 0) &#123;</span><br><span class="line">            return false;</span><br><span class="line">        &#125;</span><br><span class="line">        return requestWrites &#x3D;&#x3D; 0;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public synchronized void unlockRead() &#123;</span><br><span class="line">        Thread currentThread &#x3D; Thread.currentThread();</span><br><span class="line">        readerMap.put(currentThread, readerMap.get(currentThread) - 1);</span><br><span class="line">        if (readerMap.get(currentThread) &#x3D;&#x3D; 0) &#123;</span><br><span class="line">            &#x2F;&#x2F;清空引用</span><br><span class="line">            readerMap.remove(currentThread);</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F;唤醒所有等待的线程</span><br><span class="line">        notifyAll();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public synchronized void lockWrite() throws InterruptedException &#123;</span><br><span class="line">        &#x2F;&#x2F;自增请求写资源的线程记录数</span><br><span class="line">        requestWrites++;</span><br><span class="line">        &#x2F;&#x2F;自旋</span><br><span class="line">        while (!canGrateWriteAccess()) &#123;</span><br><span class="line">            wait();</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F;请求写资源的线程获取到了锁，请求数自减</span><br><span class="line">        requestWrites--;</span><br><span class="line">        &#x2F;&#x2F;自增正在写资源的线程记录数</span><br><span class="line">        writes++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 是否可以获取写访问</span><br><span class="line">     *</span><br><span class="line">     * &lt;p&gt;写需要保证没有线程在读或写资源&lt;p&#x2F;&gt;</span><br><span class="line">     *</span><br><span class="line">     * @return          结果</span><br><span class="line">     *&#x2F;</span><br><span class="line">    private boolean canGrateWriteAccess() &#123;</span><br><span class="line">        return  writingThread &#x3D;&#x3D; Thread.currentThread()</span><br><span class="line">                || writes &gt; 0</span><br><span class="line">                || readerMap.entrySet().stream().filter(thread -&gt; thread !&#x3D; Thread.currentThread())</span><br><span class="line">                    .map(Map.Entry::getValue)</span><br><span class="line">                    .mapToInt(i -&gt; i).sum() &gt; 0;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public synchronized void unlockWrite() &#123;</span><br><span class="line">        writes--;</span><br><span class="line">        &#x2F;&#x2F;没有写的线程，清空writingThread</span><br><span class="line">        if (writes &#x3D;&#x3D; 0) &#123;</span><br><span class="line">            writingThread &#x3D; null;</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F;唤醒所有等待的线程</span><br><span class="line">        notifyAll();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="2-6-在finally代码块中调用unlock-方法"><a href="#2-6-在finally代码块中调用unlock-方法" class="headerlink" title="2.6 在finally代码块中调用unlock()方法"></a>2.6 在finally代码块中调用unlock()方法</h5><p>为了产生死锁，请在finally代码块中调用unlock()方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">lock.lockWrite();</span><br><span class="line">try&#123;</span><br><span class="line">    &#x2F;&#x2F;do critical section code, which may throw exception</span><br><span class="line">&#125; finally &#123;</span><br><span class="line">    lock.unlockWrite();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+            </div>
+
+            <!-- Post information -->
+            
+    <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 post-tags">
+        
+            <i class="fas fa-tag" style="vertical-align: middle;font-size: .8rem;"></i>
+            tags:&nbsp;
+            
+            
+        
+            <a href="/tags/Java-并发编程/">#Java 并发编程</a>
+        
+    </div>
+
+            
+    <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
+        <ul class="pagination d-block text-center">
+            
+                <li class="previous page-item d-inline"><a href="/2020/09/04/Semaphores/" class="page-link float-left">&larr;  下一页</a></li>
+            
+            
+                <li class="next page-item d-inline"><a href="/2020/09/02/Lock-In-Java/" class="page-link float-right">上一页  &rarr;</a></li>
+            
+        </ul>
+    </div>
+
+
+            
+                <!-- Comments -->
+                
+
+                
+
+            
+
+        </div>
+    </div>
+</article> 
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+    <style>
+        #toc-content .toc-link::before {
+            background-color: transparent;
+            max-height: 25px;
+        }
+
+        #toc-content .toc-link.is-active-link::before {
+            background-color: #404040;
+        }
+    </style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    <div class="ui-toc dropup scrollspy-body pull-right" style="right: 3%;">
+        <button type="button" class="toc-btn btn btn-light" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
+            <i class="fas fa-list"></i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right p-2"  aria-labelledby="tocLabel">
+            <div class="toc-widget">
+                <div id="toc-content" class="text-truncate">
+                </div>
+            </div>
+            <div class="toc-menu pt-3 pl-4">
+                <a class="expand-toggle d-block py-1" href="#"><span class="expand-text">全部展开</span><span class="close-text" style="display: none;">全部收起</span></a>
+                <a class="back-to-top d-block py-1" href="#">回到顶部</a>
+                <a class="go-to-bottom d-block py-1" href="#">移至底部</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        tocbot.init({
+            // Where to render the table of contents.
+            tocSelector: '#toc-content',
+            // Where to grab the headings to build the table of contents.
+            contentSelector: 'article',
+            // Which headings to grab inside of the contentSelector element.
+            headingSelector: 'h1, h2, h3',
+            // For headings inside relative or absolute positioned containers within content.
+            hasInnerContainers: true,
+        });
+    </script>
+
+
+    
+
+
+    <!-- Footer -->
+    <hr />
+
+<!-- Footer -->
+<footer id="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 text-center">
+                <ul class="list-inline">
+                    
+
+                    
+
+                    
+
+                    
+
+                    
+
+                    
+                </ul>
+                <ul class="copyright footer-menu list-inline">
+                    
+                    
+                        <li class="list-inline-item">
+                            
+                            
+                            <a href="/">
+                                
+                                    Home
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/archives">
+                                
+                                    Archives
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/tags">
+                                
+                                    Tags
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/categories">
+                                
+                                    Categories
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/about">
+                                
+                                    About
+                                
+                            </a>
+                        </li>
+                    
+                </ul>
+                <p class="copyright footer-author">
+                    &copy; -2020 
+                    <a rel="external" class="copyright-link" href="" target="_blank">sungm</a><br/>
+                    Powered by <a rel="external" class="copyright-link" href="https://hexo.io/" target="_blank">Hexo</a>  
+                    <span class="copyright-split">&nbsp;|&nbsp;&nbsp;</span>
+                    Theme <a rel="external" class="copyright-link" href="https://github.com/luswdev/hexo-theme-clean.git" target="_blank">Clean</a>
+                    
+                    
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    <!-- After footer scripts -->
+    <!-- jQuery -->
+<script src="//cdn.jsdelivr.net/npm/jquery@2.1.4/dist/jquery.min.js"></script>
+
+<!-- For drop down -->
+<script src="//cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="//cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
+<!-- Gallery -->
+<script src="//cdn.jsdelivr.net/npm/lightgallery@1.6.11/dist/js/lightgallery-all.min.js"></script>
+<!-- Busuanzi -->
+
+
+<!-- Search script -->
+<script src="/js/search.js"></script>
+<script type="text/javascript">
+    $(function () {
+        searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+    });
+</script>
+
+
+<script src="/js/main.js"></script>
+
+
+    <!-- Search Modal -->
+    <!-- Modal -->
+<div class="modal fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+        <div class="modal-content overflow-auto">
+            <div class="modal-header">
+                <input type="text" class="form-control" placeholder="搜索关键词..." id="searchInput">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div id="searchResult">
+                    <div class="search-empty text-center text-muted p-5">
+                        <i class="far fa-meh"></i>
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>
