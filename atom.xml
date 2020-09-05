@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2020-09-04T13:27:11.332Z</updated>
+  <updated>2020-09-05T02:44:56.643Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,31 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>[Java 并发编程] 23. CAS算法</title>
+    <link href="http://yoursite.com/2020/09/05/CAS%E7%AE%97%E6%B3%95/"/>
+    <id>http://yoursite.com/2020/09/05/CAS%E7%AE%97%E6%B3%95/</id>
+    <published>2020-09-05T02:15:20.000Z</published>
+    <updated>2020-09-05T02:44:56.643Z</updated>
+    
+    <content type="html"><![CDATA[<p>CAS (Compare And Swap的缩写) 算法是在设计并发程序时常用的一个算法。通常情况下， CAS 算法接收两个入参，一个期望值，一个修改值，如果期望值与实际值相同，那么将修改值赋予指定值。听起来CAS算法很复杂，实际上当你理解它之后就变得非常简单。</p><p>在JUC提供的Lock的实现类中，大量的使用了CAS算法，比如ReentrantLock，大致算法如下：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public void compareAndSwap(int expect, int update) &#123;</span><br><span class="line">    if (actual &#x3D;&#x3D; expect) &#123;</span><br><span class="line">        actual &#x3D; update;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>CAS 是一种原子操作，保证了在并发情况下是线程安全的。CAS 的具体操作是比较和替换，首先比较指定值和期望值是否一致，若一致则将修改值赋予指定值。</p><p>Java 中，sun.misc.Unsafe 类提供了一系列 compareAndSwap 函数。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;CAS (Compare And Swap的缩写) 算法是在设计并发程序时常用的一个算法。通常情况下， CAS 算法接收两个入参，一个期望值，一个修改值，如果期望值与实际值相同，那么将修改值赋予指定值。听起来CAS算法很复杂，实际上当你理解它之后就变得非常简单。&lt;/p&gt;
+&lt;
+      
+    
+    </summary>
+    
+    
+    
+      <category term="Java 并发编程" scheme="http://yoursite.com/tags/Java-%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/"/>
+    
+  </entry>
   
   <entry>
     <title>[Java 并发编程] 22. 线程池</title>
@@ -478,31 +503,6 @@
         &lt;p&gt;相同线程是一个从单线程系统扩展到多个相同的单线程的系统的并发模型，结果是多个相同的线程在计算机中并行执行。&lt;/p&gt;
 &lt;p&gt;一个相同线程的系统不是纯粹的单线程系统，因为它包含多个线程，每个线程执行就像一个单线程系统，所以用相同线程或者同一线程命名更加合理。&lt;/p&gt;
 &lt;h3 i
-      
-    
-    </summary>
-    
-    
-    
-      <category term="Java 并发编程" scheme="http://yoursite.com/tags/Java-%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>[Java 并发编程] 3. 并发模型</title>
-    <link href="http://yoursite.com/2020/08/09/%E5%B9%B6%E5%8F%91%E6%A8%A1%E5%9E%8B/"/>
-    <id>http://yoursite.com/2020/08/09/%E5%B9%B6%E5%8F%91%E6%A8%A1%E5%9E%8B/</id>
-    <published>2020-08-09T09:10:45.000Z</published>
-    <updated>2020-09-01T09:56:58.263Z</updated>
-    
-    <content type="html"><![CDATA[<p>我们可以通过使用不同的并发模型来实现一个并发系统，线程之间通过协作完成系统给定的任务。不同的并发模型以不同的方式切割任务，线程之间可能存在通信和合作完成不同的任务。</p><h3 id="1-并发模型与分布式系统相似"><a href="#1-并发模型与分布式系统相似" class="headerlink" title="1. 并发模型与分布式系统相似"></a>1. 并发模型与分布式系统相似</h3><blockquote><ul><li>在一个并发系统中，不同的线程之间相互通信。</li><li>在一个分布式系统中，不同的进程之间相互通信。</li></ul></blockquote><p>分布式系统比并发系统面临更多的挑战，比如可能面临网络异常、远程主机或进程停止；并发系统理论上也存在相似的问题，比如CPU异常，内存或硬盘损坏等情况，这种异常的概率相对较小，但实际上是存在的。</p><hr><h3 id="2-共享状态-vs-隔离状态"><a href="#2-共享状态-vs-隔离状态" class="headerlink" title="2. 共享状态 vs 隔离状态"></a>2. 共享状态 vs 隔离状态</h3><h5 id="2-1-共享状态"><a href="#2-1-共享状态" class="headerlink" title="2.1 共享状态"></a>2.1 共享状态</h5><p>共享状态意味着同一系统的多个线程之间共享一些状态（一般指数据，共享一个或多个对象的数据）。当线程共享状态时，容易引发一些并发问题，比如死锁，竞争条件等等，这取决于线程怎样地使用和访问共享数据等等。<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-0-1.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-0-1.png" alt></div></p><h5 id="2-2-隔离状态"><a href="#2-2-隔离状态" class="headerlink" title="2.2 隔离状态"></a>2.2 隔离状态</h5><p>隔离状态意味着同一系统的多个线程之间不共享状态。如果不同的线程之间需要进行通信，可以通过交换不可变对象、或者使用复制的对象进行通信。当多个线程之间不存在共享状态（或共享数据），就可以避免最常见的并发问题。<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-0-2.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-0-2.png" alt></div></p><p><strong>备注</strong><br>隔离状态通常情况下可以让代码实现更加简单，并且可以不用担心发生并发访问的问题，避免一些常见的并发问题。在一些特殊情况下，使用分离状态并发设计可能存在更大的挑战。</p><hr><h3 id="3-并发模型"><a href="#3-并发模型" class="headerlink" title="3. 并发模型"></a>3. 并发模型</h3><h5 id="3-1-Parallel-Workers-并行工作者并发模式"><a href="#3-1-Parallel-Workers-并行工作者并发模式" class="headerlink" title="3.1 Parallel Workers (并行工作者并发模式)"></a>3.1 Parallel Workers (并行工作者并发模式)</h5><p><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-1.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-1.png" alt></div></p><p><strong>并行工作者模式：</strong><br>传入的工作被分配到不同的工作者去执行，每个工作者执行完整的工作流程。工作者在不同的线程中执行。并行工作者并发模型在 Java 应用程序中很常见，JUC包中很多并发工具类的设计都采用了这种并发模型。 </p><h6 id="优点："><a href="#优点：" class="headerlink" title="优点："></a>优点：</h6><blockquote><ul><li>非常容易理解：如果要提高并行效率只需要增加更多的工作者</li></ul></blockquote><h6 id="缺点："><a href="#缺点：" class="headerlink" title="缺点："></a>缺点：</h6><blockquote><ul><li>存在共享状态时实现更加复杂</li><li>工作顺序不固定</li></ul></blockquote><p><strong>缺点1：存在共享状态时实现更加复杂</strong><br>并行工作者模式不同线程存在共享数据时，实现变得更加复杂。共享线程通常需要访问共享对象，不论共享对象存在于内存中还是数据库中。如下图所示<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-2.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-2.png" alt></div></p><p>某些共享状态是工作队列中的通信机制，也有些共享状态是业务数据、数据缓存、数据库连接池等等。</p><p>并行工作者并发模式的线程之间存在共享数据时会更加复杂，当一个线程修改了共享数据变量时，需要确保其他线程读取的共享数据变量是最新的（线程修改了共享数据变量应该把数据保存至主内存中，而不是保存至线程独有的CPU高速缓存栈中）。线程需要避免死锁、竞争条件、或者其他共享状态的并发问题。</p><p>当某个线程正在访问共享数据结构时，其他线程会等待正在访问共享数据结构的线程执行完毕，造成阻塞。这可能导致这些线程在竞争共享数据资源，高的竞争条件会导致许多线程访问共享数据时串行执行。</p><p>现代非阻塞并发算法可能降低竞争并且提高性能，但是非阻塞并发算法很难实现。</p><p>持久性数据结构是另一种选择，当持久性数据结构被修改时，他总是保持修改前版本。当多个线程引用了某个持久性数据结构，其中某个线程对持久性数据结构做了修改时，这个修改了持久性数据结构的线程获得了最新的引用数据，而其他的线程保持原来的引用的数据。在共享数据被修改时，持久性数据结构的方式是一个很好的解决方案。</p><blockquote><p>关于持久性数据结构的举例：</p><ul><li>当某个线程给ArrayList添加一个元素时，新添加的元素对其他线程并不可见</li><li>也存在某些缺陷，比如LinkedList， 由于LinkedList是链表的数据结构，链表的每个元素都是一个单独的对象，这种数据结构分布在内存块中的各个地方。然而现代CPU在访问顺序的数据结构时要快的多，比如ArrayList，所以CPU在访问ArrayList时能够表现出更加卓越的性能。CPU能够一次加载一个较大的数组类型的数据结构至高速缓存中，但是无法将一个元素分布至内存各个地方的链表（ListedList）加载到CPU的高速缓存中。</li></ul></blockquote><p><strong>无状态工作者</strong><br>共享数据可以被系统中某个线程修改，其他线程在每次访问共享数据时必须重新读取最新的内存中的数据，以保证线程在执行中时拿到的是最新的内存副本，一个线程不始终保持自己线程独有的CPU高速缓存数据的状态称为无状态。</p><p><strong>缺点2：工作顺序不固定</strong><br>工作A可能被分配给线程A执行，也可能被分配给线程B执行，因此并行工作者模式的执行顺序不是固定的。</p><h5 id="3-2-Assembly-Line-流水线并发模式"><a href="#3-2-Assembly-Line-流水线并发模式" class="headerlink" title="3.2 Assembly Line (流水线并发模式)"></a>3.2 Assembly Line (流水线并发模式)</h5><p><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-3.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-3.png" alt></div></p><p>这种模式就像工厂中流水线的工人一样，每个工作者只负责整个生产车间的一部分工作，每个工作者负责的这部分工作完成之后会传递给下一个工作者。</p><p>每个工作者在自己的线程内执行，不存在共享状态，流水线并发模式也被称为无共享并发模式。</p><p>流水线并发模式经常在非阻塞IO (NIO) 被设计使用。当一个工作者开始IO操作，其他工作者不需要等待IO操作结束。IO操作很慢，所以等待IO操作完成会浪费大量CPU时间，当IO操作完成时，IO操作的结果会被传递给其他工作者。</p><p>关于NIO， 在IO操作确定工人之间的界限。如图<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-4.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-4.png" alt></div></p><p>实际上，工作模式可能不只一条流水线，大多数系统可以设计多条流水线。<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-5.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-5.png" alt></div></p><p>工作可能并定向到一个工作者进行并行处理。比如一个工作可能同时被分配到工作执行器和日志执行器中执行。<br><div class="img-item" data-src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-6.png" data-sub-html=".caption"><img src="http://tutorials.jenkov.com/images/java-concurrency/concurrency-models-6.png" alt></div></p><p>流水线并发模式也被称为反应系统或者事件响应系统。</p><p><strong>优点：</strong></p><blockquote><ul><li>不共享状态</li><li>可以顺序执行工作</li></ul></blockquote><p><strong>缺点</strong></p><blockquote><ul><li>作业的执行分散在各个工人</li><li>调试更加复杂</li></ul></blockquote>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;p&gt;我们可以通过使用不同的并发模型来实现一个并发系统，线程之间通过协作完成系统给定的任务。不同的并发模型以不同的方式切割任务，线程之间可能存在通信和合作完成不同的任务。&lt;/p&gt;
-&lt;h3 id=&quot;1-并发模型与分布式系统相似&quot;&gt;&lt;a href=&quot;#1-并发模型与分布式系统相似&quot; 
       
     
     </summary>
